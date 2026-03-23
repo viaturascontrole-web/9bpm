@@ -588,6 +588,7 @@
 </script>
 
 <!-- MODAL QR -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <div id="qrBackdrop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px)" onclick="if(event.target===this)fecharQR()">
   <div style="background:#162030;border:1px solid #253548;border-radius:16px;padding:32px;width:100%;max-width:500px;position:relative;animation:mIn .2s ease">
     <button onclick="fecharQR()" style="position:absolute;top:14px;right:14px;width:28px;height:28px;background:#1e2d3d;border:1px solid #253548;border-radius:6px;color:#8ea0b5;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">✕</button>
@@ -595,11 +596,11 @@
     <div style="font-size:12px;color:#8ea0b5;margin-bottom:24px">Escaneie para acessar os formulários</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
       <div style="text-align:center">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://viaturascontrole-web.github.io/9bpm/entrada.html" style="width:160px;height:160px;border-radius:8px;border:1px solid #253548;background:#fff;padding:6px;display:block;margin:0 auto 10px">
+        <div id="qrEntrada" style="width:160px;height:160px;border-radius:8px;border:1px solid #253548;background:#fff;padding:6px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px"></div>
         <div style="font-weight:600;font-size:13px;color:#00c9a7">Entrada de Serviço</div>
       </div>
       <div style="text-align:center">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://viaturascontrole-web.github.io/9bpm/saida.html" style="width:160px;height:160px;border-radius:8px;border:1px solid #253548;background:#fff;padding:6px;display:block;margin:0 auto 10px">
+        <div id="qrSaida" style="width:160px;height:160px;border-radius:8px;border:1px solid #253548;background:#fff;padding:6px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px"></div>
         <div style="font-weight:600;font-size:13px;color:#0099ff">Saída de Serviço</div>
       </div>
     </div>
@@ -607,7 +608,15 @@
   </div>
 </div>
 <script>
-function abrirQR(){document.getElementById('qrBackdrop').style.display='flex';}
+var qrGerado=false;
+function abrirQR(){
+  document.getElementById('qrBackdrop').style.display='flex';
+  if(!qrGerado){
+    new QRCode(document.getElementById('qrEntrada'),{text:'https://viaturascontrole-web.github.io/9bpm/entrada.html',width:148,height:148,colorDark:'#000000',colorLight:'#ffffff'});
+    new QRCode(document.getElementById('qrSaida'),{text:'https://viaturascontrole-web.github.io/9bpm/saida.html',width:148,height:148,colorDark:'#000000',colorLight:'#ffffff'});
+    qrGerado=true;
+  }
+}
 function fecharQR(){document.getElementById('qrBackdrop').style.display='none';}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')fecharQR();});
 </script>
