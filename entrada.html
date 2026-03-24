@@ -167,9 +167,9 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
       <div class="fg">
         <label>Nível de Óleo do Motor <span class="req">*</span></label>
         <div class="nivel-group">
-          <div class="nivel-btn" id="oleo_MIN" onclick="selecionarNivel(\'oleo\',\'MIN\')">🔴 Mínimo</div>
-          <div class="nivel-btn" id="oleo_MED" onclick="selecionarNivel(\'oleo\',\'MED\')">🟡 Médio</div>
-          <div class="nivel-btn" id="oleo_MAX" onclick="selecionarNivel(\'oleo\',\'MAX\')">🟢 Máximo</div>
+          <div class="nivel-btn" id="oleo_MIN" onclick="selecionarNivel('oleo','MIN')">🔴 Mínimo</div>
+          <div class="nivel-btn" id="oleo_MED" onclick="selecionarNivel('oleo','MED')">🟡 Médio</div>
+          <div class="nivel-btn" id="oleo_MAX" onclick="selecionarNivel('oleo','MAX')">🟢 Máximo</div>
         </div>
         <input type="hidden" id="nivelOleo">
         <div class="msg-invalido" id="msgOleo">Selecione o nível de óleo</div>
@@ -177,9 +177,9 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
       <div class="fg" style="margin-top:16px">
         <label>Nível de Água do Radiador <span class="req">*</span></label>
         <div class="nivel-group">
-          <div class="nivel-btn" id="agua_MIN" onclick="selecionarNivel(\'agua\',\'MIN\')">🔴 Mínimo</div>
-          <div class="nivel-btn" id="agua_MED" onclick="selecionarNivel(\'agua\',\'MED\')">🟡 Médio</div>
-          <div class="nivel-btn" id="agua_MAX" onclick="selecionarNivel(\'agua\',\'MAX\')">🟢 Máximo</div>
+          <div class="nivel-btn" id="agua_MIN" onclick="selecionarNivel('agua','MIN')">🔴 Mínimo</div>
+          <div class="nivel-btn" id="agua_MED" onclick="selecionarNivel('agua','MED')">🟡 Médio</div>
+          <div class="nivel-btn" id="agua_MAX" onclick="selecionarNivel('agua','MAX')">🟢 Máximo</div>
         </div>
         <input type="hidden" id="nivelAgua">
         <div class="msg-invalido" id="msgAgua">Selecione o nível de água</div>
@@ -221,8 +221,8 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
       <div class="fg">
         <label>O cartão confere com a placa? <span class="req">*</span></label>
         <div class="opcao-group">
-          <div class="opcao-btn" id="cartao_SIM" onclick="selecionarCartao(\'SIM\')"><div class="obi">✅</div><div class="obt">Sim, confere</div></div>
-          <div class="opcao-btn" id="cartao_NAO" onclick="selecionarCartao(\'NÃO\')"><div class="obi">❌</div><div class="obt">Não confere</div></div>
+          <div class="opcao-btn" id="cartao_SIM" onclick="selecionarCartao('SIM')"><div class="obi">✅</div><div class="obt">Sim, confere</div></div>
+          <div class="opcao-btn" id="cartao_NAO" onclick="selecionarCartao('NÃO')"><div class="obi">❌</div><div class="obt">Não confere</div></div>
         </div>
         <input type="hidden" id="cartaoConferePlaca">
         <div class="msg-invalido" id="msgCartao">Selecione uma opção</div>

@@ -109,8 +109,8 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
       <div class="card-title">⛽ Abastecimento</div>
       <div class="fg"><label>Houve abastecimento? <span class="req">*</span></label>
         <div class="opcao-group">
-          <div class="opcao-btn" id="abast_SIM" onclick="selecionarAbast(\'SIM\')"><div class="obi">⛽</div><div class="obt">Sim, abasteceu</div></div>
-          <div class="opcao-btn" id="abast_NAO" onclick="selecionarAbast(\'NÃO\')"><div class="obi">🚫</div><div class="obt">Não abasteceu</div></div>
+          <div class="opcao-btn" id="abast_SIM" onclick="selecionarAbast('SIM')"><div class="obi">⛽</div><div class="obt">Sim, abasteceu</div></div>
+          <div class="opcao-btn" id="abast_NAO" onclick="selecionarAbast('NÃO')"><div class="obi">🚫</div><div class="obt">Não abasteceu</div></div>
         </div>
         <input type="hidden" id="houvAbastecimento"><div class="msg-invalido" id="msgAbast">Selecione uma opção</div>
       </div>
@@ -118,8 +118,8 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
         <div class="fg" style="margin-top:14px"><label>Saldo do cartão <span class="req">*</span></label><input type="text" id="saldoCartao" placeholder="Ex: 150.50" oninput="this.value=this.value.replace(/[^0-9.,]/g,\'\')"><div class="msg-invalido">Informe o saldo</div></div>
         <div class="fg"><label>Ficou pendência no posto? <span class="req">*</span></label>
           <div class="opcao-group">
-            <div class="opcao-btn" id="pend_SIM" onclick="selecionarPendencia(\'SIM\')"><div class="obi">⚠️</div><div class="obt">Sim, ficou pendência</div></div>
-            <div class="opcao-btn" id="pend_NAO" onclick="selecionarPendencia(\'NÃO\')"><div class="obi">✅</div><div class="obt">Sem pendência</div></div>
+            <div class="opcao-btn" id="pend_SIM" onclick="selecionarPendencia('SIM')"><div class="obi">⚠️</div><div class="obt">Sim, ficou pendência</div></div>
+            <div class="opcao-btn" id="pend_NAO" onclick="selecionarPendencia('NÃO')"><div class="obi">✅</div><div class="obt">Sem pendência</div></div>
           </div>
           <input type="hidden" id="pendenciaPostos"><div class="msg-invalido" id="msgPend">Selecione uma opção</div>
         </div>
@@ -132,8 +132,8 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
       <div class="card-title">🚨 Sinistros e Avarias</div>
       <div class="fg"><label>Houve sinistro ou novas avarias? <span class="req">*</span></label>
         <div class="opcao-group">
-          <div class="opcao-btn" id="sin_SIM" onclick="selecionarSinistro(\'SIM\')"><div class="obi">⚠️</div><div class="obt">Sim, houve</div></div>
-          <div class="opcao-btn" id="sin_NAO" onclick="selecionarSinistro(\'NÃO\')"><div class="obi">✅</div><div class="obt">Não houve</div></div>
+          <div class="opcao-btn" id="sin_SIM" onclick="selecionarSinistro('SIM')"><div class="obi">⚠️</div><div class="obt">Sim, houve</div></div>
+          <div class="opcao-btn" id="sin_NAO" onclick="selecionarSinistro('NÃO')"><div class="obi">✅</div><div class="obt">Não houve</div></div>
         </div>
         <input type="hidden" id="houveSinistro"><div class="msg-invalido" id="msgSin">Selecione uma opção</div>
       </div>
