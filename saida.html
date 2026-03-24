@@ -100,7 +100,7 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
       <div class="fg"><label>Motorista <span class="req">*</span></label><input type="text" id="motorista" class="upper" placeholder="Nome completo" required maxlength="80"><div class="msg-invalido">Informe o motorista</div></div>
       <div class="fg-row">
         <div class="fg"><label>Matrícula <span class="req">*</span></label><input type="tel" id="matricula" placeholder="Ex: 1234567" maxlength="12" required oninput="this.value=this.value.replace(/\D/g,\'\')"><div class="msg-invalido">Informe a matrícula</div></div>
-        <div class="fg"><label>Telefone <span class="req">*</span></label><input type="tel" id="telefone" placeholder="(69) 9xxxx-xxxx" maxlength="16" required><div class="msg-invalido">Informe o telefone</div></div>
+        
       </div>
     </div>
   </div>
@@ -109,8 +109,8 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
       <div class="card-title">⛽ Abastecimento</div>
       <div class="fg"><label>Houve abastecimento? <span class="req">*</span></label>
         <div class="opcao-group">
-          <div class="opcao-btn" id="abast_SIM" onclick="selecionarAbast('SIM')"><div class="obi">⛽</div><div class="obt">Sim, abasteceu</div></div>
-          <div class="opcao-btn" id="abast_NAO" onclick="selecionarAbast('NÃO')"><div class="obi">🚫</div><div class="obt">Não abasteceu</div></div>
+          <div class="opcao-btn" id="abast_SIM" onclick="selecionarAbast(\'SIM\')"><div class="obi">⛽</div><div class="obt">Sim, abasteceu</div></div>
+          <div class="opcao-btn" id="abast_NAO" onclick="selecionarAbast(\'NÃO\')"><div class="obi">🚫</div><div class="obt">Não abasteceu</div></div>
         </div>
         <input type="hidden" id="houvAbastecimento"><div class="msg-invalido" id="msgAbast">Selecione uma opção</div>
       </div>
@@ -118,8 +118,8 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
         <div class="fg" style="margin-top:14px"><label>Saldo do cartão <span class="req">*</span></label><input type="text" id="saldoCartao" placeholder="Ex: 150.50" oninput="this.value=this.value.replace(/[^0-9.,]/g,\'\')"><div class="msg-invalido">Informe o saldo</div></div>
         <div class="fg"><label>Ficou pendência no posto? <span class="req">*</span></label>
           <div class="opcao-group">
-            <div class="opcao-btn" id="pend_SIM" onclick="selecionarPendencia('SIM')"><div class="obi">⚠️</div><div class="obt">Sim, ficou pendência</div></div>
-            <div class="opcao-btn" id="pend_NAO" onclick="selecionarPendencia('NÃO')"><div class="obi">✅</div><div class="obt">Sem pendência</div></div>
+            <div class="opcao-btn" id="pend_SIM" onclick="selecionarPendencia(\'SIM\')"><div class="obi">⚠️</div><div class="obt">Sim, ficou pendência</div></div>
+            <div class="opcao-btn" id="pend_NAO" onclick="selecionarPendencia(\'NÃO\')"><div class="obi">✅</div><div class="obt">Sem pendência</div></div>
           </div>
           <input type="hidden" id="pendenciaPostos"><div class="msg-invalido" id="msgPend">Selecione uma opção</div>
         </div>
@@ -132,8 +132,8 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
       <div class="card-title">🚨 Sinistros e Avarias</div>
       <div class="fg"><label>Houve sinistro ou novas avarias? <span class="req">*</span></label>
         <div class="opcao-group">
-          <div class="opcao-btn" id="sin_SIM" onclick="selecionarSinistro('SIM')"><div class="obi">⚠️</div><div class="obt">Sim, houve</div></div>
-          <div class="opcao-btn" id="sin_NAO" onclick="selecionarSinistro('NÃO')"><div class="obi">✅</div><div class="obt">Não houve</div></div>
+          <div class="opcao-btn" id="sin_SIM" onclick="selecionarSinistro(\'SIM\')"><div class="obi">⚠️</div><div class="obt">Sim, houve</div></div>
+          <div class="opcao-btn" id="sin_NAO" onclick="selecionarSinistro(\'NÃO\')"><div class="obi">✅</div><div class="obt">Não houve</div></div>
         </div>
         <input type="hidden" id="houveSinistro"><div class="msg-invalido" id="msgSin">Selecione uma opção</div>
       </div>
@@ -223,7 +223,7 @@ function voltar(){if(ETAPA_ATUAL>1){ETAPA_ATUAL--;atualizarUI();}}
 function validarEtapa(){esconderErro();var ok=true;
   if(ETAPA_ATUAL===1){if(!document.getElementById('prefixo').value){marcarInvalido('prefixo',true);ok=false;}if(!parseFloat(document.getElementById('odometroFinal').value)){marcarInvalido('odometroFinal',true);ok=false;}}
   if(ETAPA_ATUAL===2){var setor=document.getElementById('setor').value;if(!setor){marcarInvalido('setor',true);ok=false;}if(setor==='OUTRO'&&!document.getElementById('setorLivre').value.trim()){marcarInvalido('setorLivre',true);ok=false;}}
-  if(ETAPA_ATUAL===3){if(!document.getElementById('comandante').value.trim()){marcarInvalido('comandante',true);ok=false;}if(!document.getElementById('motorista').value.trim()){marcarInvalido('motorista',true);ok=false;}if(!document.getElementById('matricula').value.trim()){marcarInvalido('matricula',true);ok=false;}if(!document.getElementById('telefone').value.trim()){marcarInvalido('telefone',true);ok=false;}}
+  if(ETAPA_ATUAL===3){if(!document.getElementById('comandante').value.trim()){marcarInvalido('comandante',true);ok=false;}if(!document.getElementById('motorista').value.trim()){marcarInvalido('motorista',true);ok=false;}if(!document.getElementById('matricula').value.trim()){marcarInvalido('matricula',true);ok=false;}}
   if(ETAPA_ATUAL===4){if(!abastValor){document.getElementById('msgAbast').style.display='block';ok=false;}if(abastValor==='SIM'){if(!document.getElementById('saldoCartao').value.trim()){marcarInvalido('saldoCartao',true);ok=false;}if(!pendValor){document.getElementById('msgPend').style.display='block';ok=false;}if(pendValor==='SIM'&&!document.getElementById('qualPendencia').value.trim()){marcarInvalido('qualPendencia',true);ok=false;}}}
   if(ETAPA_ATUAL===5){if(!sinValor){document.getElementById('msgSin').style.display='block';ok=false;}if(sinValor==='SIM'&&!document.getElementById('descricaoAlteracoes').value.trim()){marcarInvalido('descricaoAlteracoes',true);ok=false;}}
   if(!ok)mostrarErro('Preencha todos os campos obrigatórios.');return ok;
@@ -243,7 +243,7 @@ async function enviar(){
   document.getElementById('btnSend').disabled=true;
   var linkFotos=await enviarFotos(prefixo);
   document.getElementById('loadingTxt').textContent='Registrando saída...';
-  var dados={tipo:'saida',prefixo:prefixo,odometroFinal:document.getElementById('odometroFinal').value,setor:setorFinal,comandante:document.getElementById('comandante').value.trim().toUpperCase(),motorista:document.getElementById('motorista').value.trim().toUpperCase(),matricula:document.getElementById('matricula').value.trim(),telefone:document.getElementById('telefone').value.trim(),houvAbastecimento:abastValor,saldoCartao:abastValor==='SIM'?document.getElementById('saldoCartao').value.trim():'',pendenciaPostos:abastValor==='SIM'?pendValor:'NÃO',qualPendencia:(abastValor==='SIM'&&pendValor==='SIM')?document.getElementById('qualPendencia').value.trim():'',houveSinistro:sinValor,descricaoAlteracoes:sinValor==='SIM'?document.getElementById('descricaoAlteracoes').value.trim():'SEM NOVAS AVARIAS',linkImagens:linkFotos||''};
+  var dados={tipo:'saida',prefixo:prefixo,odometroFinal:document.getElementById('odometroFinal').value,setor:setorFinal,comandante:document.getElementById('comandante').value.trim().toUpperCase(),motorista:document.getElementById('motorista').value.trim().toUpperCase(),matricula:document.getElementById('matricula').value.trim(),houvAbastecimento:abastValor,saldoCartao:abastValor==='SIM'?document.getElementById('saldoCartao').value.trim():'',pendenciaPostos:abastValor==='SIM'?pendValor:'NÃO',qualPendencia:(abastValor==='SIM'&&pendValor==='SIM')?document.getElementById('qualPendencia').value.trim():'',houveSinistro:sinValor,descricaoAlteracoes:sinValor==='SIM'?document.getElementById('descricaoAlteracoes').value.trim():'SEM NOVAS AVARIAS',linkImagens:linkFotos||''};
   fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados)})
   .then(function(r){return r.json();})
   .then(function(resp){

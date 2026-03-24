@@ -167,9 +167,9 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
       <div class="fg">
         <label>Nível de Óleo do Motor <span class="req">*</span></label>
         <div class="nivel-group">
-          <div class="nivel-btn" id="oleo_MIN" onclick="selecionarNivel('oleo','MIN')">🔴 Mínimo</div>
-          <div class="nivel-btn" id="oleo_MED" onclick="selecionarNivel('oleo','MED')">🟡 Médio</div>
-          <div class="nivel-btn" id="oleo_MAX" onclick="selecionarNivel('oleo','MAX')">🟢 Máximo</div>
+          <div class="nivel-btn" id="oleo_MIN" onclick="selecionarNivel(\'oleo\',\'MIN\')">🔴 Mínimo</div>
+          <div class="nivel-btn" id="oleo_MED" onclick="selecionarNivel(\'oleo\',\'MED\')">🟡 Médio</div>
+          <div class="nivel-btn" id="oleo_MAX" onclick="selecionarNivel(\'oleo\',\'MAX\')">🟢 Máximo</div>
         </div>
         <input type="hidden" id="nivelOleo">
         <div class="msg-invalido" id="msgOleo">Selecione o nível de óleo</div>
@@ -177,9 +177,9 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
       <div class="fg" style="margin-top:16px">
         <label>Nível de Água do Radiador <span class="req">*</span></label>
         <div class="nivel-group">
-          <div class="nivel-btn" id="agua_MIN" onclick="selecionarNivel('agua','MIN')">🔴 Mínimo</div>
-          <div class="nivel-btn" id="agua_MED" onclick="selecionarNivel('agua','MED')">🟡 Médio</div>
-          <div class="nivel-btn" id="agua_MAX" onclick="selecionarNivel('agua','MAX')">🟢 Máximo</div>
+          <div class="nivel-btn" id="agua_MIN" onclick="selecionarNivel(\'agua\',\'MIN\')">🔴 Mínimo</div>
+          <div class="nivel-btn" id="agua_MED" onclick="selecionarNivel(\'agua\',\'MED\')">🟡 Médio</div>
+          <div class="nivel-btn" id="agua_MAX" onclick="selecionarNivel(\'agua\',\'MAX\')">🟢 Máximo</div>
         </div>
         <input type="hidden" id="nivelAgua">
         <div class="msg-invalido" id="msgAgua">Selecione o nível de água</div>
@@ -221,8 +221,8 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
       <div class="fg">
         <label>O cartão confere com a placa? <span class="req">*</span></label>
         <div class="opcao-group">
-          <div class="opcao-btn" id="cartao_SIM" onclick="selecionarCartao('SIM')"><div class="obi">✅</div><div class="obt">Sim, confere</div></div>
-          <div class="opcao-btn" id="cartao_NAO" onclick="selecionarCartao('NÃO')"><div class="obi">❌</div><div class="obt">Não confere</div></div>
+          <div class="opcao-btn" id="cartao_SIM" onclick="selecionarCartao(\'SIM\')"><div class="obi">✅</div><div class="obt">Sim, confere</div></div>
+          <div class="opcao-btn" id="cartao_NAO" onclick="selecionarCartao(\'NÃO\')"><div class="obi">❌</div><div class="obt">Não confere</div></div>
         </div>
         <input type="hidden" id="cartaoConferePlaca">
         <div class="msg-invalido" id="msgCartao">Selecione uma opção</div>
@@ -286,18 +286,29 @@ function buscarUltimoOdometro(){
   var prefixo=document.getElementById('prefixo').value;
   var hint=document.getElementById('odometroHint');
   var inputOdo=document.getElementById('odometroInicial');
-  hint.className='odometro-hint';
   if(!prefixo)return;
+  // Mostra mensagem de carregando
+  hint.className='odometro-hint on';
+  document.getElementById('odometroHintVal').textContent='⏳ Buscando último odômetro...';
+  inputOdo.placeholder='Aguarde...';
   fetch(SCRIPT_URL+'?page=odometro&prefixo='+encodeURIComponent(prefixo))
     .then(function(r){return r.json();})
     .then(function(d){
+      inputOdo.placeholder='Ex: 45230';
       if(d && d.odometro && d.odometro>0){
         inputOdo.value=d.odometro;
-        document.getElementById('odometroHintVal').textContent=Number(d.odometro).toLocaleString('pt-BR');
+        document.getElementById('odometroHintVal').textContent='✅ Último registrado: '+Number(d.odometro).toLocaleString('pt-BR')+' km — confirme ou corrija';
         hint.className='odometro-hint on';
+      } else {
+        document.getElementById('odometroHintVal').textContent='ℹ️ Nenhum registro anterior encontrado';
+        hint.className='odometro-hint on';
+        setTimeout(function(){ hint.className='odometro-hint'; }, 3000);
       }
     })
-    .catch(function(){});
+    .catch(function(){
+      inputOdo.placeholder='Ex: 45230';
+      hint.className='odometro-hint';
+    });
 }
 
 function renderSteps(){
@@ -420,7 +431,7 @@ async function enviarFotos(prefixo){
     document.getElementById('loadingTxt').textContent='Enviando foto '+(i+1)+' de '+fotos.length+'...';
     document.getElementById('fotoProgFill').style.width=Math.round((i/fotos.length)*100)+'%';
     try{
-      var resFoto=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      var resFoto=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},mode:'no-cors',
         body:JSON.stringify({tipo:'foto',prefixo:prefixo,nomeArquivo:fotos[i].nome,base64:fotos[i].base64,mimeType:fotos[i].mimeType})});
       var jFoto=await resFoto.json();
       links.push(jFoto&&jFoto.sucesso?'ok':'erro');
@@ -488,8 +499,8 @@ async function enviar(){
   var linkFotos=await enviarFotos(prefixo);
   document.getElementById('loadingTxt').textContent='Registrando entrada...';
   var dados={tipo:'entrada',prefixo:prefixo,odometroInicial:document.getElementById('odometroInicial').value,setor:setorFinal,comandante:document.getElementById('comandante').value.trim().toUpperCase(),motorista:document.getElementById('motorista').value.trim().toUpperCase(),matricula:document.getElementById('matricula').value.trim(),telefone:document.getElementById('telefone').value.trim(),nivelOleo:nivelOleo,nivelAgua:nivelAgua,alteracoes:alteracoesSel.join(', '),descricaoAvarias:document.getElementById('descricaoAvarias').value.trim(),linkImagens:linkFotos||'',cartaoConferePlaca:cartaoValor,divergenciaCartao:cartaoValor==='NÃO'?document.getElementById('divergenciaCartao').value.trim():''};
-  fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados)})
-  .then(function(r){return r.json();})
+  fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(dados),mode:'no-cors'})
+  .then(function(r){return {sucesso:true};})
   .then(function(resp){
     document.getElementById('loadingOv').className='loading-ov';
     if(resp&&resp.sucesso===false){
