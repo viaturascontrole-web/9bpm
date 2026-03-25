@@ -1,0 +1,26 @@
+{
+  "name": "9º BPM — Controle de Viaturas",
+  "short_name": "9º BPM",
+  "description": "Sistema de controle de viaturas do 9º Batalhão de Polícia Militar",
+  "start_url": "/9bpm/",
+  "scope": "/9bpm/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0e1a",
+  "theme_color": "#00c9a7",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
