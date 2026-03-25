@@ -1,11 +1,13 @@
-const CACHE = '9bpm-v2';
+const CACHE = '9bpm-v3';
 const FILES = [
   '/9bpm/',
   '/9bpm/index.html',
   '/9bpm/entrada.html',
   '/9bpm/saida.html',
   '/9bpm/comando.html',
-  '/9bpm/manifest.json'
+  '/9bpm/manifest.json',
+  '/9bpm/icon-192.png',
+  '/9bpm/icon-512.png'
 ];
 
 self.addEventListener('install', e => {
@@ -24,6 +26,6 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   e.respondWith(
-    fetch(e.request).catch(() => caches.match(e.request))
+    caches.match(e.request).then(cached => cached || fetch(e.request))
   );
 });
