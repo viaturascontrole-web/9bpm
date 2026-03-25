@@ -246,10 +246,8 @@ async function enviar(){
   var dados={tipo:'saida',prefixo:prefixo,odometroFinal:document.getElementById('odometroFinal').value,setor:setorFinal,comandante:document.getElementById('comandante').value.trim().toUpperCase(),motorista:document.getElementById('motorista').value.trim().toUpperCase(),matricula:document.getElementById('matricula').value.trim(),houvAbastecimento:abastValor,saldoCartao:abastValor==='SIM'?document.getElementById('saldoCartao').value.trim():'',pendenciaPostos:abastValor==='SIM'?pendValor:'NÃO',qualPendencia:(abastValor==='SIM'&&pendValor==='SIM')?document.getElementById('qualPendencia').value.trim():'',houveSinistro:sinValor,descricaoAlteracoes:sinValor==='SIM'?document.getElementById('descricaoAlteracoes').value.trim():'SEM NOVAS AVARIAS',linkImagens:linkFotos||''};
   fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},mode:'no-cors',body:JSON.stringify(dados)})
   .then(function(){
-    var resp={sucesso:true};
-    (function(resp){
     document.getElementById('loadingOv').className='loading-ov';
-    if(resp&&resp.sucesso===false){document.getElementById('btnSend').disabled=false;mostrarErro('Erro do servidor: '+(resp.erro||'tente novamente'));return;}
+    if(false){document.getElementById('btnSend').disabled=false;mostrarErro('Erro do servidor: '+(resp.erro||'tente novamente'));return;}
     document.getElementById('footerFixed').style.display='none';
     for(var i=1;i<=TOTAL_ETAPAS;i++){var s=document.getElementById('s'+i);if(s)s.className='section';}
     ['stepsRow','stepLabel'].forEach(function(id){document.getElementById(id).style.display='none';});
