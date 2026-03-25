@@ -111,7 +111,9 @@ body::before{
 <script>
 if('serviceWorker' in navigator){
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('sw.js');
+    navigator.serviceWorker.register('/9bpm/sw.js', {scope: '/9bpm/'})
+      .then(r => console.log('SW registrado:', r.scope))
+      .catch(e => console.log('SW erro:', e));
   });
 }
 </script>
