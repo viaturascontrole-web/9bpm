@@ -129,6 +129,40 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
   </div>
   <div class="section" id="s5">
     <div class="card">
+      <div class="card-title">🧹 Controle de Limpeza</div>
+      <div class="fg">
+        <label>A viatura está sendo entregue limpa? <span class="req">*</span></label>
+        <div class="opcao-group">
+          <div class="opcao-btn" id="entLimpa_SIM" onclick="selecionarEntregaLimpa('SIM')"><div class="obi">✅</div><div class="obt">Sim, está limpa</div></div>
+          <div class="opcao-btn" id="entLimpa_NAO" onclick="selecionarEntregaLimpa('NÃO')"><div class="obi">🚫</div><div class="obt">Não está limpa</div></div>
+        </div>
+        <input type="hidden" id="viaturaLimpaSaida">
+        <div class="msg-invalido" id="msgEntLimpa">Selecione uma opção</div>
+      </div>
+      <div id="justLimpaGroup" style="display:none">
+        <div class="fg" style="margin-top:14px">
+          <label>Justifique o motivo da viatura não estar limpa <span class="req">*</span></label>
+          <textarea id="justLimpaSaida" placeholder="Ex: Serviço em área de terra, falta de tempo para lavar, chuva forte..." rows="3"></textarea>
+          <div class="msg-invalido">Informe a justificativa</div>
+        </div>
+        <div class="fg">
+          <label>Fotos da situação na entrega <span class="opt">(opcional)</span></label>
+          <div class="foto-area">
+            <div class="foto-btns">
+              <button type="button" class="foto-btn camera" onclick="abrirCameraEntLimpa()"><span class="foto-btn-icon">📷</span><span>Tirar Foto</span></button>
+              <button type="button" class="foto-btn galeria" onclick="abrirGaleriaEntLimpa()"><span class="foto-btn-icon">🖼️</span><span>Galeria</span></button>
+            </div>
+            <input type="file" id="inputCameraEntLimpa" accept="image/*" capture="environment" style="display:none" onchange="processarFotosEntLimpa(this)">
+            <input type="file" id="inputGaleriaEntLimpa" accept="image/*" multiple style="display:none" onchange="processarFotosEntLimpa(this)">
+            <div class="fotos-preview" id="fotosPreviewEntLimpa"></div>
+            <div class="foto-status" id="fotoStatusEntLimpa">Nenhuma foto selecionada</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section" id="s6">
+    <div class="card">
       <div class="card-title">🚨 Sinistros e Avarias</div>
       <div class="fg"><label>Houve sinistro ou novas avarias? <span class="req">*</span></label>
         <div class="opcao-group">
@@ -174,9 +208,11 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
 <div class="loading-ov" id="loadingOv"><div class="loading-spin"></div><div class="loading-txt" id="loadingTxt">Carregando...</div></div>
 <script>
 var SCRIPT_URL='https://script.google.com/macros/s/AKfycbyQl3ns6drVY1H2DepxCfN23Zee3xmcVlsP4a47IMPlfhxIPGHveaI3-EGYZ7gyVwbooA/exec';
-var ETAPA_ATUAL=1,TOTAL_ETAPAS=5,abastValor='',pendValor='',sinValor='';
+var ETAPA_ATUAL=1,TOTAL_ETAPAS=6,abastValor='',pendValor='',sinValor='';
 var fotosParaEnviar=[];
-var LABELS=['Viatura','Setor','Guarnição','Abastecimento','Finalização'];
+var entLimpaValor="";
+var fotosEntLimpa=[];
+var LABELS=['Viatura','Setor','Guarnição','Abastecimento','Limpeza','Finalização'];
 
 window.addEventListener('DOMContentLoaded',function(){renderSteps();atualizarUI();carregarDados();});
 
@@ -215,6 +251,31 @@ function removerFoto(idx){fotosParaEnviar[idx]=null;var t=document.getElementByI
 function atualizarStatusFoto(){var total=fotosParaEnviar.filter(function(f){return f!==null;}).length;document.getElementById('fotoStatus').textContent=total>0?total+' foto(s) pronta(s) para envio':'Nenhuma foto selecionada';}
 async function enviarFotos(prefixo){var fotos=fotosParaEnviar.filter(function(f){return f!==null;});if(!fotos.length)return null;document.getElementById('fotoProgBar').className='foto-upload-prog on';var links=[];for(var i=0;i<fotos.length;i++){document.getElementById('loadingTxt').textContent='Enviando foto '+(i+1)+' de '+fotos.length+'...';document.getElementById('fotoProgFill').style.width=Math.round((i/fotos.length)*100)+'%';try{var resFoto=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},mode:'no-cors',body:JSON.stringify({tipo:'foto',prefixo:prefixo,nomeArquivo:fotos[i].nome,base64:fotos[i].base64,mimeType:fotos[i].mimeType})});var jFoto=await resFoto.json();links.push(jFoto&&jFoto.sucesso?'ok':'erro');}catch(e){}}document.getElementById('fotoProgFill').style.width='100%';setTimeout(function(){document.getElementById('fotoProgBar').className='foto-upload-prog';},1000);return links.length>0?'Fotos enviadas para pasta da viatura no Drive ('+links.length+')':'';}
 
+
+function selecionarEntregaLimpa(val){
+  entLimpaValor=val;
+  document.getElementById('viaturaLimpaSaida').value=val;
+  document.getElementById('entLimpa_SIM').className='opcao-btn'+(val==='SIM'?' sel-sim':'');
+  document.getElementById('entLimpa_NAO').className='opcao-btn'+(val==='NÃO'?' sel-nao':'');
+  document.getElementById('justLimpaGroup').style.display=val==='NÃO'?'block':'none';
+  document.getElementById('msgEntLimpa').style.display='none';
+}
+function abrirCameraEntLimpa(){document.getElementById('inputCameraEntLimpa').click();}
+function abrirGaleriaEntLimpa(){document.getElementById('inputGaleriaEntLimpa').click();}
+function processarFotosEntLimpa(input){
+  var files=Array.from(input.files);if(!files.length)return;
+  files.forEach(function(file){
+    comprimirImagem(file,800,0.7,function(base64,nome){
+      fotosEntLimpa.push({base64:base64,nome:nome,mimeType:'image/jpeg'});
+      var preview=document.getElementById('fotosPreviewEntLimpa');
+      var div=document.createElement('div');div.className='foto-thumb';
+      div.innerHTML='<img src="data:image/jpeg;base64,'+base64+'">';
+      preview.appendChild(div);
+      document.getElementById('fotoStatusEntLimpa').textContent=fotosEntLimpa.length+' foto(s) pronta(s)';
+    });
+  });input.value='';
+}
+
 function renderSteps(){var row=document.getElementById('stepsRow');row.innerHTML='';for(var i=1;i<=TOTAL_ETAPAS;i++){if(i>1){var l=document.createElement('div');l.className='step-line';row.appendChild(l);}var d=document.createElement('div');d.className='step-dot'+(i<ETAPA_ATUAL?' done':i===ETAPA_ATUAL?' active':'');row.appendChild(d);}document.getElementById('stepLabel').textContent=LABELS[ETAPA_ATUAL-1]+' — Etapa '+ETAPA_ATUAL+' de '+TOTAL_ETAPAS;document.getElementById('progressFill').style.width=(ETAPA_ATUAL/TOTAL_ETAPAS*100)+'%';}
 function atualizarUI(){for(var i=1;i<=TOTAL_ETAPAS;i++){var s=document.getElementById('s'+i);if(s)s.className='section'+(i===ETAPA_ATUAL?' active':'');}document.getElementById('btnBack').style.display=ETAPA_ATUAL>1?'flex':'none';document.getElementById('btnNext').style.display=ETAPA_ATUAL<TOTAL_ETAPAS?'flex':'none';document.getElementById('btnSend').style.display=ETAPA_ATUAL===TOTAL_ETAPAS?'flex':'none';renderSteps();window.scrollTo(0,0);esconderErro();}
 function avancar(){if(!validarEtapa())return;if(ETAPA_ATUAL<TOTAL_ETAPAS){ETAPA_ATUAL++;atualizarUI();}}
@@ -225,13 +286,17 @@ function validarEtapa(){esconderErro();var ok=true;
   if(ETAPA_ATUAL===2){var setor=document.getElementById('setor').value;if(!setor){marcarInvalido('setor',true);ok=false;}if(setor==='OUTRO'&&!document.getElementById('setorLivre').value.trim()){marcarInvalido('setorLivre',true);ok=false;}}
   if(ETAPA_ATUAL===3){if(!document.getElementById('comandante').value.trim()){marcarInvalido('comandante',true);ok=false;}if(!document.getElementById('motorista').value.trim()){marcarInvalido('motorista',true);ok=false;}if(!document.getElementById('matricula').value.trim()){marcarInvalido('matricula',true);ok=false;}}
   if(ETAPA_ATUAL===4){if(!abastValor){document.getElementById('msgAbast').style.display='block';ok=false;}if(abastValor==='SIM'){if(!document.getElementById('saldoCartao').value.trim()){marcarInvalido('saldoCartao',true);ok=false;}if(!pendValor){document.getElementById('msgPend').style.display='block';ok=false;}if(pendValor==='SIM'&&!document.getElementById('qualPendencia').value.trim()){marcarInvalido('qualPendencia',true);ok=false;}}}
-  if(ETAPA_ATUAL===5){if(!sinValor){document.getElementById('msgSin').style.display='block';ok=false;}if(sinValor==='SIM'&&!document.getElementById('descricaoAlteracoes').value.trim()){marcarInvalido('descricaoAlteracoes',true);ok=false;}}
+  if(ETAPA_ATUAL===5){
+    if(!entLimpaValor){document.getElementById('msgEntLimpa').style.display='block';ok=false;}
+    if(entLimpaValor==='NÃO'&&!document.getElementById('justLimpaSaida').value.trim()){marcarInvalido('justLimpaSaida',true);ok=false;}
+  }
+  if(ETAPA_ATUAL===6){if(!sinValor){document.getElementById('msgSin').style.display='block';ok=false;}if(sinValor==='SIM'&&!document.getElementById('descricaoAlteracoes').value.trim()){marcarInvalido('descricaoAlteracoes',true);ok=false;}}
   if(!ok)mostrarErro('Preencha todos os campos obrigatórios.');return ok;
 }
 
 function marcarInvalido(id,on){var el=document.getElementById(id);if(!el)return;on?el.classList.add('invalido'):el.classList.remove('invalido');}
 function mostrarErro(msg){document.getElementById('erroTexto').textContent=msg;document.getElementById('erroGlobal').className='erro-msg on';window.scrollTo({top:0,behavior:'smooth'});}
-function esconderErro(){document.getElementById('erroGlobal').className='erro-msg';document.querySelectorAll('.invalido').forEach(function(el){el.classList.remove('invalido');});['msgAbast','msgPend','msgSin'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});}
+function esconderErro(){document.getElementById('erroGlobal').className='erro-msg';document.querySelectorAll('.invalido').forEach(function(el){el.classList.remove('invalido');});['msgAbast','msgPend','msgSin','msgEntLimpa'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});}
 
 async function enviar(){
   if(!validarEtapa())return;
@@ -243,7 +308,7 @@ async function enviar(){
   document.getElementById('btnSend').disabled=true;
   var linkFotos=await enviarFotos(prefixo);
   document.getElementById('loadingTxt').textContent='Registrando saída...';
-  var dados={tipo:'saida',prefixo:prefixo,odometroFinal:document.getElementById('odometroFinal').value,setor:setor,setorTextoLivre:setor==='OUTRO'?document.getElementById('setorLivre').value.trim():'',comandante:document.getElementById('comandante').value.trim().toUpperCase(),motorista:document.getElementById('motorista').value.trim().toUpperCase(),matricula:document.getElementById('matricula').value.trim(),houvAbastecimento:abastValor,saldoCartao:abastValor==='SIM'?document.getElementById('saldoCartao').value.trim():'',pendenciaPostos:abastValor==='SIM'?pendValor:'NÃO',qualPendencia:(abastValor==='SIM'&&pendValor==='SIM')?document.getElementById('qualPendencia').value.trim():'',houveSinistro:sinValor,descricaoAlteracoes:sinValor==='SIM'?document.getElementById('descricaoAlteracoes').value.trim():'SEM NOVAS AVARIAS',linkImagens:linkFotos||''};
+  var dados={tipo:'saida',prefixo:prefixo,odometroFinal:document.getElementById('odometroFinal').value,setor:setor,setorTextoLivre:setor==='OUTRO'?document.getElementById('setorLivre').value.trim():'',comandante:document.getElementById('comandante').value.trim().toUpperCase(),motorista:document.getElementById('motorista').value.trim().toUpperCase(),matricula:document.getElementById('matricula').value.trim(),houvAbastecimento:abastValor,saldoCartao:abastValor==='SIM'?document.getElementById('saldoCartao').value.trim():'',pendenciaPostos:abastValor==='SIM'?pendValor:'NÃO',qualPendencia:(abastValor==='SIM'&&pendValor==='SIM')?document.getElementById('qualPendencia').value.trim():'',viaturaLimpaSaida:entLimpaValor,justLimpaSaida:entLimpaValor==='NÃO'?document.getElementById('justLimpaSaida').value.trim():'',houveSinistro:sinValor,descricaoAlteracoes:sinValor==='SIM'?document.getElementById('descricaoAlteracoes').value.trim():'SEM NOVAS AVARIAS',linkImagens:linkFotos||''};
   fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},mode:'no-cors',body:JSON.stringify(dados)})
   .then(function(){
     document.getElementById('loadingOv').className='loading-ov';

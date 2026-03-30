@@ -217,6 +217,40 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
   </div>
   <div class="section" id="s5">
     <div class="card">
+      <div class="card-title">🧹 Controle de Limpeza</div>
+      <div class="fg">
+        <label>A viatura está limpa na assunção do serviço? <span class="req">*</span></label>
+        <div class="opcao-group">
+          <div class="opcao-btn" id="limpa_SIM" onclick="selecionarLimpa('SIM')"><div class="obi">✅</div><div class="obt">Sim, está limpa</div></div>
+          <div class="opcao-btn" id="limpa_NAO" onclick="selecionarLimpa('NÃO')"><div class="obi">🚫</div><div class="obt">Não está limpa</div></div>
+        </div>
+        <input type="hidden" id="viaturaLimpaEntrada">
+        <div class="msg-invalido" id="msgLimpa">Selecione uma opção</div>
+      </div>
+      <div id="descLimpaGroup" style="display:none">
+        <div class="fg" style="margin-top:14px">
+          <label>Descreva a situação da viatura <span class="req">*</span></label>
+          <textarea id="descLimpaEntrada" placeholder="Ex: Bancos com barro, odor forte, resíduos no porta-malas..." rows="3"></textarea>
+          <div class="msg-invalido">Informe a descrição</div>
+        </div>
+        <div class="fg">
+          <label>Fotos da sujeira <span class="opt">(opcional)</span></label>
+          <div class="foto-area">
+            <div class="foto-btns">
+              <button type="button" class="foto-btn camera" onclick="abrirCameraLimpa()"><span class="foto-btn-icon">📷</span><span>Tirar Foto</span></button>
+              <button type="button" class="foto-btn galeria" onclick="abrirGaleriaLimpa()"><span class="foto-btn-icon">🖼️</span><span>Galeria</span></button>
+            </div>
+            <input type="file" id="inputCameraLimpa" accept="image/*" capture="environment" style="display:none" onchange="processarFotosLimpa(this)">
+            <input type="file" id="inputGaleriaLimpa" accept="image/*" multiple style="display:none" onchange="processarFotosLimpa(this)">
+            <div class="fotos-preview" id="fotosPreviewLimpa"></div>
+            <div class="foto-status" id="fotoStatusLimpa">Nenhuma foto selecionada</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section" id="s6">
+    <div class="card">
       <div class="card-title">💳 Cartão de Abastecimento</div>
       <div class="fg">
         <label>O cartão confere com a placa? <span class="req">*</span></label>
@@ -253,9 +287,11 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
 <div class="loading-ov" id="loadingOv"><div class="loading-spin"></div><div class="loading-txt" id="loadingTxt">Carregando...</div></div>
 <script>
 var SCRIPT_URL='https://script.google.com/macros/s/AKfycbyQl3ns6drVY1H2DepxCfN23Zee3xmcVlsP4a47IMPlfhxIPGHveaI3-EGYZ7gyVwbooA/exec';
-var ETAPA_ATUAL=1,TOTAL_ETAPAS=5,nivelOleo='',nivelAgua='',alteracoesSel=[],cartaoValor='';
+var ETAPA_ATUAL=1,TOTAL_ETAPAS=6,nivelOleo='',nivelAgua='',alteracoesSel=[],cartaoValor='';
 var fotosParaEnviar=[];
-var LABELS=['Viatura','Setor','Guarnição','Condições','Cartão'];
+var limpaValor="";
+var fotosLimpa=[];
+var LABELS=['Viatura','Setor','Guarnição','Condições','Limpeza','Cartão'];
 var ALTERACOES=['Giroflex','Sirene','Motor','Câmbio','Pneus','TWI pneus','Retrovisores','Luzes','Painel','Rádio / HT','Lataria','Documentação','Extintor','Porta-malas','Freios','Direção','Outros','Sem Alteração'];
 
 window.addEventListener('DOMContentLoaded',function(){renderSteps();renderAlteracoes();atualizarUI();carregarDados();});
@@ -309,6 +345,32 @@ function buscarUltimoOdometro(){
       inputOdo.placeholder='Ex: 45230';
       hint.className='odometro-hint';
     });
+}
+
+
+function selecionarLimpa(val){
+  limpaValor=val;
+  document.getElementById('viaturaLimpaEntrada').value=val;
+  document.getElementById('limpa_SIM').className='opcao-btn'+(val==='SIM'?' sel-sim':'');
+  document.getElementById('limpa_NAO').className='opcao-btn'+(val==='NÃO'?' sel-nao':'');
+  document.getElementById('descLimpaGroup').style.display=val==='NÃO'?'block':'none';
+  document.getElementById('msgLimpa').style.display='none';
+}
+function abrirCameraLimpa(){document.getElementById('inputCameraLimpa').click();}
+function abrirGaleriaLimpa(){document.getElementById('inputGaleriaLimpa').click();}
+function processarFotosLimpa(input){
+  var files=Array.from(input.files);if(!files.length)return;
+  files.forEach(function(file){
+    comprimirImagem(file,800,0.7,function(base64,nome){
+      fotosLimpa.push({base64:base64,nome:nome,mimeType:'image/jpeg'});
+      var preview=document.getElementById('fotosPreviewLimpa');
+      var div=document.createElement('div');div.className='foto-thumb';
+      div.innerHTML='<img src="data:image/jpeg;base64,'+base64+'">';
+      preview.appendChild(div);
+      var total=fotosLimpa.length;
+      document.getElementById('fotoStatusLimpa').textContent=total+' foto(s) pronta(s)';
+    });
+  });input.value='';
 }
 
 function renderSteps(){
@@ -477,6 +539,10 @@ function validarEtapa(){
     if(!document.getElementById('descricaoAvarias').value.trim()){marcarInvalido('descricaoAvarias',true);ok=false;}
   }
   if(ETAPA_ATUAL===5){
+    if(!limpaValor){document.getElementById('msgLimpa').style.display='block';ok=false;}
+    if(limpaValor==='NÃO'&&!document.getElementById('descLimpaEntrada').value.trim()){marcarInvalido('descLimpaEntrada',true);ok=false;}
+  }
+  if(ETAPA_ATUAL===6){
     if(!cartaoValor){document.getElementById('msgCartao').style.display='block';ok=false;}
     if(cartaoValor==='NÃO'&&!document.getElementById('divergenciaCartao').value.trim()){marcarInvalido('divergenciaCartao',true);ok=false;}
   }
@@ -486,7 +552,7 @@ function validarEtapa(){
 
 function marcarInvalido(id,on){var el=document.getElementById(id);if(!el)return;on?el.classList.add('invalido'):el.classList.remove('invalido');}
 function mostrarErro(msg){document.getElementById('erroTexto').textContent=msg;document.getElementById('erroGlobal').className='erro-msg on';window.scrollTo({top:0,behavior:'smooth'});}
-function esconderErro(){document.getElementById('erroGlobal').className='erro-msg';document.querySelectorAll('.invalido').forEach(function(el){el.classList.remove('invalido');});['msgOleo','msgAgua','msgAlteracoes','msgCartao'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});}
+function esconderErro(){document.getElementById('erroGlobal').className='erro-msg';document.querySelectorAll('.invalido').forEach(function(el){el.classList.remove('invalido');});['msgOleo','msgAgua','msgAlteracoes','msgCartao','msgLimpa'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});}
 
 async function enviar(){
   if(!validarEtapa())return;
@@ -498,7 +564,11 @@ async function enviar(){
   document.getElementById('btnSend').disabled=true;
   var linkFotos=await enviarFotos(prefixo);
   document.getElementById('loadingTxt').textContent='Registrando entrada...';
-  var dados={tipo:'entrada',prefixo:prefixo,odometroInicial:document.getElementById('odometroInicial').value,setor:setor,setorTextoLivre:setor==='OUTRO'?document.getElementById('setorLivre').value.trim():'',comandante:document.getElementById('comandante').value.trim().toUpperCase(),motorista:document.getElementById('motorista').value.trim().toUpperCase(),matricula:document.getElementById('matricula').value.trim(),telefone:document.getElementById('telefone').value.trim(),nivelOleo:nivelOleo,nivelAgua:nivelAgua,alteracoes:alteracoesSel.join(', '),descricaoAvarias:document.getElementById('descricaoAvarias').value.trim(),linkImagens:linkFotos||'',cartaoConferePlaca:cartaoValor,divergenciaCartao:cartaoValor==='NÃO'?document.getElementById('divergenciaCartao').value.trim():''};
+  var limpaFotos=fotosLimpa.filter(function(f){return f!==null;});
+  for(var lf=0;lf<limpaFotos.length;lf++){
+    try{fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},mode:'no-cors',body:JSON.stringify({tipo:'foto',prefixo:prefixo,nomeArquivo:limpaFotos[lf].nome,base64:limpaFotos[lf].base64,mimeType:limpaFotos[lf].mimeType})});}catch(e){}
+  }
+  var dados={tipo:'entrada',prefixo:prefixo,odometroInicial:document.getElementById('odometroInicial').value,setor:setor,setorTextoLivre:setor==='OUTRO'?document.getElementById('setorLivre').value.trim():'',comandante:document.getElementById('comandante').value.trim().toUpperCase(),motorista:document.getElementById('motorista').value.trim().toUpperCase(),matricula:document.getElementById('matricula').value.trim(),telefone:document.getElementById('telefone').value.trim(),nivelOleo:nivelOleo,nivelAgua:nivelAgua,alteracoes:alteracoesSel.join(', '),descricaoAvarias:document.getElementById('descricaoAvarias').value.trim(),linkImagens:linkFotos||'',viaturaLimpaEntrada:limpaValor,descLimpaEntrada:limpaValor==='NÃO'?document.getElementById('descLimpaEntrada').value.trim():'',cartaoConferePlaca:cartaoValor,divergenciaCartao:cartaoValor==='NÃO'?document.getElementById('divergenciaCartao').value.trim():''};
   fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(dados),mode:'no-cors'})
   .then(function(r){return {sucesso:true};})
   .then(function(resp){
