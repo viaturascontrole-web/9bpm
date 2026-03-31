@@ -430,8 +430,27 @@
   function renderViaturas(lista){
     var grid=document.getElementById('vGrid');
     if(!lista||lista.length===0){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><span class="icon">📭</span><p>Nenhuma viatura encontrada</p></div>';return;}
-    grid.innerHTML=lista.map(function(v){var cls=resolverClasse(v.status),lbl=resolverLabel(v.status),det='';if(cls==='servico'||cls==='semretorno'){if(v.motorista&&v.motorista!=='--')det+='<div class="v-row">👤 <span>'+esc(v.motorista)+'</span></div>';if(v.comandante&&v.comandante!=='--')det+='<div class="v-row">👨‍✈️ <span>'+esc(v.comandante)+'</span></div>';if(v.setor&&v.setor!=='--')det+='<div class="v-row">📍 <span>'+esc(v.setor)+'</span></div>';if(v.tempo&&v.tempo!=='--')det+='<div class="v-row">⏱️ <span>'+esc(v.tempo)+'</span></div>';
-if(v.viaturaLimpaEntrada&&v.viaturaLimpaEntrada!=='--'){var limpaOk=String(v.viaturaLimpaEntrada).toUpperCase()==='SIM';det+='<div class="v-row">🧹 <span style="color:'+(limpaOk?'#86efac':'#f87171')+'">'+(limpaOk?'Limpa na assunção':'Suja na assunção')+'</span></div>';}}else if(cls==='oficina'){if(v.setor&&v.setor!=='--')det+='<div class="v-row">🏢 <span>'+esc(v.setor)+'</span></div>';if(v.tempo&&v.tempo!=='--')det+='<div class="v-row">⏱️ <span>'+esc(v.tempo)+'</span></div>';}return '<div class="v-card '+cls+'"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px"><div><div class="v-prefixo">'+esc(v.prefixo)+'</div><div class="v-modelo">'+esc(v.modelo)+(v.placa&&v.placa!=='--'?' · '+esc(v.placa):'')+'</div></div><span class="bp b-'+cls+'">'+lbl+'</span></div>'+det+'</div>';}).join('');
+    grid.innerHTML=lista.map(function(v){
+      var cls=resolverClasse(v.status),lbl=resolverLabel(v.status),det='';
+      if(cls==='servico'||cls==='semretorno'){
+        if(v.motorista&&v.motorista!=='--')det+='<div class="v-row">👤 <span>'+esc(v.motorista)+'</span></div>';
+        if(v.comandante&&v.comandante!=='--')det+='<div class="v-row">👨‍✈️ <span>'+esc(v.comandante)+'</span></div>';
+        if(v.setor&&v.setor!=='--')det+='<div class="v-row">📍 <span>'+esc(v.setor)+'</span></div>';
+        if(v.tempo&&v.tempo!=='--')det+='<div class="v-row">⏱️ <span>'+esc(v.tempo)+'</span></div>';
+        var limpaVal=String(v.viaturaLimpaEntrada||v.limpaEntrada||'').trim().toUpperCase();
+        if(limpaVal&&limpaVal!=='--'&&limpaVal!==''){
+          var limpaOk=limpaVal==='SIM';
+          det+='<div class="v-row">🧹 <span style="color:'+(limpaOk?'#86efac':'#f87171')+'">'+(limpaOk?'Limpa na assunção':'Suja na assunção')+'</span></div>';
+        }
+        var telWa=String(v.whatsapp||'').trim();
+        if(telWa&&telWa.startsWith('http'))
+          det+='<div class="v-row" style="margin-top:6px"><a class="wa-btn" href="'+telWa+'" target="_blank">📱 WhatsApp</a></div>';
+      }else if(cls==='oficina'){
+        if(v.setor&&v.setor!=='--')det+='<div class="v-row">🏢 <span>'+esc(v.setor)+'</span></div>';
+        if(v.tempo&&v.tempo!=='--')det+='<div class="v-row">⏱️ <span>'+esc(v.tempo)+'</span></div>';
+      }
+      return '<div class="v-card '+cls+'"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px"><div><div class="v-prefixo">'+esc(v.prefixo)+'</div><div class="v-modelo">'+esc(v.modelo)+(v.placa&&v.placa!=='--'?' · '+esc(v.placa):'')+'</div></div><span class="bp b-'+cls+'">'+lbl+'</span></div>'+det+'</div>';
+    }).join('');
   }
 
   function carregarEntradas(){
