@@ -107,7 +107,7 @@
     table{width:100%;border-collapse:collapse;font-size:12px}
     thead{position:sticky;top:0;z-index:5;background:var(--bg3)}
     th{padding:10px 11px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--txt2);border-bottom:1px solid var(--bd);white-space:nowrap}
-    td{padding:8px 11px;border-bottom:1px solid rgba(37,53,72,.4);vertical-align:middle;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    td{padding:8px 11px;border-bottom:1px solid rgba(37,53,72,.4);vertical-align:middle;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.td-wrap{white-space:normal !important}
     tr:hover td{background:rgba(0,201,167,.04)}
     .erow td{text-align:center !important;padding:40px !important;color:var(--txt2);font-size:14px}
     /* GRÁFICOS */
@@ -368,7 +368,7 @@
   };
 
   var _configSistemas = {
-    'VIATURAS':{nome:'Viaturas',icone:'🚓',classe:'sistema-viaturas',badgeTxt:'Operacional',grupos:[{label:'Status da frota',indicadores:[{chave:'Em serviço',icone:'🚓',cor:'#60a5fa',alertaTipo:'ok'},{chave:'Em oficina',icone:'🔧',cor:'#fb923c',alertaTipo:'atencao'},{chave:'Disponíveis',icone:'✅',cor:'#86efac',alertaTipo:null},{chave:'Total',icone:'🚗',cor:'#60a5fa',alertaTipo:null}]},{label:'Movimentação hoje',indicadores:[{chave:'Entradas hoje',icone:'📥',cor:'#c084fc',alertaTipo:null},{chave:'Saídas hoje',icone:'📤',cor:'#f87171',alertaTipo:null}]}]},
+    'VIATURAS':{nome:'Viaturas',icone:'🚓',classe:'sistema-viaturas',badgeTxt:'Operacional',grupos:[{label:'Status da frota',indicadores:[{chave:'Em serviço',icone:'🚓',cor:'#60a5fa',alertaTipo:'ok'},{chave:'Em oficina',icone:'🔧',cor:'#fb923c',alertaTipo:'atencao'},{chave:'Disponíveis',icone:'✅',cor:'#86efac',alertaTipo:null},{chave:'Total',icone:'🚗',cor:'#60a5fa',alertaTipo:null}]},{label:'Movimentação hoje',indicadores:[{chave:'Entradas hoje',icone:'📥',cor:'#c084fc',alertaTipo:null},{chave:'Saídas hoje',icone:'📤',cor:'#f87171',alertaTipo:null}]},{label:'Controle de limpeza',indicadores:[{chave:'Sujas na assunção hoje',icone:'🧹',cor:'#f87171',alertaTipo:'alerta'},{chave:'Sujas na entrega hoje',icone:'🧺',cor:'#fbbf24',alertaTipo:'atencao'}]}]},
     'INVENTÁRIO':{nome:'Inventário Patrimonial',icone:'📦',classe:'sistema-inventario',badgeTxt:'Patrimônio',grupos:[{label:'Bens móveis',indicadores:[{chave:'Total bens',icone:'📦',cor:'#86efac',alertaTipo:null},{chave:'Seções ativas',icone:'🏢',cor:'#86efac',alertaTipo:null},{chave:'Sem tombamento',icone:'⚠️',cor:'#fbbf24',alertaTipo:'atencao'},{chave:'Cadastrados mês',icone:'📅',cor:'#86efac',alertaTipo:null}]}]},
     'CONSUMO':{nome:'Bens de Consumo',icone:'🧾',classe:'sistema-consumo',badgeTxt:'Consumo',grupos:[{label:'Estoque',indicadores:[{chave:'Total produtos',icone:'📋',cor:'#fbbf24',alertaTipo:null},{chave:'Estoque baixo',icone:'📉',cor:'#fbbf24',alertaTipo:'atencao'},{chave:'Itens críticos',icone:'🚨',cor:'#f87171',alertaTipo:'alerta'}]},{label:'Movimentação',indicadores:[{chave:'Saídas hoje',icone:'📤',cor:'#fbbf24',alertaTipo:null},{chave:'Saídas no mês',icone:'📊',cor:'#fbbf24',alertaTipo:null}]}]}
   };
@@ -430,7 +430,8 @@
   function renderViaturas(lista){
     var grid=document.getElementById('vGrid');
     if(!lista||lista.length===0){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><span class="icon">📭</span><p>Nenhuma viatura encontrada</p></div>';return;}
-    grid.innerHTML=lista.map(function(v){var cls=resolverClasse(v.status),lbl=resolverLabel(v.status),det='';if(cls==='servico'||cls==='semretorno'){if(v.motorista&&v.motorista!=='--')det+='<div class="v-row">👤 <span>'+esc(v.motorista)+'</span></div>';if(v.comandante&&v.comandante!=='--')det+='<div class="v-row">👨‍✈️ <span>'+esc(v.comandante)+'</span></div>';if(v.setor&&v.setor!=='--')det+='<div class="v-row">📍 <span>'+esc(v.setor)+'</span></div>';if(v.tempo&&v.tempo!=='--')det+='<div class="v-row">⏱️ <span>'+esc(v.tempo)+'</span></div>';}else if(cls==='oficina'){if(v.setor&&v.setor!=='--')det+='<div class="v-row">🏢 <span>'+esc(v.setor)+'</span></div>';if(v.tempo&&v.tempo!=='--')det+='<div class="v-row">⏱️ <span>'+esc(v.tempo)+'</span></div>';}return '<div class="v-card '+cls+'"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px"><div><div class="v-prefixo">'+esc(v.prefixo)+'</div><div class="v-modelo">'+esc(v.modelo)+(v.placa&&v.placa!=='--'?' · '+esc(v.placa):'')+'</div></div><span class="bp b-'+cls+'">'+lbl+'</span></div>'+det+'</div>';}).join('');
+    grid.innerHTML=lista.map(function(v){var cls=resolverClasse(v.status),lbl=resolverLabel(v.status),det='';if(cls==='servico'||cls==='semretorno'){if(v.motorista&&v.motorista!=='--')det+='<div class="v-row">👤 <span>'+esc(v.motorista)+'</span></div>';if(v.comandante&&v.comandante!=='--')det+='<div class="v-row">👨‍✈️ <span>'+esc(v.comandante)+'</span></div>';if(v.setor&&v.setor!=='--')det+='<div class="v-row">📍 <span>'+esc(v.setor)+'</span></div>';if(v.tempo&&v.tempo!=='--')det+='<div class="v-row">⏱️ <span>'+esc(v.tempo)+'</span></div>';
+if(v.viaturaLimpaEntrada&&v.viaturaLimpaEntrada!=='--'){var limpaOk=String(v.viaturaLimpaEntrada).toUpperCase()==='SIM';det+='<div class="v-row">🧹 <span style="color:'+(limpaOk?'#86efac':'#f87171')+'">'+(limpaOk?'Limpa na assunção':'Suja na assunção')+'</span></div>';}}else if(cls==='oficina'){if(v.setor&&v.setor!=='--')det+='<div class="v-row">🏢 <span>'+esc(v.setor)+'</span></div>';if(v.tempo&&v.tempo!=='--')det+='<div class="v-row">⏱️ <span>'+esc(v.tempo)+'</span></div>';}return '<div class="v-card '+cls+'"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px"><div><div class="v-prefixo">'+esc(v.prefixo)+'</div><div class="v-modelo">'+esc(v.modelo)+(v.placa&&v.placa!=='--'?' · '+esc(v.placa):'')+'</div></div><span class="bp b-'+cls+'">'+lbl+'</span></div>'+det+'</div>';}).join('');
   }
 
   function carregarEntradas(){
@@ -444,8 +445,8 @@
   function exibirRegistrosEntrada(registros,containerId){
     var el=document.getElementById(containerId||'twEntrada');
     if(!registros||registros.length===0){el.innerHTML='<div class="empty-state"><span class="icon">📭</span><p>Nenhum registro encontrado</p></div>';return;}
-    var html='<table><thead><tr><th>Data/Hora</th><th>Viatura</th><th>Motorista</th><th>Comandante</th><th>Setor</th><th>Odômetro</th><th>Óleo / Água</th><th>Alterações</th><th>Imagens</th></tr></thead><tbody>';
-    registros.forEach(function(r){var temAlter=r.alteracoes&&r.alteracoes!=='--'&&r.alteracoes!=='-'&&r.alteracoes!=='Sem alteração'&&r.alteracoes.toUpperCase()!=='NÃO'&&r.alteracoes.toUpperCase()!=='NAO';var telLimpo=String(r.telefone||'').replace(/\D/g,'');var wa=telLimpo?'<br><a class="wa-btn" href="https://wa.me/55'+telLimpo+'" target="_blank">📱 WhatsApp</a>':'';html+='<tr><td style="white-space:nowrap;color:var(--txt2)">'+esc(r.data||'--')+'</td><td style="font-weight:700;color:var(--ac)">'+esc(r.prefixo||r.viatura||'--')+'</td><td>'+esc(r.motorista||'--')+wa+'</td><td>'+esc(r.comandante||'--')+'</td><td>'+esc(r.setor||'--')+'</td><td style="font-family:var(--mono)">'+esc(r.odometro||'--')+'</td><td style="white-space:nowrap">'+_nivelBadge(r.nivelOleo||r.oleo,'🛢️')+' '+_nivelBadge(r.nivelAgua||r.agua,'💧')+'</td><td style="max-width:180px;white-space:normal;font-size:11px">'+(temAlter?'<span style="color:#fbbf24;font-weight:700">⚠️ '+esc(r.alteracoes)+'</span>':'<span style="color:var(--txt2)">Sem alteração</span>')+'</td><td>'+_imgLink(r.imagens)+'</td></tr>';});
+    var html='<table><thead><tr><th>Data/Hora</th><th>Viatura</th><th>Motorista</th><th>Comandante</th><th>Setor</th><th>Odômetro</th><th>Óleo / Água</th><th>Alterações</th><th>Limpeza</th><th>Imagens</th></tr></thead><tbody>';
+    registros.forEach(function(r){var temAlter=r.alteracoes&&r.alteracoes!=='--'&&r.alteracoes!=='-'&&r.alteracoes!=='Sem alteração'&&r.alteracoes.toUpperCase()!=='NÃO'&&r.alteracoes.toUpperCase()!=='NAO';var telLimpo=String(r.telefone||'').replace(/\D/g,'');var wa=telLimpo?'<br><a class="wa-btn" href="https://wa.me/55'+telLimpo+'" target="_blank">📱 WhatsApp</a>':'';html+='<tr><td style="white-space:nowrap;color:var(--txt2)">'+esc(r.data||'--')+'</td><td style="font-weight:700;color:var(--ac)">'+esc(r.prefixo||r.viatura||'--')+'</td><td>'+esc(r.motorista||'--')+wa+'</td><td>'+esc(r.comandante||'--')+'</td><td>'+esc(r.setor||'--')+'</td><td style="font-family:var(--mono)">'+esc(r.odometro||'--')+'</td><td style="white-space:nowrap">'+_nivelBadge(r.nivelOleo||r.oleo,'🛢️')+' '+_nivelBadge(r.nivelAgua||r.agua,'💧')+'</td><td style="max-width:180px;white-space:normal;font-size:11px">'+(temAlter?'<span style="color:#fbbf24;font-weight:700">⚠️ '+esc(r.alteracoes)+'</span>':'<span style="color:var(--txt2)">Sem alteração</span>')+'</td><td>'+_imgLink(r.linkImagens||r.imagens)+'</td></tr>';});
     el.innerHTML=html+'</tbody></table>';
   }
 
@@ -460,9 +461,9 @@
   function exibirRegistrosSaida(registros,containerId){
     var el=document.getElementById(containerId||'twSaida');
     if(!registros||registros.length===0){el.innerHTML='<div class="empty-state"><span class="icon">📭</span><p>Nenhum registro encontrado</p></div>';return;}
-    var html='<table><thead><tr><th>Data/Hora</th><th>Viatura</th><th>Motorista</th><th>Comandante</th><th>Setor</th><th>Odômetro</th><th>Abasteceu</th><th>Saldo</th><th>Pendência</th><th>Sinistro</th><th>Descrição</th><th>Imagens</th></tr></thead><tbody>';
-    registros.forEach(function(r){var telLimpo=String(r.telefone||'').replace(/\D/g,'');var wa=telLimpo?'<br><a class="wa-btn" href="https://wa.me/55'+telLimpo+'" target="_blank">📱 WhatsApp</a>':'';var temProblema=String(r.pendencia||'').toUpperCase()==='SIM'||String(r.sinistro||'').toUpperCase()==='SIM';var saldo=r.saldoCartao||r.saldo||'--';var qualPend=r.qualPendencia||'';var pendStr=_badgeSN(r.pendencia);if(qualPend&&qualPend!=='--'&&qualPend!=='-')pendStr+='<br><small style="color:#f87171;font-size:10px">'+esc(qualPend)+'</small>';html+='<tr'+(temProblema?' style="background:rgba(231,76,60,.07)"':'')+'>'+
-    '<td style="white-space:nowrap;color:var(--txt2)">'+esc(r.data||'--')+'</td><td style="font-weight:700;color:var(--ac)">'+esc(r.prefixo||r.viatura||'--')+'</td><td>'+esc(r.motorista||'--')+wa+'</td><td>'+esc(r.comandante||'--')+'</td><td>'+esc(r.setor||'--')+'</td><td style="font-family:var(--mono)">'+esc(r.odometro||'--')+'</td><td>'+_badgeSN(r.abastecimento)+'</td><td>'+(saldo!=='--'&&saldo!=='-'?'💳 '+esc(saldo):'--')+'</td><td>'+pendStr+'</td><td>'+_badgeSN(r.sinistro)+'</td><td style="max-width:160px;white-space:normal;font-size:11px;color:var(--txt2)">'+esc(r.descricaoAlteracoes||r.descricao||'--')+'</td><td>'+_imgLink(r.imagens)+'</td></tr>';});
+    var html='<table><thead><tr><th>Data/Hora</th><th>Viatura</th><th>Motorista</th><th>Comandante</th><th>Setor</th><th>Odômetro</th><th>Abasteceu</th><th>Saldo</th><th>Pendência</th><th>Limpeza</th><th>Sinistro</th><th>Descrição</th><th>Imagens</th></tr></thead><tbody>';
+    registros.forEach(function(r){var telLimpo=String(r.telefone||'').replace(/\D/g,'');var wa=telLimpo?'<br><a class="wa-btn" href="https://wa.me/55'+telLimpo+'" target="_blank">📱 WhatsApp</a>':'';var temProblema=String(r.pendencia||'').toUpperCase()==='SIM'||String(r.houveSinistro||r.sinistro||'').toUpperCase()==='SIM'||String(r.viaturaLimpaSaida||'').toUpperCase()==='NÃO'||String(r.viaturaLimpaSaida||'').toUpperCase()==='NAO';var saldo=r.saldoCartao||r.saldo||'--';var qualPend=r.qualPendencia||'';var pendStr=_badgeSN(r.pendencia);if(qualPend&&qualPend!=='--'&&qualPend!=='-')pendStr+='<br><small style="color:#f87171;font-size:10px">'+esc(qualPend)+'</small>';html+='<tr'+(temProblema?' style="background:rgba(231,76,60,.07)"':'')+'>'+
+    '<td style="white-space:nowrap;color:var(--txt2)">'+esc(r.data||'--')+'</td><td style="font-weight:700;color:var(--ac)">'+esc(r.prefixo||r.viatura||'--')+'</td><td>'+esc(r.motorista||'--')+wa+'</td><td>'+esc(r.comandante||'--')+'</td><td>'+esc(r.setor||'--')+'</td><td style="font-family:var(--mono)">'+esc(r.odometro||'--')+'</td><td>'+_badgeSN(r.houvAbastecimento||r.abastecimento)+'</td><td>'+(saldo!=='--'&&saldo!=='-'?'💳 '+esc(saldo):'--')+'</td><td>'+pendStr+'</td><td>'+_limpaSaidaBadge(r)+'</td><td>'+_badgeSN(r.houveSinistro||r.sinistro)+'</td><td style="max-width:160px;white-space:normal;font-size:11px;color:var(--txt2)">'+esc(r.descricaoAlteracoes||r.descricao||'--')+'</td><td>'+_imgLink(r.imagens)+'</td></tr>';});
     el.innerHTML=html+'</tbody></table>';
   }
 
@@ -580,6 +581,24 @@
   function _badgeSN(v){var u=String(v||'').toUpperCase().trim();if(u==='SIM')return'<span class="badge-sim">⚠️ SIM</span>';if(u==='NÃO'||u==='NAO')return'<span class="badge-nao">✓ NÃO</span>';return esc(v)||'--';}
   function _imgLink(link){if(link&&link.trim()&&link!=='--')return'<a class="img-link" href="'+link+'" target="_blank">🖼️ Ver fotos</a>';return'--';}
 
+  function _limpaEntradaBadge(r){
+    var v=String(r.viaturaLimpaEntrada||r.limpaEntrada||'').trim().toUpperCase();
+    var desc=r.descLimpaEntrada||r.descricaoLimpa||'';
+    if(!v||v==='--'||v==='')return '<span style="color:var(--txt2);font-size:10px">—</span>';
+    if(v==='SIM')return '<span class="badge-nao">🧹 Limpa</span>';
+    var html='<span class="badge-sim">🚫 Suja</span>';
+    if(desc&&desc!=='--')html+='<br><small style="color:#f87171;font-size:10px">'+esc(desc)+'</small>';
+    return html;
+  }
+  function _limpaSaidaBadge(r){
+    var v=String(r.viaturaLimpaSaida||r.limpaSaida||'').trim().toUpperCase();
+    var just=r.justLimpaSaida||r.justificativaLimpa||'';
+    if(!v||v==='--'||v==='')return '<span style="color:var(--txt2);font-size:10px">—</span>';
+    if(v==='SIM')return '<span class="badge-nao">🧹 Limpa</span>';
+    var html='<span class="badge-sim">🚫 Não limpa</span>';
+    if(just&&just!=='--')html+='<br><small style="color:#f87171;font-size:10px">'+esc(just)+'</small>';
+    return html;
+  }
   function atualizarContador(){_segundosRestantes--;if(_segundosRestantes<=0){document.getElementById('countdown').textContent='...';carregarDados();}else{document.getElementById('countdown').textContent=_segundosRestantes+'s';}}
 
   document.querySelectorAll('.ov').forEach(function(o){o.addEventListener('click',function(e){if(e.target===o)o.classList.remove('on');});});
