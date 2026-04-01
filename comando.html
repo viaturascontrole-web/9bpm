@@ -38,6 +38,8 @@
     .sb-item:hover{background:var(--bg3);color:var(--txt)}
     .sb-item.active{background:rgba(0,201,167,.07);color:var(--ac);border-left-color:var(--ac)}
     .sb-item.painel.active{background:rgba(251,146,60,.07);color:#fb923c;border-left-color:#fb923c}
+    .sb-item.consumo.active,.sb-item.consumo:hover{background:rgba(251,191,36,.07);color:#fbbf24}
+    .sb-item.consumo:hover .si-icon{background:rgba(251,191,36,.12)}
     .sb-item .si-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:var(--bg3);transition:background .18s}
     .sb-item.active .si-icon{background:rgba(0,201,167,.15)}
     .sb-item.painel.active .si-icon{background:rgba(251,146,60,.15)}
@@ -219,6 +221,10 @@
     </div>
     <div class="sb-divider"></div>
     <div class="sb-section">Administrativo</div>
+    <div class="sb-item consumo" id="nav-consumo" onclick="window.open('https://inventariobpm9.github.io/bens-de-consumo/','_blank')" title="Abre em nova aba">
+      <div class="si-icon">🧾</div><span class="si-label">Bens de Consumo</span>
+      <span style="font-size:9px;color:var(--txt2);opacity:.7">↗</span>
+    </div>
     <div class="sb-item painel" id="nav-painel" onclick="navTo('painel')">
       <div class="si-icon">🏛️</div><span class="si-label">Painel Administrativo</span>
       <span class="si-badge ylw" id="nav-badge-alertas" style="display:none">!</span>
