@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Garageiro — 9º BPM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080e12;--panel:#0c1a22;--borda:#1a3a4a;
+  --ac:#f5a623;--ac2:#e8881a;
+  --red:#e74c3c;--green:#27ae60;
+  --txt:#cfe8f0;--txt2:#5a8090;
+  --mono:'Share Tech Mono',monospace;
+  --sans:'Rajdhani',sans-serif;
+  --cond:'Barlow Condensed',sans-serif;
+}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--sans);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;position:relative}
+
+/* grade de fundo */
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(245,166,35,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(245,166,35,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;animation:gridMove 20s linear infinite}
+@keyframes gridMove{to{background-position:40px 40px}}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.07) 2px,rgba(0,0,0,.07) 4px);pointer-events:none;z-index:0}
+
+/* glows */
+.glow{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
+.glow-1{width:600px;height:600px;top:-200px;left:-200px;background:radial-gradient(circle,rgba(245,166,35,.12),transparent 70%)}
+.glow-2{width:500px;height:500px;bottom:-150px;right:-150px;background:radial-gradient(circle,rgba(26,115,232,.10),transparent 70%)}
+
+.wrap{position:relative;z-index:1;width:100%;max-width:430px;padding:0 20px;animation:fadeIn .6s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* emblema */
+.emblem{text-align:center;margin-bottom:28px}
+.emblem-icon{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));display:inline-flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 0 40px rgba(245,166,35,.35),0 0 0 1px rgba(245,166,35,.2);margin-bottom:14px;animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 40px rgba(245,166,35,.35),0 0 0 1px rgba(245,166,35,.2)}50%{box-shadow:0 0 60px rgba(245,166,35,.55),0 0 0 1px rgba(245,166,35,.4)}}
+.emblem-badge{display:inline-block;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.3);padding:4px 14px;border-radius:4px;font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--ac);margin-bottom:10px}
+.emblem-title{font-family:var(--cond);font-size:28px;font-weight:800;letter-spacing:3px;color:#fff;line-height:1}
+.emblem-sub{font-family:var(--mono);font-size:11px;color:var(--txt2);letter-spacing:2px;margin-top:5px}
+
+/* painel */
+.panel{background:var(--panel);border:1px solid var(--borda);border-radius:12px;padding:28px;box-shadow:0 24px 64px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.04);position:relative;overflow:hidden}
+.panel::before{content:'';position:absolute;top:0;left:24px;right:24px;height:2px;background:linear-gradient(90deg,transparent,var(--ac),var(--ac2),transparent);border-radius:0 0 4px 4px}
+
+/* barra de status */
+.status-bar{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;color:var(--txt2);margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--borda)}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--ac);box-shadow:0 0 8px var(--ac);animation:blink 2s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.status-text{flex:1}
+.status-time{color:var(--ac2)}
+
+/* campos */
+.fgrp{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.flbl{font-family:var(--mono);font-size:10px;color:var(--txt2);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.flbl::before{content:'//';color:var(--ac);font-size:11px}
+.finp-wrap{position:relative}
+.finp-wrap .ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--txt2);font-size:14px;pointer-events:none}
+.finp-wrap .toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--txt2);cursor:pointer;font-size:14px;padding:4px;transition:color .2s}
+.finp-wrap .toggle-pw:hover{color:var(--ac)}
+.finp{background:rgba(0,0,0,.35);border:1px solid var(--borda);border-radius:6px;color:var(--txt);padding:12px 14px 12px 40px;font-family:var(--mono);font-size:15px;letter-spacing:1px;outline:none;transition:border-color .2s,box-shadow .2s;width:100%}
+.finp::placeholder{color:var(--txt2);font-size:13px;letter-spacing:0}
+.finp:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(245,166,35,.12)}
+.finp.upper{text-transform:uppercase}
+
+/* mensagem */
+.msg{display:none;padding:10px 13px;border-radius:6px;font-family:var(--mono);font-size:12px;margin-bottom:14px;animation:slideIn .2s ease;line-height:1.5}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.msg.err{background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.28);color:#f87171}
+.msg.ok{background:rgba(245,166,35,.10);border:1px solid rgba(245,166,35,.28);color:var(--ac)}
+.msg.warn{background:rgba(243,156,18,.10);border:1px solid rgba(243,156,18,.28);color:#fbbf24}
+.msg.on{display:block}
+
+/* spinner */
+.spin-wrap{display:none;align-items:center;justify-content:center;gap:10px;padding:8px 0 2px}
+.spin-wrap.on{display:flex}
+.spin{width:20px;height:20px;border:2px solid var(--borda);border-top-color:var(--ac);border-radius:50%;animation:rot 1s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.spin-lbl{font-family:var(--mono);font-size:11px;color:var(--txt2)}
+
+/* botão login */
+.btn-login{width:100%;padding:14px;background:linear-gradient(135deg,var(--ac),var(--ac2));border:none;border-radius:7px;color:#000;font-family:var(--cond);font-size:17px;font-weight:800;letter-spacing:3px;text-transform:uppercase;cursor:pointer;margin-top:4px;transition:all .2s;position:relative;overflow:hidden}
+.btn-login::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);opacity:0;transition:opacity .2s}
+.btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(245,166,35,.4)}
+.btn-login:hover::after{opacity:1}
+.btn-login:active{transform:translateY(0)}
+.btn-login:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* botão de acesso pós-login */
+.btn-acesso{display:none;width:100%;padding:14px;background:linear-gradient(135deg,#1a73e8,#1558b0);border:none;border-radius:7px;color:#fff;font-family:var(--cond);font-size:17px;font-weight:800;letter-spacing:3px;text-transform:uppercase;cursor:pointer;margin-top:10px;transition:all .2s}
+.btn-acesso:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,115,232,.4)}
+.btn-acesso.on{display:block}
+
+/* link voltar */
+.voltar{margin-top:20px;text-align:center}
+.voltar a{font-family:var(--mono);font-size:10px;color:var(--txt2);text-decoration:none;letter-spacing:1px;transition:color .2s}
+.voltar a:hover{color:var(--ac)}
+
+.footer{margin-top:22px;text-align:center;font-family:var(--mono);font-size:10px;color:#1a2a35;letter-spacing:1.5px;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
+
+<div class="wrap">
+  <div class="emblem">
+    <div class="emblem-icon">🚗</div>
+    <div class="emblem-badge">9º BPM — LOGÍSTICA</div>
+    <div class="emblem-title">GARAGEIRO</div>
+    <div class="emblem-sub">CONTROLE DE VIATURAS</div>
+  </div>
+
+  <div class="panel">
+    <div class="status-bar">
+      <div class="status-dot"></div>
+      <div class="status-text">SISTEMA OPERACIONAL</div>
+      <div class="status-time" id="relogio">--:--:--</div>
+    </div>
+
+    <div class="msg" id="msgBox"></div>
+    <div class="spin-wrap" id="spinWrap">
+      <div class="spin"></div>
+      <span class="spin-lbl" id="spinLbl">AUTENTICANDO...</span>
+    </div>
+
+    <div class="fgrp">
+      <label class="flbl" for="iMat">Matrícula</label>
+      <div class="finp-wrap">
+        <span class="ico">🪪</span>
+        <input type="text" id="iMat" class="finp upper" placeholder="Digite sua matrícula"
+          maxlength="20" autocomplete="username"
+          onkeydown="if(event.key==='Enter') document.getElementById('iSenha').focus()">
+      </div>
+    </div>
+
+    <div class="fgrp">
+      <label class="flbl" for="iSenha">Senha</label>
+      <div class="finp-wrap">
+        <span class="ico">🔒</span>
+        <input type="password" id="iSenha" class="finp" placeholder="Digite sua senha"
+          maxlength="50" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter') fazerLogin()">
+        <button class="toggle-pw" onclick="toggleSenha()" title="Mostrar/ocultar senha">👁</button>
+      </div>
+    </div>
+
+    <button class="btn-login" id="btnLogin" onclick="fazerLogin()">ACESSAR SISTEMA</button>
+    <button class="btn-acesso" id="btnAcesso" onclick="irParaDashboard()">▶ ENTRAR NO PAINEL</button>
+  </div>
+
+  <div class="voltar"><a href="index.html">← Voltar à página inicial</a></div>
+  <div class="footer">Polícia Militar do Estado de Rondônia</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  CONFIGURAÇÃO
+// ═══════════════════════════════════════════════════════
+var API_URL = 'https://script.google.com/macros/s/AKfycbyQl3ns6drVY1H2DepxCfN23Zee3xmcVlsP4a47IMPlfhxIPGHveaI3-EGYZ7gyVwbooA/exec';
+
+// ═══════════════════════════════════════════════════════
+//  ESTADO
+// ═══════════════════════════════════════════════════════
+var _urlDashboard = '';
+
+// ═══════════════════════════════════════════════════════
+//  RELÓGIO
+// ═══════════════════════════════════════════════════════
+setInterval(function() {
+  var el = document.getElementById('relogio');
+  if (!el) return;
+  var d = new Date();
+  el.textContent =
+    ('0'+d.getHours()).slice(-2)+':'+
+    ('0'+d.getMinutes()).slice(-2)+':'+
+    ('0'+d.getSeconds()).slice(-2);
+}, 1000);
+
+// ═══════════════════════════════════════════════════════
+//  REDIRECIONA SE JÁ LOGADO
+// ═══════════════════════════════════════════════════════
+window.addEventListener('load', function() {
+  // sessionStorage: se já tem sessão ativa, vai direto pro dashboard
+  var tk = sessionStorage.getItem('gar_token');
+  var mat = sessionStorage.getItem('gar_matricula');
+  if (tk && mat) {
+    // Verifica se a sessão ainda é válida antes de redirecionar
+    var expira = parseInt(sessionStorage.getItem('gar_expira') || '0');
+    if (Date.now() < expira) {
+      window.location.href = 'garageiro.html';
+      return;
+    } else {
+      // Sessão expirada — limpa
+      sessionStorage.clear();
+    }
+  }
+  document.getElementById('iMat').focus();
+});
+
+// ═══════════════════════════════════════════════════════
+//  HELPERS UI
+// ═══════════════════════════════════════════════════════
+function toggleSenha() {
+  var inp = document.getElementById('iSenha');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function showMsg(texto, tipo) {
+  var el = document.getElementById('msgBox');
+  el.textContent = texto;
+  el.className = 'msg ' + tipo + ' on';
+}
+
+function setLoading(on, txt) {
+  document.getElementById('spinWrap').classList.toggle('on', on);
+  document.getElementById('spinLbl').textContent = txt || 'AUTENTICANDO...';
+  document.getElementById('btnLogin').disabled = on;
+  document.getElementById('iMat').disabled = on;
+  document.getElementById('iSenha').disabled = on;
+}
+
+function irParaDashboard() {
+  if (!_urlDashboard) {
+    showMsg('✗ URL não disponível. Tente novamente.', 'err');
+    return;
+  }
+  window.location.href = _urlDashboard;
+}
+
+// ═══════════════════════════════════════════════════════
+//  CHAMADA À API (fetch POST — sem google.script.run)
+// ═══════════════════════════════════════════════════════
+async function api(payload) {
+  var ctrl = new AbortController();
+  var timer = setTimeout(function() { ctrl.abort(); }, 15000);
+  try {
+    var resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload),
+      signal: ctrl.signal
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    return resp.json();
+  } catch(e) {
+    if (e.name === 'AbortError') throw new Error('Tempo limite esgotado. Verifique a conexão.');
+    throw e;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  LOGIN
+//  Fluxo: login → obter token → criar handoff no servidor
+//  → salvar no sessionStorage → redirecionar para garageiro.html?hk=...
+// ═══════════════════════════════════════════════════════
+async function fazerLogin() {
+  var matricula = document.getElementById('iMat').value.trim().toUpperCase();
+  var senha = document.getElementById('iSenha').value;
+  document.getElementById('msgBox').className = 'msg';
+
+  if (!matricula) { showMsg('⚠ Informe sua matrícula.', 'warn'); return; }
+  if (!senha)     { showMsg('⚠ Informe sua senha.', 'warn'); return; }
+
+  setLoading(true, 'AUTENTICANDO...');
+
+  try {
+    // Passo 1: Login
+    var loginResult = await api({ tipo: 'garageiroLogin', matricula: matricula, senha: senha });
+
+    if (!loginResult || !loginResult.sucesso) {
+      setLoading(false);
+      showMsg('✗ ' + (loginResult?.mensagem || 'Matrícula ou senha incorretos.'), 'err');
+      document.getElementById('iSenha').value = '';
+      document.getElementById('iSenha').focus();
+      return;
+    }
+
+    showMsg('✓ ' + loginResult.mensagem, 'ok');
+    setLoading(true, 'PREPARANDO ACESSO...');
+
+    var token      = loginResult.token;
+    var nomeGuerra = loginResult.nomeGuerra;
+    var mat        = loginResult.matricula;
+    var perfil     = loginResult.perfil;
+
+    // Passo 2: Criar handoff de uso único no servidor
+    var hkResult = await api({
+      tipo: 'garageiroHandoff',
+      token: token,
+      matricula: mat,
+      nomeGuerra: nomeGuerra,
+      perfil: perfil
+    });
+
+    setLoading(false);
+
+    if (!hkResult || !hkResult.handoffKey) {
+      // Fallback: salva sessão diretamente no sessionStorage
+      // (acontece se o servidor não suportar handoff via POST)
+      salvarSessaoLocal(token, mat, nomeGuerra, perfil);
+      _urlDashboard = 'garageiro.html';
+    } else {
+      // Handoff criado: garageiro.html consumirá e apagará a chave
+      salvarSessaoLocal(token, mat, nomeGuerra, perfil);
+      _urlDashboard = 'garageiro.html?hk=' + hkResult.handoffKey;
+    }
+
+    // Exibe botão de acesso (usuário clica — evita popup blocker)
+    document.getElementById('btnLogin').style.display = 'none';
+    var btnAcesso = document.getElementById('btnAcesso');
+    btnAcesso.classList.add('on');
+    btnAcesso.focus();
+
+  } catch(e) {
+    setLoading(false);
+    showMsg('✗ Erro de conexão: ' + e.message, 'err');
+  }
+}
+
+function salvarSessaoLocal(token, matricula, nomeGuerra, perfil) {
+  // sessionStorage: destruído ao fechar a aba (mais seguro)
+  var OITO_HORAS = 8 * 60 * 60 * 1000;
+  sessionStorage.setItem('gar_token',      token);
+  sessionStorage.setItem('gar_matricula',  matricula);
+  sessionStorage.setItem('gar_nomeGuerra', nomeGuerra);
+  sessionStorage.setItem('gar_perfil',     perfil);
+  sessionStorage.setItem('gar_expira',     String(Date.now() + OITO_HORAS));
+}
+</script>
+</body>
+</html>
