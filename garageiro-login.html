@@ -534,35 +534,26 @@ function salvarBruteforceState() {
 // ═══════════════════════════════════════════════════════
 
 
-function doGet(e) {
-  var tipo = e.parameter.tipo || '';
-
-  if (tipo === 'garageiroLogin') {
-    return ContentService
-      .createTextOutput(JSON.stringify(
-        garageiroLogin(e.parameter.matricula, e.parameter.senha)
-      ))
-      .setMimeType(ContentService.MimeType.JSON);
+fasync function api(payload) {
+  var ctrl = new AbortController();
+  var timer = setTimeout(function() { ctrl.abort(); }, 15000);
+  try {
+    var resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload),
+      signal: ctrl.signal
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    return resp.json();
+  } catch(e) {
+    if (e.name === 'AbortError') throw new Error('Tempo limite esgotado. Verifique a conexão.');
+    throw e;
+  } finally {
+    clearTimeout(timer);
   }
-
-  if (tipo === 'garageiroHandoff') {
-    return ContentService
-      .createTextOutput(JSON.stringify(
-        garageiroCriarHandoff(
-          e.parameter.token,
-          e.parameter.matricula,
-          e.parameter.nomeGuerra,
-          e.parameter.perfil
-        )
-      ))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-
-  // fallback: serve o HTML do dashboard (se for Web App)
-  return HtmlService.createHtmlOutputFromFile('garageiro')
-    .setTitle('Garageiro — 9º BPM')
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
+
   
   
 // ═══════════════════════════════════════════════════════
