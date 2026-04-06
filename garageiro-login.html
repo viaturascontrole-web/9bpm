@@ -2,10 +2,6 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://storage.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; connect-src 'self' https://script.google.com; img-src 'self' data: https:; frame-ancestors 'none';">
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="X-Frame-Options" content="DENY">
-  <meta http-equiv="Referrer-Policy" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Garageiro — 9º BPM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -262,19 +258,7 @@ async function api(payload) {
 //  Fluxo: login → obter token → criar handoff no servidor
 //  → salvar no sessionStorage → redirecionar para garageiro.html?hk=...
 // ═══════════════════════════════════════════════════════
-
-// Rate limit: máximo 5 tentativas em 5 minutos
-var _loginTentativas = 0;
-var _loginBloqueadoAte = 0;
-
 async function fazerLogin() {
-  var agora = Date.now();
-  if (agora < _loginBloqueadoAte) {
-    var restam = Math.ceil((_loginBloqueadoAte - agora) / 1000);
-    showMsg('⛔ Muitas tentativas. Aguarde ' + restam + ' segundos.', 'err');
-    return;
-  }
-
   var matricula = document.getElementById('iMat').value.trim().toUpperCase();
   var senha = document.getElementById('iSenha').value;
   document.getElementById('msgBox').className = 'msg';
@@ -290,7 +274,7 @@ async function fazerLogin() {
 
     if (!loginResult || !loginResult.sucesso) {
       setLoading(false);
-      showMsg('✗ Matrícula ou senha incorretos.', 'err');
+      showMsg('✗ ' + (loginResult?.mensagem || 'Matrícula ou senha incorretos.'), 'err');
       document.getElementById('iSenha').value = '';
       document.getElementById('iSenha').focus();
       return;
