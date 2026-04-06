@@ -533,15 +533,21 @@ function salvarBruteforceState() {
 //  CHAMADA À API
 // ═══════════════════════════════════════════════════════
 async function api(payload) {
-  var ctrl = new AbortController();
+  var ctrl  = new AbortController();
   var timer = setTimeout(function() { ctrl.abort(); }, 15000);
   try {
-    var resp = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload),
+    // Serializa payload como parâmetros de URL (GET evita CORS preflight)
+    var params = Object.keys(payload).map(function(k) {
+      return encodeURIComponent(k) + '=' + encodeURIComponent(
+        typeof payload[k] === 'object' ? JSON.stringify(payload[k]) : payload[k]
+      );
+    }).join('&');
+
+    var resp = await fetch(API_URL + '?' + params, {
+      method: 'GET',
       signal: ctrl.signal
     });
+
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     return resp.json();
   } catch(e) {
@@ -551,7 +557,6 @@ async function api(payload) {
     clearTimeout(timer);
   }
 }
-
 // ═══════════════════════════════════════════════════════
 //  LOGIN
 // ═══════════════════════════════════════════════════════
