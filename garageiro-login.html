@@ -532,31 +532,39 @@ function salvarBruteforceState() {
 // ═══════════════════════════════════════════════════════
 //  CHAMADA À API
 // ═══════════════════════════════════════════════════════
-async function api(payload) {
-  var ctrl  = new AbortController();
-  var timer = setTimeout(function() { ctrl.abort(); }, 15000);
-  try {
-    // Serializa payload como parâmetros de URL (GET evita CORS preflight)
-    var params = Object.keys(payload).map(function(k) {
-      return encodeURIComponent(k) + '=' + encodeURIComponent(
-        typeof payload[k] === 'object' ? JSON.stringify(payload[k]) : payload[k]
-      );
-    }).join('&');
 
-    var resp = await fetch(API_URL + '?' + params, {
-      method: 'GET',
-      signal: ctrl.signal
-    });
 
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    return resp.json();
-  } catch(e) {
-    if (e.name === 'AbortError') throw new Error('Tempo limite esgotado. Verifique a conexão.');
-    throw e;
-  } finally {
-    clearTimeout(timer);
+function doGet(e) {
+  var tipo = e.parameter.tipo || '';
+
+  if (tipo === 'garageiroLogin') {
+    return ContentService
+      .createTextOutput(JSON.stringify(
+        garageiroLogin(e.parameter.matricula, e.parameter.senha)
+      ))
+      .setMimeType(ContentService.MimeType.JSON);
   }
+
+  if (tipo === 'garageiroHandoff') {
+    return ContentService
+      .createTextOutput(JSON.stringify(
+        garageiroCriarHandoff(
+          e.parameter.token,
+          e.parameter.matricula,
+          e.parameter.nomeGuerra,
+          e.parameter.perfil
+        )
+      ))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // fallback: serve o HTML do dashboard (se for Web App)
+  return HtmlService.createHtmlOutputFromFile('garageiro')
+    .setTitle('Garageiro — 9º BPM')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
+  
+  
 // ═══════════════════════════════════════════════════════
 //  LOGIN
 // ═══════════════════════════════════════════════════════
