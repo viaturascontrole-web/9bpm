@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<!-- [BAIXA] Headers de segurança via meta tag -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://script.google.com; img-src 'self' data:">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta name="referrer" content="no-referrer">
 <title>Garageiro — 9º BPM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
@@ -11,7 +16,7 @@
 :root{
   --bg:#080e12;--panel:#0c1a22;--borda:#1a3a4a;
   --ac:#f5a623;--ac2:#e8881a;
-  --red:#e74c3c;--green:#27ae60;
+  --red:#e74c3c;--green:#27ae60;--yellow:#f39c12;
   --txt:#cfe8f0;--txt2:#5a8090;
   --mono:'Share Tech Mono',monospace;
   --sans:'Rajdhani',sans-serif;
@@ -64,13 +69,46 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .finp:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(245,166,35,.12)}
 .finp.upper{text-transform:uppercase}
 
+/* [MÉDIA] Indicador de força de senha */
+.pw-strength{display:none;flex-direction:column;gap:4px;margin-top:6px}
+.pw-strength.visible{display:flex}
+.pw-bars{display:flex;gap:3px;height:4px}
+.pw-bar{flex:1;border-radius:2px;background:var(--borda);transition:background .3s}
+.pw-bar.fraca{background:var(--red)}
+.pw-bar.media{background:var(--yellow)}
+.pw-bar.forte{background:var(--green)}
+.pw-label{font-family:var(--mono);font-size:9px;color:var(--txt2);letter-spacing:1px}
+.pw-label.fraca{color:var(--red)}
+.pw-label.media{color:var(--yellow)}
+.pw-label.forte{color:var(--green)}
+
+/* [ALTA] Captcha visual */
+.captcha-wrap{display:none;flex-direction:column;gap:8px;margin-bottom:16px;padding:14px;background:rgba(0,0,0,.3);border:1px solid var(--borda);border-radius:8px}
+.captcha-wrap.visible{display:flex}
+.captcha-label{font-family:var(--mono);font-size:10px;color:var(--txt2);letter-spacing:2px;display:flex;align-items:center;gap:6px}
+.captcha-label::before{content:'//';color:var(--red)}
+.captcha-question{font-family:var(--mono);font-size:14px;color:var(--ac);text-align:center;padding:8px;background:rgba(0,0,0,.3);border-radius:4px;letter-spacing:3px;user-select:none;font-weight:bold}
+.captcha-input-row{display:flex;gap:8px;align-items:center}
+.captcha-inp{flex:1;background:rgba(0,0,0,.35);border:1px solid var(--borda);border-radius:6px;color:var(--txt);padding:10px 14px;font-family:var(--mono);font-size:14px;outline:none;transition:border-color .2s}
+.captcha-inp:focus{border-color:var(--ac)}
+.captcha-refresh{background:none;border:1px solid var(--borda);border-radius:4px;color:var(--txt2);cursor:pointer;padding:8px 10px;font-size:12px;transition:all .2s}
+.captcha-refresh:hover{color:var(--ac);border-color:var(--ac)}
+
 /* mensagem */
 .msg{display:none;padding:10px 13px;border-radius:6px;font-family:var(--mono);font-size:12px;margin-bottom:14px;animation:slideIn .2s ease;line-height:1.5}
 @keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 .msg.err{background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.28);color:#f87171}
 .msg.ok{background:rgba(245,166,35,.10);border:1px solid rgba(245,166,35,.28);color:var(--ac)}
 .msg.warn{background:rgba(243,156,18,.10);border:1px solid rgba(243,156,18,.28);color:#fbbf24}
+.msg.info{background:rgba(26,115,232,.10);border:1px solid rgba(26,115,232,.28);color:#60a5fa}
 .msg.on{display:block}
+
+/* [ALTA] Cooldown countdown */
+.countdown-bar-wrap{display:none;flex-direction:column;gap:6px;margin-bottom:14px}
+.countdown-bar-wrap.on{display:flex}
+.countdown-bar-bg{height:4px;background:var(--borda);border-radius:2px;overflow:hidden}
+.countdown-bar-fill{height:100%;background:linear-gradient(90deg,var(--red),#f97316);border-radius:2px;transition:width 1s linear}
+.countdown-text{font-family:var(--mono);font-size:11px;color:#f87171;text-align:center}
 
 /* spinner */
 .spin-wrap{display:none;align-items:center;justify-content:center;gap:10px;padding:8px 0 2px}
@@ -91,6 +129,10 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .btn-acesso{display:none;width:100%;padding:14px;background:linear-gradient(135deg,#1a73e8,#1558b0);border:none;border-radius:7px;color:#fff;font-family:var(--cond);font-size:17px;font-weight:800;letter-spacing:3px;text-transform:uppercase;cursor:pointer;margin-top:10px;transition:all .2s}
 .btn-acesso:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,115,232,.4)}
 .btn-acesso.on{display:block}
+
+/* [MÉDIO] Banner modo offline */
+.offline-banner{display:none;align-items:center;gap:8px;padding:10px 13px;background:rgba(243,156,18,.1);border:1px solid rgba(243,156,18,.3);border-radius:6px;font-family:var(--mono);font-size:11px;color:#fbbf24;margin-bottom:14px;animation:slideIn .2s ease}
+.offline-banner.on{display:flex}
 
 /* link voltar */
 .voltar{margin-top:20px;text-align:center}
@@ -120,7 +162,21 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       <div class="status-time" id="relogio">--:--:--</div>
     </div>
 
+    <!-- [MÉDIO] Banner de modo offline -->
+    <div class="offline-banner" id="offlineBanner">
+      ⚠ MODO OFFLINE — somente leitura disponível
+    </div>
+
     <div class="msg" id="msgBox"></div>
+
+    <!-- [ALTA] Barra de cooldown por brute-force -->
+    <div class="countdown-bar-wrap" id="cooldownWrap">
+      <div class="countdown-bar-bg">
+        <div class="countdown-bar-fill" id="cooldownFill" style="width:100%"></div>
+      </div>
+      <div class="countdown-text" id="cooldownText">AGUARDE <span id="cooldownSec">0</span>s</div>
+    </div>
+
     <div class="spin-wrap" id="spinWrap">
       <div class="spin"></div>
       <span class="spin-lbl" id="spinLbl">AUTENTICANDO...</span>
@@ -142,8 +198,28 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         <span class="ico">🔒</span>
         <input type="password" id="iSenha" class="finp" placeholder="Digite sua senha"
           maxlength="50" autocomplete="current-password"
+          oninput="avaliarForcaSenha(this.value)"
           onkeydown="if(event.key==='Enter') fazerLogin()">
         <button class="toggle-pw" onclick="toggleSenha()" title="Mostrar/ocultar senha">👁</button>
+      </div>
+      <!-- [MÉDIA] Indicador de força de senha -->
+      <div class="pw-strength" id="pwStrength">
+        <div class="pw-bars">
+          <div class="pw-bar" id="pwBar1"></div>
+          <div class="pw-bar" id="pwBar2"></div>
+          <div class="pw-bar" id="pwBar3"></div>
+        </div>
+        <div class="pw-label" id="pwLabel">AVALIANDO...</div>
+      </div>
+    </div>
+
+    <!-- [ALTA] Captcha visual (aparece após 3 tentativas) -->
+    <div class="captcha-wrap" id="captchaWrap">
+      <div class="captcha-label">VERIFICAÇÃO HUMANA</div>
+      <div class="captcha-question" id="captchaQuestion">?? + ?? = ??</div>
+      <div class="captcha-input-row">
+        <input type="number" class="captcha-inp" id="captchaInput" placeholder="Resposta..." min="0" max="99">
+        <button class="captcha-refresh" onclick="gerarCaptcha()" title="Nova pergunta">🔄</button>
       </div>
     </div>
 
@@ -161,10 +237,151 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 // ═══════════════════════════════════════════════════════
 var API_URL = 'https://script.google.com/macros/s/AKfycbyQl3ns6drVY1H2DepxCfN23Zee3xmcVlsP4a47IMPlfhxIPGHveaI3-EGYZ7gyVwbooA/exec';
 
+// [ALTA] Salt estático para hashing no cliente
+var SALT_CLIENTE = '9bpm-gar-2025-x7k';
+
 // ═══════════════════════════════════════════════════════
 //  ESTADO
 // ═══════════════════════════════════════════════════════
 var _urlDashboard = '';
+
+// [ALTA] Controle de rate limiting / brute-force
+var LIMITE_TENTATIVAS = 5;
+var _tentativas = 0;          // tentativas na sessão de memória
+var _bloqueadoAte = 0;        // timestamp de desbloqueio
+var _timerCooldown = null;
+var _captchaResposta = null;
+var _captchaAtivo = false;
+
+// [MÉDIO] Controle de inatividade
+var INATIVIDADE_MS = 30 * 60 * 1000; // 30 minutos
+var _timerInatividade = null;
+
+// [BAIXO] Log de auditoria no cliente
+var _auditLog = [];
+
+// ═══════════════════════════════════════════════════════
+//  SHA-256 (Web Crypto API) — [ALTA] hash antes do envio
+// ═══════════════════════════════════════════════════════
+async function sha256(texto) {
+  var dados = new TextEncoder().encode(texto);
+  var hash = await crypto.subtle.digest('SHA-256', dados);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  LOG DE AUDITORIA — [BAIXO]
+// ═══════════════════════════════════════════════════════
+function auditLog(evento, detalhes) {
+  var entrada = {
+    ts: new Date().toISOString(),
+    evento: evento,
+    detalhes: detalhes || ''
+  };
+  _auditLog.push(entrada);
+  try {
+    sessionStorage.setItem('gar_audit_log', JSON.stringify(_auditLog.slice(-50)));
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════
+//  CAPTCHA VISUAL — [ALTA]
+// ═══════════════════════════════════════════════════════
+function gerarCaptcha() {
+  var ops = ['+', '-', '×'];
+  var a = Math.floor(Math.random() * 12) + 1;
+  var b = Math.floor(Math.random() * 12) + 1;
+  var op = ops[Math.floor(Math.random() * ops.length)];
+  var resultado;
+  if (op === '+') resultado = a + b;
+  else if (op === '-') { if (a < b) { var t = a; a = b; b = t; } resultado = a - b; }
+  else { resultado = a * b; }
+  _captchaResposta = resultado;
+  document.getElementById('captchaQuestion').textContent = a + ' ' + op + ' ' + b + ' = ?';
+  document.getElementById('captchaInput').value = '';
+}
+
+function mostrarCaptcha() {
+  if (_captchaAtivo) return;
+  _captchaAtivo = true;
+  gerarCaptcha();
+  document.getElementById('captchaWrap').classList.add('visible');
+}
+
+function verificarCaptcha() {
+  if (!_captchaAtivo) return true; // captcha não necessário ainda
+  var resposta = parseInt(document.getElementById('captchaInput').value, 10);
+  if (isNaN(resposta) || resposta !== _captchaResposta) {
+    showMsg('✗ Verificação humana incorreta. Resolva o cálculo.', 'err');
+    gerarCaptcha();
+    auditLog('CAPTCHA_FALHOU', '');
+    return false;
+  }
+  return true;
+}
+
+// ═══════════════════════════════════════════════════════
+//  RATE LIMITING / BRUTE-FORCE — [ALTA]
+// ═══════════════════════════════════════════════════════
+function calcularCooldown(tentativas) {
+  // Cooldown exponencial: 30s, 60s, 120s, 240s...
+  var base = 30;
+  return base * Math.pow(2, tentativas - LIMITE_TENTATIVAS);
+}
+
+function iniciarCooldown(segundos) {
+  var restante = segundos;
+  var total = segundos;
+  document.getElementById('cooldownWrap').classList.add('on');
+  document.getElementById('cooldownFill').style.width = '100%';
+  document.getElementById('btnLogin').disabled = true;
+
+  auditLog('COOLDOWN_INICIADO', segundos + 's');
+
+  _timerCooldown = setInterval(function() {
+    restante--;
+    var pct = (restante / total) * 100;
+    document.getElementById('cooldownFill').style.width = pct + '%';
+    document.getElementById('cooldownSec').textContent = restante;
+    if (restante <= 0) {
+      clearInterval(_timerCooldown);
+      _timerCooldown = null;
+      document.getElementById('cooldownWrap').classList.remove('on');
+      document.getElementById('btnLogin').disabled = false;
+      document.getElementById('msgBox').className = 'msg';
+      gerarCaptcha(); // gera novo captcha após desbloqueio
+      auditLog('COOLDOWN_ENCERRADO', '');
+    }
+  }, 1000);
+}
+
+function registrarFalha() {
+  _tentativas++;
+  auditLog('LOGIN_FALHOU', 'tentativa=' + _tentativas);
+
+  // Exibe captcha a partir da 3ª tentativa
+  if (_tentativas >= 3) mostrarCaptcha();
+
+  // Bloqueia após limite
+  if (_tentativas >= LIMITE_TENTATIVAS) {
+    var cooldownSeg = calcularCooldown(_tentativas);
+    _bloqueadoAte = Date.now() + cooldownSeg * 1000;
+    showMsg(
+      '✗ Muitas tentativas incorretas. Aguarde ' + cooldownSeg + ' segundos.',
+      'err'
+    );
+    iniciarCooldown(cooldownSeg);
+    auditLog('BLOQUEIO_ATIVADO', 'duracao=' + cooldownSeg + 's');
+    return false;
+  }
+  var restam = LIMITE_TENTATIVAS - _tentativas;
+  return restam; // quantas tentativas restam
+}
+
+function verificarBloqueio() {
+  if (_bloqueadoAte > Date.now()) return true;
+  return false;
+}
 
 // ═══════════════════════════════════════════════════════
 //  RELÓGIO
@@ -180,24 +397,96 @@ setInterval(function() {
 }, 1000);
 
 // ═══════════════════════════════════════════════════════
+//  INATIVIDADE — [MÉDIO]
+// ═══════════════════════════════════════════════════════
+function resetarInatividade() {
+  clearTimeout(_timerInatividade);
+  _timerInatividade = setTimeout(function() {
+    sessionStorage.clear();
+    auditLog('SESSAO_EXPIRADA_INATIVIDADE', '');
+    showMsg('⚠ Sessão encerrada por inatividade.', 'warn');
+  }, INATIVIDADE_MS);
+}
+
+['mousemove','keydown','touchstart','click'].forEach(function(ev) {
+  document.addEventListener(ev, resetarInatividade, { passive: true });
+});
+resetarInatividade();
+
+// ═══════════════════════════════════════════════════════
+//  FORÇA DE SENHA — [MÉDIO]
+// ═══════════════════════════════════════════════════════
+var SENHAS_PROIBIDAS = [
+  '123456','654321','111111','password','senha','abcdef',
+  '123456789','12345678','000000','qwerty','admin','1234'
+];
+
+function avaliarForcaSenha(senha) {
+  var el = document.getElementById('pwStrength');
+  if (!senha) { el.classList.remove('visible'); return; }
+  el.classList.add('visible');
+
+  var score = 0;
+  if (senha.length >= 8) score++;
+  if (senha.length >= 12) score++;
+  if (/[A-Z]/.test(senha)) score++;
+  if (/[0-9]/.test(senha)) score++;
+  if (/[^A-Za-z0-9]/.test(senha)) score++;
+
+  var nivel = score <= 2 ? 'fraca' : score <= 3 ? 'media' : 'forte';
+  var labels = { fraca: 'FRACA', media: 'MÉDIA', forte: 'FORTE' };
+  var ativas = { fraca: 1, media: 2, forte: 3 };
+  var n = ativas[nivel];
+
+  for (var i = 1; i <= 3; i++) {
+    var bar = document.getElementById('pwBar' + i);
+    bar.className = 'pw-bar' + (i <= n ? ' ' + nivel : '');
+  }
+  var lbl = document.getElementById('pwLabel');
+  lbl.className = 'pw-label ' + nivel;
+  lbl.textContent = labels[nivel];
+}
+
+function senhaEhFraca(senha) {
+  if (senha.length < 6) return true;
+  if (SENHAS_PROIBIDAS.includes(senha.toLowerCase())) return true;
+  return false;
+}
+
+// ═══════════════════════════════════════════════════════
 //  REDIRECIONA SE JÁ LOGADO
 // ═══════════════════════════════════════════════════════
 window.addEventListener('load', function() {
-  // sessionStorage: se já tem sessão ativa, vai direto pro dashboard
   var tk = sessionStorage.getItem('gar_token');
   var mat = sessionStorage.getItem('gar_matricula');
   if (tk && mat) {
-    // Verifica se a sessão ainda é válida antes de redirecionar
     var expira = parseInt(sessionStorage.getItem('gar_expira') || '0');
     if (Date.now() < expira) {
       window.location.href = 'garageiro.html';
       return;
     } else {
-      // Sessão expirada — limpa
       sessionStorage.clear();
     }
   }
+
+  // Carregar tentativas persistidas na memória desta página
+  try {
+    var dadosBF = JSON.parse(sessionStorage.getItem('gar_bruteforce') || '{}');
+    if (dadosBF.bloqueadoAte && dadosBF.bloqueadoAte > Date.now()) {
+      _tentativas = dadosBF.tentativas || LIMITE_TENTATIVAS;
+      _bloqueadoAte = dadosBF.bloqueadoAte;
+      var restam = Math.ceil((_bloqueadoAte - Date.now()) / 1000);
+      document.getElementById('cooldownSec').textContent = restam;
+      mostrarCaptcha();
+      iniciarCooldown(restam);
+    } else if (dadosBF.tentativas) {
+      _tentativas = dadosBF.tentativas;
+      if (_tentativas >= 3) mostrarCaptcha();
+    }
+  } catch(e) {}
+
   document.getElementById('iMat').focus();
+  auditLog('PAGINA_CARREGADA', navigator.userAgent.substring(0, 80));
 });
 
 // ═══════════════════════════════════════════════════════
@@ -227,11 +516,21 @@ function irParaDashboard() {
     showMsg('✗ URL não disponível. Tente novamente.', 'err');
     return;
   }
+  auditLog('REDIRECIONANDO', _urlDashboard.replace(/hk=[^&]+/, 'hk=***'));
   window.location.href = _urlDashboard;
 }
 
+function salvarBruteforceState() {
+  try {
+    sessionStorage.setItem('gar_bruteforce', JSON.stringify({
+      tentativas: _tentativas,
+      bloqueadoAte: _bloqueadoAte
+    }));
+  } catch(e) {}
+}
+
 // ═══════════════════════════════════════════════════════
-//  CHAMADA À API (fetch POST — sem google.script.run)
+//  CHAMADA À API
 // ═══════════════════════════════════════════════════════
 async function api(payload) {
   var ctrl = new AbortController();
@@ -255,30 +554,65 @@ async function api(payload) {
 
 // ═══════════════════════════════════════════════════════
 //  LOGIN
-//  Fluxo: login → obter token → criar handoff no servidor
-//  → salvar no sessionStorage → redirecionar para garageiro.html?hk=...
 // ═══════════════════════════════════════════════════════
 async function fazerLogin() {
   var matricula = document.getElementById('iMat').value.trim().toUpperCase();
   var senha = document.getElementById('iSenha').value;
   document.getElementById('msgBox').className = 'msg';
 
+  // [ALTA] Verificar se está bloqueado
+  if (verificarBloqueio()) {
+    var restam = Math.ceil((_bloqueadoAte - Date.now()) / 1000);
+    showMsg('✗ Acesso bloqueado. Aguarde ' + restam + 's.', 'err');
+    return;
+  }
+
   if (!matricula) { showMsg('⚠ Informe sua matrícula.', 'warn'); return; }
   if (!senha)     { showMsg('⚠ Informe sua senha.', 'warn'); return; }
+
+  // [MÉDIA] Verificar força de senha mínima
+  if (senhaEhFraca(senha)) {
+    showMsg('⚠ Senha muito simples ou insegura. Escolha uma senha mais forte.', 'warn');
+    auditLog('SENHA_FRACA_REJEITADA', matricula);
+    return;
+  }
+
+  // [ALTA] Verificar captcha se necessário
+  if (!verificarCaptcha()) return;
 
   setLoading(true, 'AUTENTICANDO...');
 
   try {
-    // Passo 1: Login
-    var loginResult = await api({ tipo: 'garageiroLogin', matricula: matricula, senha: senha });
+    // [ALTA] Hash SHA-256 com salt antes do envio
+    var senhaHash = await sha256(SALT_CLIENTE + senha + matricula);
+
+    // Passo 1: Login com hash no lugar da senha
+    var loginResult = await api({
+      tipo: 'garageiroLogin',
+      matricula: matricula,
+      senhaHash: senhaHash   // nunca mais "senha" em texto puro
+    });
 
     if (!loginResult || !loginResult.sucesso) {
       setLoading(false);
-      showMsg('✗ ' + (loginResult?.mensagem || 'Matrícula ou senha incorretos.'), 'err');
+      var restamTent = registrarFalha();
+      salvarBruteforceState();
+
+      var mensagem = loginResult?.mensagem || 'Matrícula ou senha incorretos.';
+      if (restamTent !== false && restamTent > 0) {
+        mensagem += ' (' + restamTent + ' tentativa' + (restamTent > 1 ? 's' : '') + ' restante' + (restamTent > 1 ? 's' : '') + ')';
+      }
+      showMsg('✗ ' + mensagem, 'err');
       document.getElementById('iSenha').value = '';
       document.getElementById('iSenha').focus();
       return;
     }
+
+    // Login bem-sucedido: zerar contadores
+    _tentativas = 0;
+    _bloqueadoAte = 0;
+    salvarBruteforceState();
+    auditLog('LOGIN_OK', matricula);
 
     showMsg('✓ ' + loginResult.mensagem, 'ok');
     setLoading(true, 'PREPARANDO ACESSO...');
@@ -300,17 +634,21 @@ async function fazerLogin() {
     setLoading(false);
 
     if (!hkResult || !hkResult.handoffKey) {
-      // Fallback: salva sessão diretamente no sessionStorage
-      // (acontece se o servidor não suportar handoff via POST)
       salvarSessaoLocal(token, mat, nomeGuerra, perfil);
       _urlDashboard = 'garageiro.html';
     } else {
-      // Handoff criado: garageiro.html consumirá e apagará a chave
       salvarSessaoLocal(token, mat, nomeGuerra, perfil);
-      _urlDashboard = 'garageiro.html?hk=' + hkResult.handoffKey;
+
+      // [ALTA] Limpar URL imediatamente para evitar token no histórico
+      var hk = hkResult.handoffKey;
+      _urlDashboard = 'garageiro.html?hk=' + hk;
+      // Já limpa a URL atual (sem parâmetros)
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, '', window.location.pathname);
+      }
     }
 
-    // Exibe botão de acesso (usuário clica — evita popup blocker)
+    // Exibe botão de acesso
     document.getElementById('btnLogin').style.display = 'none';
     var btnAcesso = document.getElementById('btnAcesso');
     btnAcesso.classList.add('on');
@@ -318,12 +656,23 @@ async function fazerLogin() {
 
   } catch(e) {
     setLoading(false);
-    showMsg('✗ Erro de conexão: ' + e.message, 'err');
+
+    // [MÉDIO] Modo offline: acesso somente-leitura se sessão existir
+    var tkExistente = sessionStorage.getItem('gar_token');
+    var expiraExistente = parseInt(sessionStorage.getItem('gar_expira') || '0');
+    if (tkExistente && expiraExistente > Date.now()) {
+      document.getElementById('offlineBanner').classList.add('on');
+      showMsg('⚠ Sem conexão com servidor. Modo somente-leitura ativo.', 'warn');
+      auditLog('MODO_OFFLINE_ATIVADO', e.message);
+      // Não redireciona automaticamente — usuário vê o aviso
+    } else {
+      showMsg('✗ Erro de conexão: ' + e.message, 'err');
+      auditLog('ERRO_CONEXAO', e.message);
+    }
   }
 }
 
 function salvarSessaoLocal(token, matricula, nomeGuerra, perfil) {
-  // sessionStorage: destruído ao fechar a aba (mais seguro)
   var OITO_HORAS = 8 * 60 * 60 * 1000;
   sessionStorage.setItem('gar_token',      token);
   sessionStorage.setItem('gar_matricula',  matricula);
