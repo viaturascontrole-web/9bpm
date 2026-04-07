@@ -154,183 +154,167 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <div class="voltar"><a href="index.html">← Voltar à página inicial</a></div>
   <div class="footer">Polícia Militar do Estado de Rondônia</div>
 </div>
-
 <script>
-// ═══════════════════════════════════════════════════════
-//  CONFIGURAÇÃO
-// ═══════════════════════════════════════════════════════
-var API_URL = 'https://script.google.com/macros/s/AKfycbyQl3ns6drVY1H2DepxCfN23Zee3xmcVlsP4a47IMPlfhxIPGHveaI3-EGYZ7gyVwbooA/exec';
+// ==========================================
+// CONFIG SEGURA
+// ==========================================
+const API_URL = 'https://script.google.com/macros/s/AKfycbyQl3ns6drVY1H2DepxCfN23Zee3xmcVlsP4a47IMPlfhxIPGHveaI3-EGYZ7gyVwbooA/exec';
 
-// ═══════════════════════════════════════════════════════
-//  ESTADO
-// ═══════════════════════════════════════════════════════
-var _urlDashboard = '';
+let _urlDashboard = '';
+let _isLoading = false;
+let _tentativas = 0;
+let _bloqueadoAte = 0;
 
-// ═══════════════════════════════════════════════════════
-//  RELÓGIO
-// ═══════════════════════════════════════════════════════
-setInterval(function() {
-  var el = document.getElementById('relogio');
-  if (!el) return;
-  var d = new Date();
-  el.textContent =
-    ('0'+d.getHours()).slice(-2)+':'+
-    ('0'+d.getMinutes()).slice(-2)+':'+
-    ('0'+d.getSeconds()).slice(-2);
-}, 1000);
-
-// ═══════════════════════════════════════════════════════
-//  REDIRECIONA SE JÁ LOGADO
-// ═══════════════════════════════════════════════════════
-window.addEventListener('load', function() {
-  // sessionStorage: se já tem sessão ativa, vai direto pro dashboard
-  var tk = sessionStorage.getItem('gar_token');
-  var mat = sessionStorage.getItem('gar_matricula');
-  if (tk && mat) {
-    // Verifica se a sessão ainda é válida antes de redirecionar
-    var expira = parseInt(sessionStorage.getItem('gar_expira') || '0');
-    if (Date.now() < expira) {
-      window.location.href = 'garageiro.html';
-      return;
-    } else {
-      // Sessão expirada — limpa
-      sessionStorage.clear();
-    }
-  }
-  document.getElementById('iMat').focus();
-});
-
-// ═══════════════════════════════════════════════════════
-//  HELPERS UI
-// ═══════════════════════════════════════════════════════
-function toggleSenha() {
-  var inp = document.getElementById('iSenha');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
+// ==========================================
+// FINGERPRINT DO DISPOSITIVO
+// ==========================================
+function gerarFingerprint() {
+  return btoa(
+    navigator.userAgent +
+    navigator.language +
+    screen.width +
+    screen.height
+  );
 }
 
-function showMsg(texto, tipo) {
-  var el = document.getElementById('msgBox');
-  el.textContent = texto;
+// ==========================================
+// VALIDA ORIGEM (PAINEL)
+// ==========================================
+function validarOrigem() {
+  const params = new URLSearchParams(window.location.search);
+  const origin = params.get('origin');
+  const nonce  = params.get('nonce');
+
+  if (origin !== 'cmd' || !nonce) {
+    document.body.innerHTML = '<h2 style="color:red;text-align:center;margin-top:50px;">ACESSO NEGADO</h2>';
+    throw new Error('Acesso não autorizado');
+  }
+
+  return nonce;
+}
+
+// ==========================================
+// SANITIZAÇÃO
+// ==========================================
+function sanitize(str) {
+  return str.replace(/[<>"'`;(){}]/g, '');
+}
+
+// ==========================================
+// API SEGURA
+// ==========================================
+async function api(payload) {
+  const ctrl = new AbortController();
+  setTimeout(() => ctrl.abort(), 8000);
+
+  const resp = await fetch(API_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload),
+    signal: ctrl.signal
+  });
+
+  if (!resp.ok) throw new Error('Falha de comunicação');
+
+  return resp.json();
+}
+
+// ==========================================
+// LOGIN MILITAR
+// ==========================================
+async function fazerLogin() {
+
+  if (_isLoading) return;
+
+  if (Date.now() < _bloqueadoAte) {
+    showMsg('⛔ Sistema temporariamente bloqueado por segurança.', 'err');
+    return;
+  }
+
+  let matricula = sanitize(document.getElementById('iMat').value.trim().toUpperCase());
+  let senha     = sanitize(document.getElementById('iSenha').value);
+
+  if (!matricula || !senha) {
+    showMsg('⚠ Preencha todos os campos.', 'warn');
+    return;
+  }
+
+  _isLoading = true;
+  setLoading(true, 'VALIDANDO CREDENCIAIS...');
+
+  try {
+
+    const nonce = validarOrigem();
+    const fingerprint = gerarFingerprint();
+
+    const login = await api({
+      tipo: 'loginSeguro',
+      matricula,
+      senha,
+      fingerprint,
+      nonce
+    });
+
+    if (!login.sucesso) {
+      _tentativas++;
+
+      if (_tentativas >= 3) {
+        _bloqueadoAte = Date.now() + (2 * 60 * 1000); // 2 min
+      }
+
+      throw new Error(login.mensagem || 'Acesso negado');
+    }
+
+    // Sessão segura
+    sessionStorage.setItem('tk', login.token);
+    sessionStorage.setItem('fp', fingerprint);
+    sessionStorage.setItem('exp', login.expira);
+
+    const hk = await api({
+      tipo: 'handoffSeguro',
+      token: login.token
+    });
+
+    _urlDashboard = 'garageiro.html?hk=' + hk.handoffKey;
+
+    setLoading(false);
+
+    document.getElementById('btnLogin').style.display = 'none';
+    document.getElementById('btnAcesso').classList.add('on');
+
+  } catch(e) {
+    setLoading(false);
+    showMsg('✗ ' + e.message, 'err');
+  }
+
+  _isLoading = false;
+}
+
+// ==========================================
+// UI
+// ==========================================
+function showMsg(t, tipo) {
+  const el = document.getElementById('msgBox');
+  el.textContent = t;
   el.className = 'msg ' + tipo + ' on';
 }
 
 function setLoading(on, txt) {
   document.getElementById('spinWrap').classList.toggle('on', on);
-  document.getElementById('spinLbl').textContent = txt || 'AUTENTICANDO...';
+  document.getElementById('spinLbl').textContent = txt;
   document.getElementById('btnLogin').disabled = on;
-  document.getElementById('iMat').disabled = on;
-  document.getElementById('iSenha').disabled = on;
 }
 
-function irParaDashboard() {
-  if (!_urlDashboard) {
-    showMsg('✗ URL não disponível. Tente novamente.', 'err');
-    return;
-  }
-  window.location.href = _urlDashboard;
-}
-
-// ═══════════════════════════════════════════════════════
-//  CHAMADA À API (fetch POST — sem google.script.run)
-// ═══════════════════════════════════════════════════════
-async function api(payload) {
-  var ctrl = new AbortController();
-  var timer = setTimeout(function() { ctrl.abort(); }, 15000);
+// ==========================================
+// INIT
+// ==========================================
+window.onload = () => {
   try {
-    var resp = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload),
-      signal: ctrl.signal
-    });
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    return resp.json();
+    validarOrigem();
   } catch(e) {
-    if (e.name === 'AbortError') throw new Error('Tempo limite esgotado. Verifique a conexão.');
-    throw e;
-  } finally {
-    clearTimeout(timer);
+    console.error(e);
   }
-}
-
-// ═══════════════════════════════════════════════════════
-//  LOGIN
-//  Fluxo: login → obter token → criar handoff no servidor
-//  → salvar no sessionStorage → redirecionar para garageiro.html?hk=...
-// ═══════════════════════════════════════════════════════
-async function fazerLogin() {
-  var matricula = document.getElementById('iMat').value.trim().toUpperCase();
-  var senha = document.getElementById('iSenha').value;
-  document.getElementById('msgBox').className = 'msg';
-
-  if (!matricula) { showMsg('⚠ Informe sua matrícula.', 'warn'); return; }
-  if (!senha)     { showMsg('⚠ Informe sua senha.', 'warn'); return; }
-
-  setLoading(true, 'AUTENTICANDO...');
-
-  try {
-    // Passo 1: Login
-    var loginResult = await api({ tipo: 'garageiroLogin', matricula: matricula, senha: senha });
-
-    if (!loginResult || !loginResult.sucesso) {
-      setLoading(false);
-      showMsg('✗ ' + (loginResult?.mensagem || 'Matrícula ou senha incorretos.'), 'err');
-      document.getElementById('iSenha').value = '';
-      document.getElementById('iSenha').focus();
-      return;
-    }
-
-    showMsg('✓ ' + loginResult.mensagem, 'ok');
-    setLoading(true, 'PREPARANDO ACESSO...');
-
-    var token      = loginResult.token;
-    var nomeGuerra = loginResult.nomeGuerra;
-    var mat        = loginResult.matricula;
-    var perfil     = loginResult.perfil;
-
-    // Passo 2: Criar handoff de uso único no servidor
-    var hkResult = await api({
-      tipo: 'garageiroHandoff',
-      token: token,
-      matricula: mat,
-      nomeGuerra: nomeGuerra,
-      perfil: perfil
-    });
-
-    setLoading(false);
-
-    if (!hkResult || !hkResult.handoffKey) {
-      // Fallback: salva sessão diretamente no sessionStorage
-      // (acontece se o servidor não suportar handoff via POST)
-      salvarSessaoLocal(token, mat, nomeGuerra, perfil);
-      _urlDashboard = 'garageiro.html';
-    } else {
-      // Handoff criado: garageiro.html consumirá e apagará a chave
-      salvarSessaoLocal(token, mat, nomeGuerra, perfil);
-      _urlDashboard = 'garageiro.html?hk=' + hkResult.handoffKey;
-    }
-
-    // Exibe botão de acesso (usuário clica — evita popup blocker)
-    document.getElementById('btnLogin').style.display = 'none';
-    var btnAcesso = document.getElementById('btnAcesso');
-    btnAcesso.classList.add('on');
-    btnAcesso.focus();
-
-  } catch(e) {
-    setLoading(false);
-    showMsg('✗ Erro de conexão: ' + e.message, 'err');
-  }
-}
-
-function salvarSessaoLocal(token, matricula, nomeGuerra, perfil) {
-  // sessionStorage: destruído ao fechar a aba (mais seguro)
-  var OITO_HORAS = 8 * 60 * 60 * 1000;
-  sessionStorage.setItem('gar_token',      token);
-  sessionStorage.setItem('gar_matricula',  matricula);
-  sessionStorage.setItem('gar_nomeGuerra', nomeGuerra);
-  sessionStorage.setItem('gar_perfil',     perfil);
-  sessionStorage.setItem('gar_expira',     String(Date.now() + OITO_HORAS));
-}
+};
 </script>
 </body>
 </html>
