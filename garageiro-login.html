@@ -3,15 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<!-- [SEC-01] Cabeçalhos de segurança via meta tags -->
+
+<!-- ══ [SEC-01] CABEÇALHOS DE SEGURANÇA ══════════════════════════
+     connect-src inclui script.googleusercontent.com porque o GAS
+     faz redirect para esse domínio ao processar a requisição POST.
+     Sem ele o fetch é bloqueado pelo browser com erro de rede.     -->
 <meta http-equiv="Content-Security-Policy"
-  content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://script.google.com; img-src 'self' data:;">
+  content="default-src 'self';
+           script-src 'self' 'unsafe-inline';
+           style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+           font-src https://fonts.gstatic.com;
+           connect-src https://script.google.com https://script.googleusercontent.com;
+           img-src 'self' data:;">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="DENY">
 <meta http-equiv="Referrer-Policy" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
+
 <title>Garageiro — 9º BPM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -25,10 +37,12 @@
 }
 html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--sans);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;position:relative}
 
+/* grade de fundo */
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(245,166,35,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(245,166,35,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;animation:gridMove 20s linear infinite}
 @keyframes gridMove{to{background-position:40px 40px}}
 body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.07) 2px,rgba(0,0,0,.07) 4px);pointer-events:none;z-index:0}
 
+/* glows */
 .glow{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
 .glow-1{width:600px;height:600px;top:-200px;left:-200px;background:radial-gradient(circle,rgba(245,166,35,.12),transparent 70%)}
 .glow-2{width:500px;height:500px;bottom:-150px;right:-150px;background:radial-gradient(circle,rgba(26,115,232,.10),transparent 70%)}
@@ -36,6 +50,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .wrap{position:relative;z-index:1;width:100%;max-width:430px;padding:0 20px;animation:fadeIn .6s ease both}
 @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
+/* emblema */
 .emblem{text-align:center;margin-bottom:28px}
 .emblem-icon{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));display:inline-flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 0 40px rgba(245,166,35,.35),0 0 0 1px rgba(245,166,35,.2);margin-bottom:14px;animation:pulse 3s ease-in-out infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 40px rgba(245,166,35,.35),0 0 0 1px rgba(245,166,35,.2)}50%{box-shadow:0 0 60px rgba(245,166,35,.55),0 0 0 1px rgba(245,166,35,.4)}}
@@ -43,15 +58,18 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .emblem-title{font-family:var(--cond);font-size:28px;font-weight:800;letter-spacing:3px;color:#fff;line-height:1}
 .emblem-sub{font-family:var(--mono);font-size:11px;color:var(--txt2);letter-spacing:2px;margin-top:5px}
 
+/* painel */
 .panel{background:var(--panel);border:1px solid var(--borda);border-radius:12px;padding:28px;box-shadow:0 24px 64px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.04);position:relative;overflow:hidden}
 .panel::before{content:'';position:absolute;top:0;left:24px;right:24px;height:2px;background:linear-gradient(90deg,transparent,var(--ac),var(--ac2),transparent);border-radius:0 0 4px 4px}
 
+/* barra de status */
 .status-bar{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;color:var(--txt2);margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--borda)}
 .status-dot{width:6px;height:6px;border-radius:50%;background:var(--ac);box-shadow:0 0 8px var(--ac);animation:blink 2s step-end infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 .status-text{flex:1}
 .status-time{color:var(--ac2)}
 
+/* campos */
 .fgrp{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
 .flbl{font-family:var(--mono);font-size:10px;color:var(--txt2);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
 .flbl::before{content:'//';color:var(--ac);font-size:11px}
@@ -65,11 +83,12 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .finp:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(245,166,35,.12)}
 .finp.upper{text-transform:uppercase}
 
-/* [SEC-07] Indicador visual de bloqueio por tentativas */
+/* [SEC-02] Barra de progresso do bloqueio por tentativas */
 .lockout-bar{display:none;height:3px;background:rgba(231,76,60,.15);border-radius:2px;margin-bottom:14px;overflow:hidden}
 .lockout-bar.on{display:block}
 .lockout-progress{height:100%;background:linear-gradient(90deg,var(--red),#c0392b);transition:width 1s linear}
 
+/* mensagem */
 .msg{display:none;padding:10px 13px;border-radius:6px;font-family:var(--mono);font-size:12px;margin-bottom:14px;animation:slideIn .2s ease;line-height:1.5}
 @keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 .msg.err{background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.28);color:#f87171}
@@ -77,12 +96,14 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .msg.warn{background:rgba(243,156,18,.10);border:1px solid rgba(243,156,18,.28);color:#fbbf24}
 .msg.on{display:block}
 
+/* spinner */
 .spin-wrap{display:none;align-items:center;justify-content:center;gap:10px;padding:8px 0 2px}
 .spin-wrap.on{display:flex}
 .spin{width:20px;height:20px;border:2px solid var(--borda);border-top-color:var(--ac);border-radius:50%;animation:rot 1s linear infinite}
 @keyframes rot{to{transform:rotate(360deg)}}
 .spin-lbl{font-family:var(--mono);font-size:11px;color:var(--txt2)}
 
+/* botão login */
 .btn-login{width:100%;padding:14px;background:linear-gradient(135deg,var(--ac),var(--ac2));border:none;border-radius:7px;color:#000;font-family:var(--cond);font-size:17px;font-weight:800;letter-spacing:3px;text-transform:uppercase;cursor:pointer;margin-top:4px;transition:all .2s;position:relative;overflow:hidden}
 .btn-login::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);opacity:0;transition:opacity .2s}
 .btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(245,166,35,.4)}
@@ -90,13 +111,16 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .btn-login:active{transform:translateY(0)}
 .btn-login:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 
+/* botão de acesso pós-login */
 .btn-acesso{display:none;width:100%;padding:14px;background:linear-gradient(135deg,#1a73e8,#1558b0);border:none;border-radius:7px;color:#fff;font-family:var(--cond);font-size:17px;font-weight:800;letter-spacing:3px;text-transform:uppercase;cursor:pointer;margin-top:10px;transition:all .2s}
 .btn-acesso:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,115,232,.4)}
 .btn-acesso.on{display:block}
 
+/* link voltar */
 .voltar{margin-top:20px;text-align:center}
 .voltar a{font-family:var(--mono);font-size:10px;color:var(--txt2);text-decoration:none;letter-spacing:1px;transition:color .2s}
 .voltar a:hover{color:var(--ac)}
+
 .footer{margin-top:22px;text-align:center;font-family:var(--mono);font-size:10px;color:#1a2a35;letter-spacing:1.5px;text-transform:uppercase}
 </style>
 </head>
@@ -120,12 +144,12 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       <div class="status-time" id="relogio">--:--:--</div>
     </div>
 
-    <div class="msg" id="msgBox" role="alert" aria-live="assertive"></div>
-
-    <!-- [SEC-07] Barra de progresso do bloqueio por tentativas -->
+    <!-- [SEC-02] Barra de progresso do cooldown por tentativas -->
     <div class="lockout-bar" id="lockoutBar">
       <div class="lockout-progress" id="lockoutProgress" style="width:100%"></div>
     </div>
+
+    <div class="msg" id="msgBox" role="alert" aria-live="assertive"></div>
 
     <div class="spin-wrap" id="spinWrap" aria-live="polite">
       <div class="spin"></div>
@@ -143,7 +167,6 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
           autocorrect="off"
           autocapitalize="characters"
           spellcheck="false"
-          inputmode="text"
           aria-required="true">
       </div>
     </div>
@@ -160,15 +183,14 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
           spellcheck="false"
           aria-required="true">
         <button class="toggle-pw" id="btnTogglePw"
-          onclick="toggleSenha()"
+          type="button"
           title="Mostrar/ocultar senha"
-          aria-label="Mostrar ou ocultar senha"
-          type="button">👁</button>
+          aria-label="Mostrar senha">👁</button>
       </div>
     </div>
 
-    <button class="btn-login" id="btnLogin" type="button" onclick="fazerLogin()">ACESSAR SISTEMA</button>
-    <button class="btn-acesso" id="btnAcesso" type="button" onclick="irParaDashboard()">▶ ENTRAR NO PAINEL</button>
+    <button class="btn-login" id="btnLogin" type="button">ACESSAR SISTEMA</button>
+    <button class="btn-acesso" id="btnAcesso" type="button">▶ ENTRAR NO PAINEL</button>
   </div>
 
   <div class="voltar"><a href="index.html">← Voltar à página inicial</a></div>
@@ -176,57 +198,59 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 </div>
 
 <script>
-(function() {
+(function () {
 'use strict';
 
-// ═══════════════════════════════════════════════════════
-//  [SEC-08] CONFIGURAÇÃO — URL isolada em escopo de módulo
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+//  [SEC-00] CONFIGURAÇÃO
+//  URL em escopo privado do IIFE — não exposta no window global
+// ═══════════════════════════════════════════════════════════════
 var _API_URL = 'https://script.google.com/macros/s/AKfycbyQl3ns6drVY1H2DepxCfN23Zee3xmcVlsP4a47IMPlfhxIPGHveaI3-EGYZ7gyVwbooA/exec';
 
-// ═══════════════════════════════════════════════════════
-//  [SEC-02] RATE LIMITING — Bloqueio progressivo por tentativas
-// ═══════════════════════════════════════════════════════
-var _tentativas       = 0;
-var MAX_TENTATIVAS    = 5;
-var _bloqueadoAte     = 0;
-var _lockoutTimer     = null;
+// ═══════════════════════════════════════════════════════════════
+//  [SEC-02] RATE LIMITING — bloqueio progressivo por tentativas
+//  Backoff: 0 → 0 → 30s → 60s → 120s → 300s (máximo)
+// ═══════════════════════════════════════════════════════════════
+var _tentativas   = 0;
+var _bloqueadoAte = 0;
+var _lockoutTimer = null;
+var MAX_TENT      = 5;
+var BACKOFF_MS    = [0, 0, 30000, 60000, 120000]; // por índice de tentativa
 
-// Backoff progressivo em ms: 0, 0, 30s, 60s, 120s
-var BACKOFF_MS = [0, 0, 30000, 60000, 120000];
-
-function getBloqueioRestante() {
+function _getBloqueioRestante() {
   return Math.max(0, _bloqueadoAte - Date.now());
 }
 
-function isBloqueado() {
-  return getBloqueioRestante() > 0;
+function _isBloqueado() {
+  return _getBloqueioRestante() > 0;
 }
 
-function registrarFalha() {
+function _registrarFalha() {
   _tentativas++;
-  if (_tentativas < BACKOFF_MS.length) {
-    var espera = BACKOFF_MS[_tentativas];
-    if (espera > 0) {
-      _bloqueadoAte = Date.now() + espera;
-      iniciarCountdownBloqueio(espera);
-    }
-  } else {
-    // Máximo: bloqueia por 5 minutos
-    _bloqueadoAte = Date.now() + 300000;
-    iniciarCountdownBloqueio(300000);
+  var espera = _tentativas < BACKOFF_MS.length
+    ? BACKOFF_MS[_tentativas]
+    : 300000; // 5 min se ultrapassar o array
+  if (espera > 0) {
+    _bloqueadoAte = Date.now() + espera;
+    _iniciarCountdown(espera);
   }
 }
 
-function iniciarCountdownBloqueio(duracao) {
+function _registrarSucesso() {
+  _tentativas   = 0;
+  _bloqueadoAte = 0;
   clearInterval(_lockoutTimer);
-  var inicio = Date.now();
-  var bar     = document.getElementById('lockoutBar');
-  var prog    = document.getElementById('lockoutProgress');
+  document.getElementById('lockoutBar').classList.remove('on');
+}
+
+function _iniciarCountdown(duracao) {
+  clearInterval(_lockoutTimer);
+  var bar  = document.getElementById('lockoutBar');
+  var prog = document.getElementById('lockoutProgress');
   bar.classList.add('on');
 
-  _lockoutTimer = setInterval(function() {
-    var restante = getBloqueioRestante();
+  _lockoutTimer = setInterval(function () {
+    var restante = _getBloqueioRestante();
     if (restante <= 0) {
       clearInterval(_lockoutTimer);
       bar.classList.remove('on');
@@ -237,47 +261,34 @@ function iniciarCountdownBloqueio(duracao) {
     var pct = (restante / duracao) * 100;
     prog.style.width = pct.toFixed(1) + '%';
     var seg = Math.ceil(restante / 1000);
-    showMsg('✗ Muitas tentativas. Aguarde ' + seg + 's para tentar novamente.', 'err');
+    _showMsg('🔒 Muitas tentativas. Aguarde ' + seg + 's.', 'err');
     document.getElementById('btnLogin').disabled = true;
   }, 500);
 }
 
-// ═══════════════════════════════════════════════════════
-//  [SEC-03] SANITIZAÇÃO DE INPUT
-// ═══════════════════════════════════════════════════════
-function sanitizarMatricula(val) {
-  // Permite apenas alfanumérico, hífen e underscore — strip tudo mais
-  return val.replace(/[^A-Z0-9\-_]/g, '').slice(0, 20);
-}
-
-function validarSenha(val) {
-  // Não sanitiza conteúdo da senha (perde entropia), apenas valida comprimento
-  return typeof val === 'string' && val.length >= 4 && val.length <= 64;
-}
-
-// ═══════════════════════════════════════════════════════
-//  [SEC-04] ESTADO PRIVADO — URL do dashboard isolada
-// ═══════════════════════════════════════════════════════
-var _urlDashboard = '';
+// ═══════════════════════════════════════════════════════════════
+//  [SEC-04] ESTADO PRIVADO
+// ═══════════════════════════════════════════════════════════════
+var _urlDashboard   = '';
 var _acessoLiberado = false;
 
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 //  RELÓGIO
-// ═══════════════════════════════════════════════════════
-setInterval(function() {
+// ═══════════════════════════════════════════════════════════════
+setInterval(function () {
   var el = document.getElementById('relogio');
   if (!el) return;
   var d = new Date();
   el.textContent =
-    ('0'+d.getHours()).slice(-2)+':'+
-    ('0'+d.getMinutes()).slice(-2)+':'+
-    ('0'+d.getSeconds()).slice(-2);
+    ('0' + d.getHours()).slice(-2)   + ':' +
+    ('0' + d.getMinutes()).slice(-2) + ':' +
+    ('0' + d.getSeconds()).slice(-2);
 }, 1000);
 
-// ═══════════════════════════════════════════════════════
-//  REDIRECIONA SE JÁ LOGADO
-// ═══════════════════════════════════════════════════════
-window.addEventListener('load', function() {
+// ═══════════════════════════════════════════════════════════════
+//  INICIALIZAÇÃO
+// ═══════════════════════════════════════════════════════════════
+window.addEventListener('load', function () {
   var tk     = sessionStorage.getItem('gar_token');
   var mat    = sessionStorage.getItem('gar_matricula');
   var expira = parseInt(sessionStorage.getItem('gar_expira') || '0', 10);
@@ -286,81 +297,95 @@ window.addEventListener('load', function() {
     if (Date.now() < expira) {
       window.location.href = 'garageiro.html';
       return;
-    } else {
-      // [SEC-05] Limpa sessão expirada completamente
-      limparSessao();
     }
+    // [SEC-05] Limpa sessão expirada — remove só as chaves do sistema
+    _limparSessao();
   }
+
   document.getElementById('iMat').focus();
 
-  // [SEC-09] Bloqueia Enter nos dois campos via addEventListener (sem inline handler)
-  document.getElementById('iMat').addEventListener('keydown', function(e) {
+  // Handlers via addEventListener — sem inline onclick (mais limpo e respeita CSP)
+  document.getElementById('btnLogin').addEventListener('click', fazerLogin);
+  document.getElementById('btnAcesso').addEventListener('click', irParaDashboard);
+  document.getElementById('btnTogglePw').addEventListener('click', toggleSenha);
+
+  document.getElementById('iMat').addEventListener('keydown', function (e) {
     if (e.key === 'Enter') { e.preventDefault(); document.getElementById('iSenha').focus(); }
   });
-  document.getElementById('iSenha').addEventListener('keydown', function(e) {
+  document.getElementById('iSenha').addEventListener('keydown', function (e) {
     if (e.key === 'Enter') { e.preventDefault(); fazerLogin(); }
   });
 });
 
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+//  [SEC-10] LIMPA CAMPO SENHA AO MINIMIZAR / TROCAR ABA
+// ═══════════════════════════════════════════════════════════════
+window.addEventListener('visibilitychange', function () {
+  if (document.visibilityState === 'hidden' && !_acessoLiberado) {
+    var inp = document.getElementById('iSenha');
+    if (inp) inp.value = '';
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
 //  HELPERS UI
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 function toggleSenha() {
   var inp = document.getElementById('iSenha');
   var btn = document.getElementById('btnTogglePw');
-  if (inp.disabled) return; // [SEC-06] Bloqueia toggle durante loading
+  if (inp.disabled) return;
   inp.type = inp.type === 'password' ? 'text' : 'password';
   btn.setAttribute('aria-label', inp.type === 'password' ? 'Mostrar senha' : 'Ocultar senha');
 }
 
-function showMsg(texto, tipo) {
+function _showMsg(texto, tipo) {
   var el = document.getElementById('msgBox');
-  // [SEC-04] textContent — nunca innerHTML, evita XSS
-  el.textContent = texto;
+  el.textContent = texto; // textContent — nunca innerHTML, evita XSS
   el.className = 'msg ' + tipo + ' on';
 }
 
-function setLoading(on, txt) {
+function _setLoading(on, txt) {
   document.getElementById('spinWrap').classList.toggle('on', on);
   document.getElementById('spinLbl').textContent = txt || 'AUTENTICANDO...';
-  document.getElementById('btnLogin').disabled = on || isBloqueado();
-  document.getElementById('iMat').disabled = on;
-  document.getElementById('iSenha').disabled = on;
+  document.getElementById('btnLogin').disabled   = on || _isBloqueado();
+  document.getElementById('iMat').disabled       = on;
+  document.getElementById('iSenha').disabled     = on;
   document.getElementById('btnTogglePw').disabled = on;
 }
 
 function irParaDashboard() {
-  // [SEC-04] Valida estado antes de redirecionar
   if (!_acessoLiberado || !_urlDashboard) {
-    showMsg('✗ Acesso não autorizado.', 'err');
+    _showMsg('✗ Sessão inválida. Faça login novamente.', 'err');
     return;
   }
-  // Invalida após uso (one-shot)
+  // [SEC-04] One-shot: invalida flag e URL após primeiro uso
   _acessoLiberado = false;
   var destino = _urlDashboard;
   _urlDashboard = '';
   window.location.href = destino;
 }
 
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 //  CHAMADA À API
-// ═══════════════════════════════════════════════════════
-async function api(payload) {
+//  Nota: o GAS responde com redirect para script.googleusercontent.com
+//  — por isso connect-src no CSP inclui esse domínio.
+//  credentials:'omit' garante que cookies do browser não são enviados.
+// ═══════════════════════════════════════════════════════════════
+async function _api(payload) {
   var ctrl  = new AbortController();
-  var timer = setTimeout(function() { ctrl.abort(); }, 15000);
+  var timer = setTimeout(function () { ctrl.abort(); }, 15000);
   try {
     var resp = await fetch(_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
       signal: ctrl.signal,
-      // [SEC-01] Não envia cookies nem credenciais do browser para o GAS
       credentials: 'omit',
       referrerPolicy: 'no-referrer'
     });
     if (!resp.ok) throw new Error('HTTP_' + resp.status);
     return resp.json();
-  } catch(e) {
+  } catch (e) {
     if (e.name === 'AbortError') throw new Error('TIMEOUT');
     throw e;
   } finally {
@@ -368,71 +393,77 @@ async function api(payload) {
   }
 }
 
-// ═══════════════════════════════════════════════════════
-//  [SEC-09] MENSAGENS DE ERRO GENÉRICAS — sem vazar detalhes internos
-// ═══════════════════════════════════════════════════════
-function msgErroConexao(e) {
+// Traduz erros técnicos para mensagens de usuário sem vazar detalhes internos
+function _msgErro(e) {
   if (!e || !e.message) return 'Erro de conexão. Tente novamente.';
-  if (e.message === 'TIMEOUT')         return 'Tempo limite esgotado. Verifique a conexão.';
-  if (e.message.startsWith('HTTP_'))   return 'Falha no servidor. Tente novamente mais tarde.';
+  if (e.message === 'TIMEOUT')       return 'Tempo limite esgotado. Verifique a conexão.';
+  if (e.message.startsWith('HTTP_')) return 'Falha no servidor (' + e.message + '). Tente mais tarde.';
+  // Erros de rede (CSP, CORS, offline) chegam como TypeError com mensagem do browser
+  if (e instanceof TypeError)        return 'Sem conexão com o servidor. Verifique a internet.';
   return 'Erro de conexão. Tente novamente.';
 }
 
-// ═══════════════════════════════════════════════════════
-//  LOGIN
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+//  [SEC-03] VALIDAÇÃO DE INPUT
+//  ATENÇÃO: matrícula NÃO é sanitizada com strip de caracteres —
+//  isso quebraria matrículas com espaços, pontos ou hífen (ex: "PM 1234").
+//  Apenas limitamos o comprimento e garantimos uppercase.
+//  O servidor é responsável pela validação definitiva.
+// ═══════════════════════════════════════════════════════════════
+function _validarInputs(matricula, senha) {
+  if (!matricula || !matricula.trim()) return '⚠ Informe sua matrícula.';
+  if (matricula.trim().length > 20)   return '⚠ Matrícula muito longa.';
+  if (!senha)                         return '⚠ Informe sua senha.';
+  if (senha.length < 4)               return '⚠ Senha muito curta (mín. 4 caracteres).';
+  if (senha.length > 64)              return '⚠ Senha muito longa.';
+  return null; // sem erro
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  LOGIN — fluxo principal
+// ═══════════════════════════════════════════════════════════════
 async function fazerLogin() {
-  // [SEC-02] Verifica bloqueio antes de qualquer coisa
-  if (isBloqueado()) return;
+  if (_isBloqueado()) return; // [SEC-02] Guard rápido
 
-  var matriculaBruta = document.getElementById('iMat').value.trim().toUpperCase();
-  var senha          = document.getElementById('iSenha').value;
-  document.getElementById('msgBox').className = 'msg';
+  var matricula = document.getElementById('iMat').value.trim().toUpperCase();
+  var senha     = document.getElementById('iSenha').value;
 
-  // [SEC-03] Sanitiza matrícula
-  var matricula = sanitizarMatricula(matriculaBruta);
+  document.getElementById('msgBox').className = 'msg'; // esconde msg anterior
 
-  if (!matricula) { showMsg('⚠ Informe sua matrícula.', 'warn'); return; }
-  if (!senha)     { showMsg('⚠ Informe sua senha.', 'warn'); return; }
+  var erroValidacao = _validarInputs(matricula, senha);
+  if (erroValidacao) { _showMsg(erroValidacao, 'warn'); return; }
 
-  // [SEC-03] Valida comprimento da senha sem expor seu conteúdo
-  if (!validarSenha(senha)) {
-    showMsg('⚠ Senha inválida (mínimo 4 caracteres).', 'warn');
-    return;
-  }
-
-  setLoading(true, 'AUTENTICANDO...');
+  _setLoading(true, 'AUTENTICANDO...');
 
   try {
-    var loginResult = await api({ tipo: 'garageiroLogin', matricula: matricula, senha: senha });
+    // Passo 1: autenticar — envia senha como recebida (o servidor faz o hash/compare)
+    var loginResult = await _api({
+      tipo: 'garageiroLogin',
+      matricula: matricula,
+      senha: senha
+    });
 
     if (!loginResult || !loginResult.sucesso) {
-      registrarFalha(); // [SEC-02] contabiliza tentativa
-      setLoading(false);
-      // [SEC-09] Mensagem genérica — não distingue "matrícula errada" de "senha errada"
-      showMsg('✗ Credenciais inválidas. Verifique e tente novamente.', 'err');
-      document.getElementById('iSenha').value = '';
-      // [SEC-05] Apaga campo senha da memória imediatamente após falha
+      _registrarFalha(); // [SEC-02] contabiliza tentativa
+      _setLoading(false);
+      // [SEC-09] Mensagem genérica — não distingue matrícula de senha para não dar dica ao atacante
+      _showMsg('✗ Credenciais inválidas. Verifique e tente novamente.', 'err');
+      document.getElementById('iSenha').value = ''; // [SEC-05] limpa campo
       document.getElementById('iSenha').focus();
       return;
     }
 
-    // [SEC-02] Sucesso: zera contador de tentativas
-    _tentativas   = 0;
-    _bloqueadoAte = 0;
-    clearInterval(_lockoutTimer);
-    document.getElementById('lockoutBar').classList.remove('on');
-
-    showMsg('✓ Autenticado.', 'ok');
-    setLoading(true, 'PREPARANDO ACESSO...');
+    _registrarSucesso(); // [SEC-02] zera tentativas
+    _showMsg('✓ ' + (loginResult.mensagem || 'Autenticado com sucesso.'), 'ok');
+    _setLoading(true, 'PREPARANDO ACESSO...');
 
     var token      = loginResult.token;
     var nomeGuerra = loginResult.nomeGuerra;
     var mat        = loginResult.matricula;
     var perfil     = loginResult.perfil;
 
-    // Passo 2: Criar handoff de uso único no servidor
-    var hkResult = await api({
+    // Passo 2: criar handoff de uso único no servidor
+    var hkResult = await _api({
       tipo: 'garageiroHandoff',
       token: token,
       matricula: mat,
@@ -440,17 +471,19 @@ async function fazerLogin() {
       perfil: perfil
     });
 
-    setLoading(false);
+    _setLoading(false);
 
-    if (!hkResult || !hkResult.handoffKey) {
-      salvarSessaoLocal(token, mat, nomeGuerra, perfil);
-      _urlDashboard   = 'garageiro.html';
-    } else {
-      salvarSessaoLocal(token, mat, nomeGuerra, perfil);
+    // Salva sessão antes de qualquer redirecionamento
+    _salvarSessao(token, mat, nomeGuerra, perfil);
+
+    if (hkResult && hkResult.handoffKey) {
       _urlDashboard = 'garageiro.html?hk=' + encodeURIComponent(hkResult.handoffKey);
+    } else {
+      // Fallback: sem handoff, vai direto com sessão já salva
+      _urlDashboard = 'garageiro.html';
     }
 
-    // [SEC-04] Libera acesso apenas via flag interna, não via URL global
+    // [SEC-04] Libera redirecionamento apenas via flag interna one-shot
     _acessoLiberado = true;
 
     document.getElementById('btnLogin').style.display = 'none';
@@ -458,17 +491,16 @@ async function fazerLogin() {
     btnAcesso.classList.add('on');
     btnAcesso.focus();
 
-  } catch(e) {
-    setLoading(false);
-    // [SEC-09] Mensagem de rede genérica — sem e.message bruto ao usuário
-    showMsg('✗ ' + msgErroConexao(e), 'err');
+  } catch (e) {
+    _setLoading(false);
+    _showMsg('✗ ' + _msgErro(e), 'err');
   }
 }
 
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 //  [SEC-05] GESTÃO DE SESSÃO
-// ═══════════════════════════════════════════════════════
-function salvarSessaoLocal(token, matricula, nomeGuerra, perfil) {
+// ═══════════════════════════════════════════════════════════════
+function _salvarSessao(token, matricula, nomeGuerra, perfil) {
   var OITO_HORAS = 8 * 60 * 60 * 1000;
   sessionStorage.setItem('gar_token',      token);
   sessionStorage.setItem('gar_matricula',  matricula);
@@ -477,32 +509,18 @@ function salvarSessaoLocal(token, matricula, nomeGuerra, perfil) {
   sessionStorage.setItem('gar_expira',     String(Date.now() + OITO_HORAS));
 }
 
-function limparSessao() {
-  // Remove apenas as chaves do sistema — não limpa sessionStorage de terceiros
-  ['gar_token','gar_matricula','gar_nomeGuerra','gar_perfil','gar_expira'].forEach(function(k) {
-    sessionStorage.removeItem(k);
-  });
+function _limparSessao() {
+  // Remove apenas as chaves do sistema — não limpa sessionStorage inteiro
+  ['gar_token','gar_matricula','gar_nomeGuerra','gar_perfil','gar_expira']
+    .forEach(function (k) { sessionStorage.removeItem(k); });
 }
 
-// ═══════════════════════════════════════════════════════
-//  [SEC-10] LIMPEZA DE SENHA AO SAIR DA ABA
-//  Evita que campo fique preenchido em caso de suspensão do SO
-// ═══════════════════════════════════════════════════════
-window.addEventListener('visibilitychange', function() {
-  if (document.visibilityState === 'hidden') {
-    var inp = document.getElementById('iSenha');
-    if (inp && !_acessoLiberado) inp.value = '';
-  }
-});
-
-// ═══════════════════════════════════════════════════════
-//  Expõe APENAS os handlers de botão que precisam ser públicos
-// ═══════════════════════════════════════════════════════
-window.fazerLogin    = fazerLogin;
+// Expõe apenas irParaDashboard e toggleSenha pois são chamadas por botões
+// fazerLogin é registrado via addEventListener — não precisa ser global
 window.irParaDashboard = irParaDashboard;
-window.toggleSenha   = toggleSenha;
+window.toggleSenha     = toggleSenha;
 
-})(); // fim do IIFE — todo o restante permanece privado
+}()); // fim IIFE — todo estado permanece privado
 </script>
 </body>
 </html>
