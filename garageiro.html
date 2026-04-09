@@ -327,12 +327,10 @@ tr:hover td{background:rgba(245,166,35,.025)}
 <div class="sess-warn" id="sessWarn">⚠ Sessão expira em breve.</div>
 
 <div class="content">
+
+<!-- ═══ PG VIATURAS ═══ -->
 <div class="pg on" id="pgViaturas">
-
-  <!-- Cards de estatísticas -->
   <div class="stats" id="statsRow"></div>
-
-  <!-- Barra de filtro -->
   <div class="bar">
     <div class="bl">
       <select class="c" id="fStatus" onchange="filtrarViaturas()">
@@ -343,85 +341,73 @@ tr:hover td{background:rgba(245,166,35,.025)}
       </select>
     </div>
     <div class="br">
-      <input type="text" class="c" id="fBusca" placeholder="🔍 Prefixo, modelo, placa..." oninput="filtrarViaturas()">
+      <input type="text" class="c" id="fBusca" placeholder="🔍 Prefixo, modelo..." oninput="filtrarViaturas()">
       <button class="btn btn-s" onclick="init()"><i class="fas fa-sync-alt"></i></button>
     </div>
   </div>
+  <div class="v-grid" id="vGrid"><div style="color:var(--txt3);padding:40px;text-align:center;grid-column:1/-1"><i class="fas fa-spinner fa-spin"></i> Carregando...</div></div>
+</div>
 
-  <!-- Grid de viaturas -->
-  <div class="v-grid" id="vGrid">
-    <div style="color:var(--txt2);padding:40px;text-align:center;grid-column:1/-1">
-      <i class="fas fa-spinner fa-spin"></i> Carregando...
+<!-- ═══ PG ENTRADAS ═══ -->
+<div class="pg" id="pgEntrada">
+  <div class="filtros">
+    <div class="filtros-grid">
+      <div class="fgrp"><label class="flbl">Viatura</label><select class="c" id="eViat" style="width:100%"><option value="">Todas</option></select></div>
+      <div class="fgrp"><label class="flbl">Motorista</label><input type="text" class="c" id="eMot" placeholder="Nome..." style="width:100%"></div>
+      <div class="fgrp"><label class="flbl">Comandante</label><input type="text" class="c" id="eCom" placeholder="Nome..." style="width:100%"></div>
+      <div class="fgrp"><label class="flbl">Setor</label><input type="text" class="c" id="eSec" placeholder="Setor..." style="width:100%"></div>
+      <div class="fgrp"><label class="flbl">Data Início</label><input type="date" class="c" id="eDi" style="width:100%"></div>
+      <div class="fgrp"><label class="flbl">Data Fim</label><input type="date" class="c" id="eDf" style="width:100%"></div>
+    </div>
+    <div class="filtros-btns">
+      <button class="btn btn-p" id="btnPesqE" onclick="pesquisarEntradas()"><i class="fas fa-search"></i> Pesquisar</button>
+      <button class="btn btn-s" onclick="limparE()"><i class="fas fa-trash"></i> Limpar</button>
+      <span class="result-info" id="infoE"></span>
     </div>
   </div>
+  <div class="stats-pq">
+    <div class="scp"><div class="scp-val" style="color:var(--ac)" id="eStT">0</div><div class="scp-lbl">Total</div></div>
+    <div class="scp"><div class="scp-val" style="color:#60a5fa" id="eStV">0</div><div class="scp-lbl">Viaturas</div></div>
+    <div class="scp"><div class="scp-val" style="color:#c084fc" id="eStM">0</div><div class="scp-lbl">Motoristas</div></div>
+    <div class="scp"><div class="scp-val" style="color:var(--ylw)" id="eStA">0</div><div class="scp-lbl">Com Alteração</div></div>
+  </div>
+  <div class="tw">
+    <table><thead><tr><th>Data/Hora</th><th>Viatura</th><th>Motorista</th><th>Comandante</th><th>Setor</th><th>Odômetro</th><th>Óleo/Água</th><th>Alterações</th></tr></thead>
+    <tbody id="tbEnt"><tr><td colspan="8" class="erow">🔍 Use os filtros e clique em Pesquisar</td></tr></tbody></table>
+  </div>
+</div>
 
-  <!-- ══ ÚLTIMAS MOVIMENTAÇÕES ══
-       Estas duas tabelas são obrigatórias — o JS referencia
-       #tbUltEntradas e #tbUltSaidas via carregarUltimasMovimentacoes()
-  -->
-  <div class="mov-wrap" style="margin-top:18px">
-
-    <!-- Últimas Entradas -->
-    <div class="mov-section">
-      <div class="mov-section-title entrada">
-        <i class="fas fa-sign-in-alt"></i>
-        Últimas Entradas
-        <span id="movTimestamp" style="font-size:10px;color:var(--txt2);font-family:var(--mono);margin-left:auto"></span>
-      </div>
-      <div class="mov-tw">
-        <table>
-          <thead>
-            <tr>
-              <th>Data/Hora</th>
-              <th>Viatura</th>
-              <th>Motorista</th>
-              <th>Setor</th>
-              <th>Óleo / Água</th>
-            </tr>
-          </thead>
-          <tbody id="tbUltEntradas">
-            <tr>
-              <td colspan="5" class="erow">
-                <i class="fas fa-spinner fa-spin"></i> Carregando...
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+<!-- ═══ PG SAÍDAS ═══ -->
+<div class="pg" id="pgSaida">
+  <div class="filtros">
+    <div class="filtros-grid">
+      <div class="fgrp"><label class="flbl">Viatura</label><select class="c" id="sViat" style="width:100%"><option value="">Todas</option></select></div>
+      <div class="fgrp"><label class="flbl">Motorista</label><input type="text" class="c" id="sMot" placeholder="Nome..." style="width:100%"></div>
+      <div class="fgrp"><label class="flbl">Comandante</label><input type="text" class="c" id="sCom" placeholder="Nome..." style="width:100%"></div>
+      <div class="fgrp"><label class="flbl">Setor</label><input type="text" class="c" id="sSec" placeholder="Setor..." style="width:100%"></div>
+      <div class="fgrp"><label class="flbl">Data Início</label><input type="date" class="c" id="sDi" style="width:100%"></div>
+      <div class="fgrp"><label class="flbl">Data Fim</label><input type="date" class="c" id="sDf" style="width:100%"></div>
+      <div class="fgrp"><label class="flbl">Sinistro</label><select class="c" id="sSin" style="width:100%"><option value="">Todos</option><option value="SIM">Com sinistro</option><option value="NÃO">Sem sinistro</option></select></div>
+      <div class="fgrp"><label class="flbl">Abastecimento</label><select class="c" id="sAbs" style="width:100%"><option value="">Todos</option><option value="SIM">Abasteceu</option><option value="NÃO">Não abasteceu</option></select></div>
     </div>
-
-    <!-- Últimas Saídas -->
-    <div class="mov-section">
-      <div class="mov-section-title saida">
-        <i class="fas fa-sign-out-alt"></i>
-        Últimas Saídas
-      </div>
-      <div class="mov-tw">
-        <table>
-          <thead>
-            <tr>
-              <th>Data/Hora</th>
-              <th>Viatura</th>
-              <th>Motorista</th>
-              <th>Setor</th>
-              <th>Abasteceu</th>
-              <th>Sinistro</th>
-            </tr>
-          </thead>
-          <tbody id="tbUltSaidas">
-            <tr>
-              <td colspan="6" class="erow">
-                <i class="fas fa-spinner fa-spin"></i> Carregando...
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="filtros-btns">
+      <button class="btn btn-p" id="btnPesqS" onclick="pesquisarSaidas()"><i class="fas fa-search"></i> Pesquisar</button>
+      <button class="btn btn-s" onclick="limparS()"><i class="fas fa-trash"></i> Limpar</button>
+      <span class="result-info" id="infoS"></span>
     </div>
-
-  </div><!-- /mov-wrap -->
-
-</div><!-- /pgViaturas -->
+  </div>
+  <div class="stats-pq">
+    <div class="scp"><div class="scp-val" style="color:var(--ac)" id="sStT">0</div><div class="scp-lbl">Total</div></div>
+    <div class="scp"><div class="scp-val" style="color:#60a5fa" id="sStV">0</div><div class="scp-lbl">Viaturas</div></div>
+    <div class="scp"><div class="scp-val" style="color:#c084fc" id="sStM">0</div><div class="scp-lbl">Motoristas</div></div>
+    <div class="scp"><div class="scp-val" style="color:#f87171" id="sStSin">0</div><div class="scp-lbl">Sinistros</div></div>
+    <div class="scp"><div class="scp-val" style="color:#4facfe" id="sStAbs">0</div><div class="scp-lbl">Abastecimentos</div></div>
+  </div>
+  <div class="tw">
+    <table><thead><tr><th>Data/Hora</th><th>Viatura</th><th>Motorista</th><th>Comandante</th><th>Setor</th><th>Odômetro</th><th>Abasteceu</th><th>Saldo</th><th>Pendência</th><th>Sinistro</th></tr></thead>
+    <tbody id="tbSai"><tr><td colspan="10" class="erow">🔍 Use os filtros e clique em Pesquisar</td></tr></tbody></table>
+  </div>
+</div>
 
 <!-- ═══ PG MANUTENÇÃO ═══ -->
 <div class="pg" id="pgManut">
