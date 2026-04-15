@@ -835,16 +835,30 @@ var _token = '', _nomeGuerra = '', _matricula = '', _perfil = '';
 var _todasViaturas = [];
 
 // ═══════ CHAMADA AO GAS ═══════
+// IMPORTANTE: usa 'text/plain' para evitar CORS preflight que bloqueia o GAS
 function gasCall(action, params, cb, errCb) {
   var payload = Object.assign({ action: action, token: _token }, params || {});
-  fetch(GAS_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(d) { if (cb) cb(d); })
-  .catch(function(e) { if (errCb) errCb(e); });
+  var tentativas = 0;
+  function tentar() {
+    tentativas++;
+    fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload),
+      credentials: 'omit',
+      referrerPolicy: 'no-referrer'
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(d) { if (cb) cb(d); })
+    .catch(function(e) {
+      if (tentativas < 2) {
+        setTimeout(tentar, 1500); // retry após 1.5s
+      } else {
+        if (errCb) errCb(e);
+      }
+    });
+  }
+  tentar();
 }
 
 // ═══════ SIDEBAR ═══════
@@ -888,23 +902,83 @@ function navTo(pgId) {
 
 // ═══════ LOGIN / SESSÃO ═══════
 function redirecionarLogin() {
-  sessionStorage.clear();
+  ['gar_token','gar_matricula','gar_nomeGuerra','gar_perfil','gar_expira']
+    .forEach(function(k) { sessionStorage.removeItem(k); });
   window.location.assign('garageiro-login.html');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  var tk = sessionStorage.getItem('gar_token') || '';
-  var mt = sessionStorage.getItem('gar_matricula') || '';
-  var nm = sessionStorage.getItem('gar_nomeGuerra') || '';
-  var pf = sessionStorage.getItem('gar_perfil') || '';
+  var tk  = sessionStorage.getItem('gar_token')      || '';
+  var mt  = sessionStorage.getItem('gar_matricula')  || '';
+  var nm  = sessionStorage.getItem('gar_nomeGuerra') || '';
+  var pf  = sessionStorage.getItem('gar_perfil')     || '';
+  var exp = parseInt(sessionStorage.getItem('gar_expira') || '0');
+
+  // Sem token ou matrícula -> login
   if (!tk || !mt) { redirecionarLogin(); return; }
+
+  // Sessão local claramente expirada -> login
+  if (exp && Date.now() > exp) { redirecionarLogin(); return; }
+
   loading('Verificando sessão...');
-  gasCall('usuariosRenovarSessao', { token: tk, matricula: mt, nomeGuerra: nm, perfil: pf }, function(s) {
-    unload();
-    if (!s || s.erro) { sessionStorage.clear(); redirecionarLogin(); return; }
-    _token = tk; _nomeGuerra = s.nomeGuerra || nm; _matricula = s.matricula || mt; _perfil = s.perfil || pf;
+
+  function _entrarComSessaoLocal() {
+    _token = tk; _nomeGuerra = nm; _matricula = mt; _perfil = pf;
+    sessionStorage.setItem('gar_expira', String(Date.now() + 8 * 60 * 60 * 1000));
     _iniciarDashboard();
-  }, function() { unload(); sessionStorage.clear(); redirecionarLogin(); });
+  }
+
+  // Fallback: se o servidor demorar mais de 12s, usa sessão local
+  var _renovacaoOk = false;
+  var _fallbackTimer = setTimeout(function() {
+    if (!_renovacaoOk) {
+      unload();
+      toast('Servidor lento — usando sessão local.', 'info');
+      _entrarComSessaoLocal();
+    }
+  }, 12000);
+
+  var _payload = JSON.stringify({
+    action: 'usuariosRenovarSessao',
+    token: tk, matricula: mt, nomeGuerra: nm, perfil: pf
+  });
+
+  fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: _payload,
+    credentials: 'omit',
+    referrerPolicy: 'no-referrer'
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(s) {
+    clearTimeout(_fallbackTimer);
+    _renovacaoOk = true;
+    unload();
+    // Servidor sinaliza explicitamente sessão inválida
+    if (s && s.invalido === true) { redirecionarLogin(); return; }
+    // Sessão válida (ou resposta ambígua) -> entra
+    _token      = tk;
+    _nomeGuerra = (s && s.nomeGuerra) ? s.nomeGuerra : nm;
+    _matricula  = (s && s.matricula)  ? s.matricula  : mt;
+    _perfil     = (s && s.perfil)     ? s.perfil     : pf;
+    sessionStorage.setItem('gar_nomeGuerra', _nomeGuerra);
+    sessionStorage.setItem('gar_perfil', _perfil);
+    sessionStorage.setItem('gar_expira', String(Date.now() + 8 * 60 * 60 * 1000));
+    _iniciarDashboard();
+  })
+  .catch(function() {
+    clearTimeout(_fallbackTimer);
+    _renovacaoOk = true;
+    unload();
+    // Erro de rede: se sessão local ainda não expirou, entra mesmo assim
+    if (!exp || Date.now() < exp) {
+      toast('Falha de rede — usando sessão local.', 'info');
+      _entrarComSessaoLocal();
+    } else {
+      redirecionarLogin();
+    }
+  });
 });
 
 function _iniciarDashboard() {
