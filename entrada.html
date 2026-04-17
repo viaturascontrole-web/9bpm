@@ -150,8 +150,8 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
       <div class="fg-row">
         <div class="fg">
           <label>Matrícula <span class="req">*</span></label>
-          <input type="tel" id="matricula" placeholder="Ex: 1234567" maxlength="12" required oninput="this.value=this.value.replace(/\D/g,\'\')">
-          <div class="msg-invalido">Informe a matrícula</div>
+          <input type="tel" id="matricula" placeholder="Ex: 100012345" maxlength="12" required oninput="this.value=this.value.replace(/\D/g,'')">
+          <div class="msg-invalido" id="msgMatricula">Matrícula deve iniciar com 1000</div>
         </div>
         <div class="fg">
           <label>Telefone <span class="req">*</span></label>
@@ -546,7 +546,7 @@ function validarEtapa(){
   if(ETAPA_ATUAL===3){
     if(!document.getElementById('comandante').value.trim()){marcarInvalido('comandante',true);ok=false;}
     if(!document.getElementById('motorista').value.trim()){marcarInvalido('motorista',true);ok=false;}
-    if(!document.getElementById('matricula').value.trim()){marcarInvalido('matricula',true);ok=false;}
+    if(!document.getElementById('matricula').value.trim()||parseInt(document.getElementById('matricula').value)<1000){marcarInvalido('matricula',true);document.getElementById('msgMatricula').style.display='block';ok=false;}
     var tel=document.getElementById('telefone').value.replace(/\D/g,'');
     if(tel.length<10||tel.length>11){marcarInvalido('telefone',true);document.getElementById('msgTelefone').style.display='block';ok=false;}
   }
@@ -571,7 +571,7 @@ function validarEtapa(){
 
 function marcarInvalido(id,on){var el=document.getElementById(id);if(!el)return;on?el.classList.add('invalido'):el.classList.remove('invalido');}
 function mostrarErro(msg){document.getElementById('erroTexto').textContent=msg;document.getElementById('erroGlobal').className='erro-msg on';window.scrollTo({top:0,behavior:'smooth'});}
-function esconderErro(){document.getElementById('erroGlobal').className='erro-msg';document.querySelectorAll('.invalido').forEach(function(el){el.classList.remove('invalido');});['msgOleo','msgAgua','msgAlteracoes','msgCartao','msgLimpa'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});}
+function esconderErro(){document.getElementById('erroGlobal').className='erro-msg';document.querySelectorAll('.invalido').forEach(function(el){el.classList.remove('invalido');});['msgOleo','msgAgua','msgAlteracoes','msgCartao','msgLimpa','msgTelefone','msgMatricula','msgOutros'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});}
 
 async function enviar(){
   if(!validarEtapa())return;

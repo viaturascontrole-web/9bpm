@@ -84,7 +84,7 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
     <div class="card">
       <div class="card-title">🚗 Viatura</div>
       <div class="fg"><label>Viatura utilizada <span class="req">*</span></label><select id="prefixo" required onchange="liberarOdometroSaida()"><option value="">Carregando viaturas...</option></select><div class="msg-invalido">Selecione a viatura</div></div>
-      <div class="fg"><label>Odômetro Final (km) <span class="req">*</span></label><input type="number" id="odometroFinal" placeholder="Selecione a viatura primeiro..." min="1" required disabled style="opacity:.5;cursor:not-allowed"><div class="odometro-hint on" id="odometroHintSaida" style="display:none"><strong id="odometroHintValSaida"></strong></div><div class="msg-invalido">Informe o odômetro</div></div>
+      <div class="fg"><label>Odômetro Final (km) <span class="req">*</span></label><input type="number" id="odometroFinal" placeholder="Selecione a viatura primeiro..." min="1" data-min="0" required disabled style="opacity:.5;cursor:not-allowed"><div class="odometro-hint on" id="odometroHintSaida" style="display:none"><strong id="odometroHintValSaida"></strong></div><div class="msg-invalido" id="msgOdometro">Odômetro final não pode ser menor que o último registrado</div></div>
     </div>
   </div>
   <div class="section" id="s2">
@@ -100,7 +100,7 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
       <div class="fg"><label>Comandante <span class="req">*</span></label><input type="text" id="comandante" class="upper" placeholder="Nome completo" required maxlength="80"><div class="msg-invalido">Informe o comandante</div></div>
       <div class="fg"><label>Motorista <span class="req">*</span></label><input type="text" id="motorista" class="upper" placeholder="Nome completo" required maxlength="80"><div class="msg-invalido">Informe o motorista</div></div>
       <div class="fg-row">
-        <div class="fg"><label>Matrícula <span class="req">*</span></label><input type="tel" id="matricula" placeholder="Ex: 1234567" maxlength="12" required oninput="this.value=this.value.replace(/\D/g,\'\')"><div class="msg-invalido">Informe a matrícula</div></div>
+        <div class="fg"><label>Matrícula <span class="req">*</span></label><input type="tel" id="matricula" placeholder="Ex: 100012345" maxlength="12" required oninput="this.value=this.value.replace(/\D/g,'')"><div class="msg-invalido" id="msgMatricula">Matrícula deve iniciar com 1000</div></div>
         
       </div>
     </div>
@@ -283,9 +283,15 @@ function avancar(){if(!validarEtapa())return;if(ETAPA_ATUAL<TOTAL_ETAPAS){ETAPA_
 function voltar(){if(ETAPA_ATUAL>1){ETAPA_ATUAL--;atualizarUI();}}
 
 function validarEtapa(){esconderErro();var ok=true;
-  if(ETAPA_ATUAL===1){if(!document.getElementById('prefixo').value){marcarInvalido('prefixo',true);ok=false;}if(!parseFloat(document.getElementById('odometroFinal').value)){marcarInvalido('odometroFinal',true);ok=false;}}
+  if(ETAPA_ATUAL===1){
+    if(!document.getElementById('prefixo').value){marcarInvalido('prefixo',true);ok=false;}
+    var odoVal=parseFloat(document.getElementById('odometroFinal').value);
+    var odoMin=parseFloat(document.getElementById('odometroFinal').getAttribute('data-min')||0);
+    if(!odoVal){marcarInvalido('odometroFinal',true);ok=false;}
+    else if(odoVal<odoMin){marcarInvalido('odometroFinal',true);document.getElementById('msgOdometro').style.display='block';ok=false;}
+  }
   if(ETAPA_ATUAL===2){var setor=document.getElementById('setor').value;if(!setor){marcarInvalido('setor',true);ok=false;}if(setor==='OUTRO'&&!document.getElementById('setorLivre').value.trim()){marcarInvalido('setorLivre',true);ok=false;}}
-  if(ETAPA_ATUAL===3){if(!document.getElementById('comandante').value.trim()){marcarInvalido('comandante',true);ok=false;}if(!document.getElementById('motorista').value.trim()){marcarInvalido('motorista',true);ok=false;}if(!document.getElementById('matricula').value.trim()){marcarInvalido('matricula',true);ok=false;}}
+  if(ETAPA_ATUAL===3){if(!document.getElementById('comandante').value.trim()){marcarInvalido('comandante',true);ok=false;}if(!document.getElementById('motorista').value.trim()){marcarInvalido('motorista',true);ok=false;}if(!document.getElementById('matricula').value.trim()||parseInt(document.getElementById('matricula').value)<1000){marcarInvalido('matricula',true);document.getElementById('msgMatricula').style.display='block';ok=false;}}
   if(ETAPA_ATUAL===4){if(!abastValor){document.getElementById('msgAbast').style.display='block';ok=false;}if(abastValor==='SIM'){if(!document.getElementById('saldoCartao').value.trim()){marcarInvalido('saldoCartao',true);ok=false;}if(!pendValor){document.getElementById('msgPend').style.display='block';ok=false;}if(pendValor==='SIM'&&!document.getElementById('qualPendencia').value.trim()){marcarInvalido('qualPendencia',true);ok=false;}}}
   if(ETAPA_ATUAL===5){
     if(!entLimpaValor){document.getElementById('msgEntLimpa').style.display='block';ok=false;}
@@ -297,7 +303,7 @@ function validarEtapa(){esconderErro();var ok=true;
 
 function marcarInvalido(id,on){var el=document.getElementById(id);if(!el)return;on?el.classList.add('invalido'):el.classList.remove('invalido');}
 function mostrarErro(msg){document.getElementById('erroTexto').textContent=msg;document.getElementById('erroGlobal').className='erro-msg on';window.scrollTo({top:0,behavior:'smooth'});}
-function esconderErro(){document.getElementById('erroGlobal').className='erro-msg';document.querySelectorAll('.invalido').forEach(function(el){el.classList.remove('invalido');});['msgAbast','msgPend','msgSin','msgEntLimpa'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});}
+function esconderErro(){document.getElementById('erroGlobal').className='erro-msg';document.querySelectorAll('.invalido').forEach(function(el){el.classList.remove('invalido');});['msgAbast','msgPend','msgSin','msgEntLimpa','msgOdometro','msgMatricula'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});}
 
 async function enviar(){
   if(!validarEtapa())return;
@@ -344,8 +350,11 @@ function liberarOdometroSaida(){
     .then(function(d){
       if(d&&d.odometro&&d.odometro>0){
         document.getElementById('odometroHintValSaida').textContent='ℹ️ Último registrado: '+Number(d.odometro).toLocaleString('pt-BR')+' km — informe o odômetro final';
+        inputOdo.setAttribute('data-min', d.odometro);
+        inputOdo.min=d.odometro;
       } else {
         document.getElementById('odometroHintValSaida').textContent='ℹ️ Nenhum registro anterior — informe o odômetro atual';
+        inputOdo.setAttribute('data-min', 0);
       }
       inputOdo.disabled=false;inputOdo.style.opacity='1';inputOdo.style.cursor='';
       inputOdo.placeholder='Ex: 45530';
