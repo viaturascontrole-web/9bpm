@@ -285,10 +285,21 @@ function voltar(){if(ETAPA_ATUAL>1){ETAPA_ATUAL--;atualizarUI();}}
 function validarEtapa(){esconderErro();var ok=true;
   if(ETAPA_ATUAL===1){
     if(!document.getElementById('prefixo').value){marcarInvalido('prefixo',true);ok=false;}
-    var odoVal=parseFloat(document.getElementById('odometroFinal').value);
-    var odoMin=parseFloat(document.getElementById('odometroFinal').getAttribute('data-min')||0);
-    if(!odoVal){marcarInvalido('odometroFinal',true);ok=false;}
-    else if(odoVal<odoMin){marcarInvalido('odometroFinal',true);document.getElementById('msgOdometro').style.display='block';ok=false;}
+    var odoInput=document.getElementById('odometroFinal');
+    var odoVal=parseFloat(odoInput.value);
+    var odoMin=parseFloat(odoInput.getAttribute('data-min')||0);
+    if(!odoInput.value||isNaN(odoVal)||odoVal<=0){marcarInvalido('odometroFinal',true);ok=false;}
+    else if(odoMin>0&&odoVal<odoMin){
+      marcarInvalido('odometroFinal',true);
+      document.getElementById('msgOdometro').textContent='❌ Odômetro final ('+odoVal.toLocaleString('pt-BR')+' km) não pode ser menor que o último registrado ('+odoMin.toLocaleString('pt-BR')+' km).';
+      document.getElementById('msgOdometro').style.display='block';
+      ok=false;
+    } else if(odoMin>0&&odoVal===odoMin){
+      marcarInvalido('odometroFinal',true);
+      document.getElementById('msgOdometro').textContent='⚠️ Odômetro final deve ser maior que o último registrado ('+odoMin.toLocaleString('pt-BR')+' km).';
+      document.getElementById('msgOdometro').style.display='block';
+      ok=false;
+    }
   }
   if(ETAPA_ATUAL===2){var setor=document.getElementById('setor').value;if(!setor){marcarInvalido('setor',true);ok=false;}if(setor==='OUTRO'&&!document.getElementById('setorLivre').value.trim()){marcarInvalido('setorLivre',true);ok=false;}}
   if(ETAPA_ATUAL===3){if(!document.getElementById('comandante').value.trim()){marcarInvalido('comandante',true);ok=false;}if(!document.getElementById('motorista').value.trim()){marcarInvalido('motorista',true);ok=false;}if(!document.getElementById('matricula').value.trim()||parseInt(document.getElementById('matricula').value)<1000){marcarInvalido('matricula',true);document.getElementById('msgMatricula').style.display='block';ok=false;}}
@@ -366,7 +377,31 @@ function liberarOdometroSaida(){
       inputOdo.placeholder='Ex: 45530';
     });
 }
-document.addEventListener('input',function(e){marcarInvalido(e.target.id,false);});
+document.addEventListener('input',function(e){
+  marcarInvalido(e.target.id,false);
+  if(e.target.id==='odometroFinal'){
+    var odoInput=document.getElementById('odometroFinal');
+    var odoVal=parseFloat(odoInput.value);
+    var odoMin=parseFloat(odoInput.getAttribute('data-min')||0);
+    var msgEl=document.getElementById('msgOdometro');
+    if(odoInput.value&&!isNaN(odoVal)&&odoMin>0){
+      if(odoVal<odoMin){
+        odoInput.classList.add('invalido');
+        msgEl.textContent='❌ Valor menor que o último registrado ('+odoMin.toLocaleString('pt-BR')+' km)';
+        msgEl.style.display='block';
+      } else if(odoVal===odoMin){
+        odoInput.classList.add('invalido');
+        msgEl.textContent='⚠️ Deve ser maior que '+odoMin.toLocaleString('pt-BR')+' km';
+        msgEl.style.display='block';
+      } else {
+        odoInput.classList.remove('invalido');
+        msgEl.style.display='none';
+      }
+    } else {
+      msgEl.style.display='none';
+    }
+  }
+});
 document.addEventListener('change',function(e){marcarInvalido(e.target.id,false);});
 </script>
 </body>
