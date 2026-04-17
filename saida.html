@@ -66,6 +66,7 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
 .foto-status{font-size:11px;color:var(--txt2);text-align:center;margin-top:6px}
 .foto-upload-prog{background:var(--bg3);border-radius:4px;height:4px;margin-top:6px;display:none}.foto-upload-prog.on{display:block}
 .foto-upload-prog-fill{height:100%;background:var(--ac);border-radius:4px;transition:width .3s}
+.odometro-hint{background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.2);border-radius:7px;padding:8px 12px;font-size:12px;color:var(--ac);margin-top:6px}
 </style>
 </head>
 <body>
@@ -82,8 +83,8 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
   <div class="section active" id="s1">
     <div class="card">
       <div class="card-title">🚗 Viatura</div>
-      <div class="fg"><label>Viatura utilizada <span class="req">*</span></label><select id="prefixo" required><option value="">Carregando viaturas...</option></select><div class="msg-invalido">Selecione a viatura</div></div>
-      <div class="fg"><label>Odômetro Final (km) <span class="req">*</span></label><input type="number" id="odometroFinal" placeholder="Ex: 45530" min="1" required><div class="msg-invalido">Informe o odômetro</div></div>
+      <div class="fg"><label>Viatura utilizada <span class="req">*</span></label><select id="prefixo" required onchange="liberarOdometroSaida()"><option value="">Carregando viaturas...</option></select><div class="msg-invalido">Selecione a viatura</div></div>
+      <div class="fg"><label>Odômetro Final (km) <span class="req">*</span></label><input type="number" id="odometroFinal" placeholder="Selecione a viatura primeiro..." min="1" required disabled style="opacity:.5;cursor:not-allowed"><div class="odometro-hint on" id="odometroHintSaida" style="display:none"><strong id="odometroHintValSaida"></strong></div><div class="msg-invalido">Informe o odômetro</div></div>
     </div>
   </div>
   <div class="section" id="s2">
@@ -324,6 +325,38 @@ async function enviar(){
 }
 
 function novoRegistro(){window.location.reload();}
+
+function liberarOdometroSaida(){
+  var prefixo=document.getElementById('prefixo').value;
+  var inputOdo=document.getElementById('odometroFinal');
+  var hint=document.getElementById('odometroHintSaida');
+  if(!prefixo){
+    inputOdo.disabled=true;inputOdo.style.opacity='.5';inputOdo.style.cursor='not-allowed';
+    inputOdo.value='';inputOdo.placeholder='Selecione a viatura primeiro...';
+    hint.style.display='none';return;
+  }
+  inputOdo.disabled=true;inputOdo.style.opacity='.5';inputOdo.style.cursor='not-allowed';
+  inputOdo.value='';
+  hint.style.display='block';
+  document.getElementById('odometroHintValSaida').textContent='⏳ Buscando último odômetro...';
+  fetch(SCRIPT_URL+'?page=odometro&prefixo='+encodeURIComponent(prefixo))
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d&&d.odometro&&d.odometro>0){
+        document.getElementById('odometroHintValSaida').textContent='ℹ️ Último registrado: '+Number(d.odometro).toLocaleString('pt-BR')+' km — informe o odômetro final';
+      } else {
+        document.getElementById('odometroHintValSaida').textContent='ℹ️ Nenhum registro anterior — informe o odômetro atual';
+      }
+      inputOdo.disabled=false;inputOdo.style.opacity='1';inputOdo.style.cursor='';
+      inputOdo.placeholder='Ex: 45530';
+      inputOdo.focus();
+    })
+    .catch(function(){
+      hint.style.display='none';
+      inputOdo.disabled=false;inputOdo.style.opacity='1';inputOdo.style.cursor='';
+      inputOdo.placeholder='Ex: 45530';
+    });
+}
 document.addEventListener('input',function(e){marcarInvalido(e.target.id,false);});
 document.addEventListener('change',function(e){marcarInvalido(e.target.id,false);});
 </script>

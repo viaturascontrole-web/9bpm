@@ -111,7 +111,7 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
       </div>
       <div class="fg">
         <label>Odômetro Inicial (km) <span class="req">*</span></label>
-        <input type="number" id="odometroInicial" placeholder="Ex: 45230" min="1" required>
+        <input type="number" id="odometroInicial" placeholder="Selecione a viatura primeiro..." min="1" required disabled style="opacity:.5;cursor:not-allowed">
         <div class="odometro-hint" id="odometroHint">⬆️ Último odômetro final registrado: <strong id="odometroHintVal"></strong> km</div>
         <div class="msg-invalido">Informe o odômetro</div>
       </div>
@@ -155,8 +155,8 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
         </div>
         <div class="fg">
           <label>Telefone <span class="req">*</span></label>
-          <input type="tel" id="telefone" placeholder="(69) 9xxxx-xxxx" maxlength="16" required>
-          <div class="msg-invalido">Informe o telefone</div>
+          <input type="tel" id="telefone" placeholder="(69) 9xxxx-xxxx" maxlength="16" required oninput="mascaraTelefone(this)">
+          <div class="msg-invalido" id="msgTelefone">Informe um telefone válido com DDD</div>
         </div>
       </div>
     </div>
@@ -189,6 +189,11 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
         <div class="check-grid" id="alteracoesGrid"></div>
         <input type="hidden" id="alteracoesSelecionadas">
         <div class="msg-invalido" id="msgAlteracoes">Selecione pelo menos um item</div>
+      </div>
+      <div class="fg" id="outrosGroup" style="display:none;margin-top:10px">
+        <label>Outras alterações <span class="req">*</span></label>
+        <textarea id="outrosTexto" placeholder="Descreva os outros itens com alteração..." rows="2"></textarea>
+        <div class="msg-invalido" id="msgOutros">Descreva as outras alterações</div>
       </div>
     </div>
     <div class="card">
@@ -322,28 +327,37 @@ function buscarUltimoOdometro(){
   var prefixo=document.getElementById('prefixo').value;
   var hint=document.getElementById('odometroHint');
   var inputOdo=document.getElementById('odometroInicial');
-  if(!prefixo)return;
-  // Mostra mensagem de carregando
+  if(!prefixo){
+    inputOdo.disabled=true;inputOdo.style.opacity='.5';inputOdo.style.cursor='not-allowed';
+    inputOdo.placeholder='Selecione a viatura primeiro...';
+    hint.className='odometro-hint';return;
+  }
+  // Bloqueia campo enquanto busca
+  inputOdo.disabled=true;inputOdo.style.opacity='.5';inputOdo.style.cursor='not-allowed';
+  inputOdo.value='';
   hint.className='odometro-hint on';
-  document.getElementById('odometroHintVal').textContent='⏳ Buscando último odômetro...';
-  inputOdo.placeholder='Aguarde...';
+  document.getElementById('odometroHintVal').textContent='⏳ Buscando...';
   fetch(SCRIPT_URL+'?page=odometro&prefixo='+encodeURIComponent(prefixo))
     .then(function(r){return r.json();})
     .then(function(d){
-      inputOdo.placeholder='Ex: 45230';
       if(d && d.odometro && d.odometro>0){
         inputOdo.value=d.odometro;
         document.getElementById('odometroHintVal').textContent='✅ Último registrado: '+Number(d.odometro).toLocaleString('pt-BR')+' km — confirme ou corrija';
         hint.className='odometro-hint on';
       } else {
-        document.getElementById('odometroHintVal').textContent='ℹ️ Nenhum registro anterior encontrado';
+        document.getElementById('odometroHintVal').textContent='ℹ️ Nenhum registro anterior — informe o odômetro atual';
         hint.className='odometro-hint on';
-        setTimeout(function(){ hint.className='odometro-hint'; }, 3000);
       }
+      // Libera o campo
+      inputOdo.disabled=false;inputOdo.style.opacity='1';inputOdo.style.cursor='';
+      inputOdo.placeholder='Ex: 45230';
+      inputOdo.focus();
     })
     .catch(function(){
-      inputOdo.placeholder='Ex: 45230';
       hint.className='odometro-hint';
+      // Libera o campo mesmo com erro
+      inputOdo.disabled=false;inputOdo.style.opacity='1';inputOdo.style.cursor='';
+      inputOdo.placeholder='Ex: 45230';
     });
 }
 
@@ -400,12 +414,15 @@ function toggleAlteracao(item,el){
     alteracoesSel=['Sem Alteração'];
     document.querySelectorAll('.check-item').forEach(function(d){d.classList.remove('selected');d.querySelector('.check-box').textContent='';});
     el.classList.add('selected');el.querySelector('.check-box').textContent='✓';
+    document.getElementById('outrosGroup').style.display='none';
   } else {
     var semIdx=alteracoesSel.indexOf('Sem Alteração');
     if(semIdx!==-1){alteracoesSel.splice(semIdx,1);var semEl=document.querySelector('[data-val="Sem Alteração"]');if(semEl){semEl.classList.remove('selected');semEl.querySelector('.check-box').textContent='';}}
     var idx=alteracoesSel.indexOf(item);
     if(idx===-1){alteracoesSel.push(item);el.classList.add('selected');el.querySelector('.check-box').textContent='✓';}
     else{alteracoesSel.splice(idx,1);el.classList.remove('selected');el.querySelector('.check-box').textContent='';}
+    document.getElementById('outrosGroup').style.display=alteracoesSel.indexOf('Outros')!==-1?'block':'none';
+    if(alteracoesSel.indexOf('Outros')===-1)document.getElementById('outrosTexto').value='';
   }
   document.getElementById('alteracoesSelecionadas').value=alteracoesSel.join(', ');
 }
@@ -530,12 +547,14 @@ function validarEtapa(){
     if(!document.getElementById('comandante').value.trim()){marcarInvalido('comandante',true);ok=false;}
     if(!document.getElementById('motorista').value.trim()){marcarInvalido('motorista',true);ok=false;}
     if(!document.getElementById('matricula').value.trim()){marcarInvalido('matricula',true);ok=false;}
-    if(!document.getElementById('telefone').value.trim()){marcarInvalido('telefone',true);ok=false;}
+    var tel=document.getElementById('telefone').value.replace(/\D/g,'');
+    if(tel.length<10||tel.length>11){marcarInvalido('telefone',true);document.getElementById('msgTelefone').style.display='block';ok=false;}
   }
   if(ETAPA_ATUAL===4){
     if(!nivelOleo){document.getElementById('msgOleo').style.display='block';ok=false;}
     if(!nivelAgua){document.getElementById('msgAgua').style.display='block';ok=false;}
     if(alteracoesSel.length===0){document.getElementById('msgAlteracoes').style.display='block';ok=false;}
+    if(alteracoesSel.indexOf('Outros')!==-1&&!document.getElementById('outrosTexto').value.trim()){marcarInvalido('outrosTexto',true);document.getElementById('msgOutros').style.display='block';ok=false;}
     if(!document.getElementById('descricaoAvarias').value.trim()){marcarInvalido('descricaoAvarias',true);ok=false;}
   }
   if(ETAPA_ATUAL===5){
@@ -568,7 +587,7 @@ async function enviar(){
   for(var lf=0;lf<limpaFotos.length;lf++){
     try{fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},mode:'no-cors',body:JSON.stringify({tipo:'foto',prefixo:prefixo,nomeArquivo:limpaFotos[lf].nome,base64:limpaFotos[lf].base64,mimeType:limpaFotos[lf].mimeType})});}catch(e){}
   }
-  var dados={tipo:'entrada',prefixo:prefixo,odometroInicial:document.getElementById('odometroInicial').value,setor:setor,setorTextoLivre:setor==='OUTRO'?document.getElementById('setorLivre').value.trim():'',comandante:document.getElementById('comandante').value.trim().toUpperCase(),motorista:document.getElementById('motorista').value.trim().toUpperCase(),matricula:document.getElementById('matricula').value.trim(),telefone:document.getElementById('telefone').value.trim(),nivelOleo:nivelOleo,nivelAgua:nivelAgua,alteracoes:alteracoesSel.join(', '),descricaoAvarias:document.getElementById('descricaoAvarias').value.trim(),linkImagens:linkFotos||'',viaturaLimpaEntrada:limpaValor,descLimpaEntrada:limpaValor==='NÃO'?document.getElementById('descLimpaEntrada').value.trim():'',cartaoConferePlaca:cartaoValor,divergenciaCartao:cartaoValor==='NÃO'?document.getElementById('divergenciaCartao').value.trim():''};
+  var dados={tipo:'entrada',prefixo:prefixo,odometroInicial:document.getElementById('odometroInicial').value,setor:setor,setorTextoLivre:setor==='OUTRO'?document.getElementById('setorLivre').value.trim():'',comandante:document.getElementById('comandante').value.trim().toUpperCase(),motorista:document.getElementById('motorista').value.trim().toUpperCase(),matricula:document.getElementById('matricula').value.trim(),telefone:document.getElementById('telefone').value.trim(),nivelOleo:nivelOleo,nivelAgua:nivelAgua,alteracoes:alteracoesSel.map(function(i){return i==='Outros'?('Outros: '+(document.getElementById('outrosTexto').value.trim()||'').toUpperCase()):i;}).join(', '),descricaoAvarias:document.getElementById('descricaoAvarias').value.trim(),linkImagens:linkFotos||'',viaturaLimpaEntrada:limpaValor,descLimpaEntrada:limpaValor==='NÃO'?document.getElementById('descLimpaEntrada').value.trim():'',cartaoConferePlaca:cartaoValor,divergenciaCartao:cartaoValor==='NÃO'?document.getElementById('divergenciaCartao').value.trim():''};
   fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(dados),mode:'no-cors'})
   .then(function(r){return {sucesso:true};})
   .then(function(resp){
@@ -594,8 +613,15 @@ async function enviar(){
 }
 
 function novoRegistro(){window.location.reload();}
-document.addEventListener('input',function(e){marcarInvalido(e.target.id,false);});
+document.addEventListener('input',function(e){marcarInvalido(e.target.id,false);if(e.target.id==='telefone'){document.getElementById('msgTelefone').style.display='none';}if(e.target.id==='outrosTexto'){document.getElementById('msgOutros').style.display='none';}});
 document.addEventListener('change',function(e){marcarInvalido(e.target.id,false);});
+
+function mascaraTelefone(input){
+  var v=input.value.replace(/\D/g,'');
+  if(v.length<=10){v=v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/,'($1) $2-$3');}
+  else{v=v.replace(/^(\d{2})(\d{5})(\d{0,4}).*/,'($1) $2-$3');}
+  input.value=v;
+}
 </script>
 </body>
 </html>
