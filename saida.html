@@ -25,8 +25,8 @@ html,body{min-height:100vh;background:var(--bg);color:var(--txt);font-family:'Se
 .card-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--ac);margin-bottom:16px;display:flex;align-items:center;gap:8px}
 .card-title::before{content:'';width:4px;height:16px;background:var(--ac);border-radius:2px;flex-shrink:0}
 .fg{margin-bottom:14px}.fg:last-child{margin-bottom:0}
-label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);margin-bottom:6px}
-label .req{color:#f87171;margin-left:2px}label .opt{color:var(--bd);margin-left:4px;font-weight:400;text-transform:none}
+label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt);margin-bottom:6px}
+label .req{color:#f87171;margin-left:2px}label .opt{color:var(--txt2);margin-left:4px;font-weight:400;text-transform:none}
 input,select,textarea{width:100%;padding:13px 14px;background:var(--bg3);border:1.5px solid var(--bd);border-radius:9px;color:var(--txt);font-size:15px;font-family:inherit;transition:border-color .2s;-webkit-appearance:none;appearance:none}
 select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a78bbb' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px rgba(192,132,252,.12)}
@@ -34,7 +34,7 @@ input.upper{text-transform:uppercase}textarea{resize:none;min-height:80px;line-h
 .fg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .opcao-group{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .opcao-btn{padding:14px 10px;border:2px solid var(--bd);border-radius:10px;background:var(--bg3);text-align:center;cursor:pointer;transition:all .2s;user-select:none}
-.opcao-btn .obi{font-size:22px;margin-bottom:6px}.opcao-btn .obt{font-size:13px;font-weight:700}
+.opcao-btn .obi{font-size:22px;margin-bottom:6px}.opcao-btn .obt{font-size:13px;font-weight:700;color:var(--txt)}
 .opcao-btn.sel-sim{border-color:var(--green);background:rgba(39,174,96,.08)}.opcao-btn.sel-sim .obt{color:var(--green)}
 .opcao-btn.sel-nao{border-color:var(--ac);background:rgba(192,132,252,.06)}.opcao-btn.sel-nao .obt{color:var(--ac)}
 .footer-fixed{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(0deg,var(--bg) 80%,transparent);padding:16px 20px 24px;display:flex;gap:12px;max-width:600px;margin:0 auto}
@@ -100,7 +100,7 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
       <div class="fg"><label>Comandante <span class="req">*</span></label><input type="text" id="comandante" class="upper" placeholder="Nome completo" required maxlength="80"><div class="msg-invalido">Informe o comandante</div></div>
       <div class="fg"><label>Motorista <span class="req">*</span></label><input type="text" id="motorista" class="upper" placeholder="Nome completo" required maxlength="80"><div class="msg-invalido">Informe o motorista</div></div>
       <div class="fg-row">
-        <div class="fg"><label>Matrícula <span class="req">*</span></label><input type="tel" id="matricula" placeholder="Ex: 100012345" maxlength="12" required oninput="this.value=this.value.replace(/\D/g,'')"><div class="msg-invalido" id="msgMatricula">Matrícula deve iniciar com 1000</div></div>
+        <div class="fg"><label>Matrícula do Motorista <span class="req">*</span></label><input type="tel" id="matricula" placeholder="Ex: 100012345" maxlength="12" required oninput="this.value=this.value.replace(/\D/g,'')"><div class="msg-invalido" id="msgMatricula">Matrícula deve iniciar com 1000</div></div>
         
       </div>
     </div>
@@ -191,7 +191,7 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
     </div>
     <div class="card" style="border-color:var(--ac);background:rgba(192,132,252,.04)">
       <div class="card-title">⚖️ Declaração</div>
-      <p style="font-size:13px;color:var(--txt2);line-height:1.6">Ao enviar, declaro que todas as informações são verdadeiras, nos termos do <strong style="color:var(--txt)">Art. 17 — I RDPM</strong>.</p>
+      <p style="font-size:13px;color:var(--txt);line-height:1.6">Ao enviar, declaro que todas as informações são verdadeiras, nos termos do <strong style="color:var(--txt)">Art. 17 — I RDPM</strong>.</p>
     </div>
   </div>
   <div id="tela-sucesso">
