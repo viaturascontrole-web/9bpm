@@ -372,14 +372,14 @@ tr:hover td{background:rgba(245,166,35,.025)}
       <div>
         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#60a5fa;margin-bottom:7px;display:flex;align-items:center;gap:6px"><i class="fas fa-sign-in-alt"></i> Últimas Entradas</div>
         <div class="mov-tw">
-          <table><thead><tr><th>Data/Hora</th><th>Viatura</th><th>Motorista</th><th>Setor</th><th>Níveis</th></tr></thead>
+          <table><thead><tr><th>Data/Hora</th><th>Viatura</th><th>Motorista</th><th>Setor</th><th>Odômetro</th><th>Níveis</th></tr></thead>
           <tbody id="tbUltEntradas"><tr><td colspan="5" class="erow">Carregando...</td></tr></tbody></table>
         </div>
       </div>
       <div>
         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#4ade80;margin-bottom:7px;display:flex;align-items:center;gap:6px"><i class="fas fa-sign-out-alt"></i> Últimas Saídas</div>
         <div class="mov-tw">
-          <table><thead><tr><th>Data/Hora</th><th>Viatura</th><th>Motorista</th><th>Setor</th><th>Abast.</th><th>Sinistro</th></tr></thead>
+          <table><thead><tr><th>Data/Hora</th><th>Viatura</th><th>Motorista</th><th>Setor</th><th>Odômetro</th><th>Abast.</th><th>Sinistro</th></tr></thead>
           <tbody id="tbUltSaidas"><tr><td colspan="6" class="erow">Carregando...</td></tr></tbody></table>
         </div>
       </div>
@@ -902,7 +902,7 @@ function renderViaturas(lista) {
   grid.innerHTML=lista.map(function(v){
     var s=String(v.status||'').trim().toUpperCase(), cls=resolverCls(s), lbl=resolverLbl(s), bp=resolverBp(cls);
     var det='';
-    if(cls==='servico'||cls==='semretorno'){det=(v.motorista&&v.motorista!=='--'?'<div class="v-row">👤 <span>'+esc(v.motorista)+'</span></div>':'')+(v.comandante&&v.comandante!=='--'?'<div class="v-row">👨‍✈️ <span>'+esc(v.comandante)+'</span></div>':'')+(v.setor&&v.setor!=='--'?'<div class="v-row">📍 <span>'+esc(v.setor)+'</span></div>':'')+(v.tempo&&v.tempo!=='--'?'<div class="v-row">⏱️ <span>'+esc(v.tempo)+'</span></div>':'');}
+    if(cls==='servico'||cls==='semretorno'){det=(v.motorista&&v.motorista!=='--'?'<div class="v-row">👤 <span>'+esc(v.motorista)+'</span></div>':'')+(v.comandante&&v.comandante!=='--'?'<div class="v-row">👨‍✈️ <span>'+esc(v.comandante)+'</span></div>':'')+(v.setor&&v.setor!=='--'?'<div class="v-row">📍 <span>'+esc(v.setor)+'</span></div>':'')+(v.odometro&&v.odometro!=='--'?'<div class="v-row">🔢 <span style="font-family:var(--mono)">'+esc(v.odometro)+' km</span></div>':'')+(v.tempo&&v.tempo!=='--'?'<div class="v-row">⏱️ <span>'+esc(v.tempo)+'</span></div>':'');}
     else if(cls==='oficina'){det=(v.setor&&v.setor!=='--'?'<div class="v-row">🏢 <span>'+esc(v.setor)+'</span></div>':'')+(v.tempo&&v.tempo!=='--'?'<div class="v-row">⏱️ <span>'+esc(v.tempo)+'</span></div>':'');}
     return '<div class="v-card '+cls+'"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px"><div><div class="v-prefixo">'+esc(v.prefixo)+'</div><div class="v-modelo">'+esc(v.modelo)+(v.placa&&v.placa!=='--'?' · '+esc(v.placa):'')+'</div></div><span class="bp '+bp+'">'+lbl+'</span></div>'+det+'</div>';
   }).join('');
@@ -1123,8 +1123,8 @@ async function carregarUltimasMovimentacoes() {
   var tbE = document.getElementById('tbUltEntradas');
   var tbS = document.getElementById('tbUltSaidas');
   if (!tbE || !tbS) return;
-  tbE.innerHTML = '<tr><td colspan="5" class="erow"><i class="fas fa-spinner fa-spin"></i></td></tr>';
-  tbS.innerHTML = '<tr><td colspan="6" class="erow"><i class="fas fa-spinner fa-spin"></i></td></tr>';
+  tbE.innerHTML = '<tr><td colspan="6" class="erow"><i class="fas fa-spinner fa-spin"></i></td></tr>';
+  tbS.innerHTML = '<tr><td colspan="7" class="erow"><i class="fas fa-spinner fa-spin"></i></td></tr>';
   var hoje = new Date();
   var mes30 = new Date(); mes30.setDate(hoje.getDate() - 30);
   var hj = hoje.toISOString().split('T')[0];
@@ -1139,17 +1139,18 @@ async function carregarUltimasMovimentacoes() {
     // Últimas 8 de cada
     entradas = entradas.slice(0, 8);
     saidas   = saidas.slice(0, 8);
-    if (!entradas.length) tbE.innerHTML = '<tr><td colspan="5" class="erow">📭 Sem registros</td></tr>';
+    if (!entradas.length) tbE.innerHTML = '<tr><td colspan="6" class="erow">📭 Sem registros</td></tr>';
     else tbE.innerHTML = entradas.map(function(r){
       return '<tr>'+
         '<td style="white-space:nowrap;color:var(--txt2);font-size:10px">'+esc(r.data||'--')+'</td>'+
         '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+'</td>'+
         '<td>'+esc(r.motorista||'--')+'</td>'+
         '<td style="color:var(--txt)">'+esc(r.setor||'--')+'</td>'+
+        '<td style="font-family:var(--mono);font-size:11px">'+esc(r.odometro||r.odometroInicial||'--')+'</td>'+
         '<td style="font-size:10px">'+nivelBadgeMini(r.nivelOleo||r.oleo,'🛢️')+' '+nivelBadgeMini(r.nivelAgua||r.agua,'💧')+'</td>'+
       '</tr>';
     }).join('');
-    if (!saidas.length) tbS.innerHTML = '<tr><td colspan="6" class="erow">📭 Sem registros</td></tr>';
+    if (!saidas.length) tbS.innerHTML = '<tr><td colspan="7" class="erow">📭 Sem registros</td></tr>';
     else tbS.innerHTML = saidas.map(function(r){
       var sin = String(r.sinistro||'').toUpperCase()==='SIM';
       return '<tr'+(sin?' style="background:rgba(231,76,60,.06)"':'')+'>'+
@@ -1157,6 +1158,7 @@ async function carregarUltimasMovimentacoes() {
         '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+'</td>'+
         '<td>'+esc(r.motorista||'--')+'</td>'+
         '<td style="color:var(--txt)">'+esc(r.setor||'--')+'</td>'+
+        '<td style="font-family:var(--mono);font-size:11px">'+esc(r.odometro||r.odometroFinal||'--')+'</td>'+
         '<td>'+badgeSNMini(r.abastecimento)+'</td>'+
         '<td>'+badgeSNMini(r.sinistro)+'</td>'+
       '</tr>';
@@ -1164,8 +1166,8 @@ async function carregarUltimasMovimentacoes() {
     var ts = document.getElementById('movTimestamp');
     if (ts) { var d=new Date(); ts.textContent='— atualizado às '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); }
   } catch(e) {
-    if (tbE) tbE.innerHTML = '<tr><td colspan="5" class="erow">⚠️ '+esc(e.message)+'</td></tr>';
-    if (tbS) tbS.innerHTML = '<tr><td colspan="6" class="erow">⚠️ '+esc(e.message)+'</td></tr>';
+    if (tbE) tbE.innerHTML = '<tr><td colspan="6" class="erow">⚠️ '+esc(e.message)+'</td></tr>';
+    if (tbS) tbS.innerHTML = '<tr><td colspan="7" class="erow">⚠️ '+esc(e.message)+'</td></tr>';
   }
 }
 
