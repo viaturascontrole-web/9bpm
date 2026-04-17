@@ -296,6 +296,7 @@ var ETAPA_ATUAL=1,TOTAL_ETAPAS=6,nivelOleo='',nivelAgua='',alteracoesSel=[],cart
 var fotosParaEnviar=[];
 var limpaValor="";
 var fotosLimpa=[];
+var ODO_MIN=0; // último odômetro registrado — usado para aviso (não bloqueio)
 var LABELS=['Viatura','Setor','Guarnição','Condições','Limpeza','Cartão'];
 var ALTERACOES=['Giroflex','Sirene','Motor','Câmbio','Pneus','TWI pneus','Retrovisores','Luzes','Painel','Rádio / HT','Lataria','Documentação','Extintor','Porta-malas','Freios','Direção','Outros','Sem Alteração'];
 
@@ -327,12 +328,12 @@ function buscarUltimoOdometro(){
   var prefixo=document.getElementById('prefixo').value;
   var hint=document.getElementById('odometroHint');
   var inputOdo=document.getElementById('odometroInicial');
+  ODO_MIN=0;
   if(!prefixo){
     inputOdo.disabled=true;inputOdo.style.opacity='.5';inputOdo.style.cursor='not-allowed';
     inputOdo.placeholder='Selecione a viatura primeiro...';
     hint.className='odometro-hint';return;
   }
-  // Bloqueia campo enquanto busca
   inputOdo.disabled=true;inputOdo.style.opacity='.5';inputOdo.style.cursor='not-allowed';
   inputOdo.value='';
   hint.className='odometro-hint on';
@@ -340,25 +341,48 @@ function buscarUltimoOdometro(){
   fetch(SCRIPT_URL+'?page=odometro&prefixo='+encodeURIComponent(prefixo))
     .then(function(r){return r.json();})
     .then(function(d){
-      if(d && d.odometro && d.odometro>0){
-        inputOdo.value=d.odometro;
-        document.getElementById('odometroHintVal').textContent='✅ Último registrado: '+Number(d.odometro).toLocaleString('pt-BR')+' km — confirme ou corrija';
+      var odoVal=d&&d.odometro?Number(d.odometro):0;
+      ODO_MIN=odoVal;
+      if(odoVal>0){
+        inputOdo.value=odoVal;
+        document.getElementById('odometroHintVal').innerHTML=
+          '✅ Último registrado: <strong>'+odoVal.toLocaleString('pt-BR')+'</strong> km — confirme ou corrija';
         hint.className='odometro-hint on';
       } else {
         document.getElementById('odometroHintVal').textContent='ℹ️ Nenhum registro anterior — informe o odômetro atual';
         hint.className='odometro-hint on';
       }
-      // Libera o campo
       inputOdo.disabled=false;inputOdo.style.opacity='1';inputOdo.style.cursor='';
       inputOdo.placeholder='Ex: 45230';
       inputOdo.focus();
+      // Liga aviso em tempo real
+      inputOdo.oninput=function(){verificarOdometro(this);};
     })
     .catch(function(){
       hint.className='odometro-hint';
-      // Libera o campo mesmo com erro
       inputOdo.disabled=false;inputOdo.style.opacity='1';inputOdo.style.cursor='';
       inputOdo.placeholder='Ex: 45230';
     });
+}
+
+function verificarOdometro(input){
+  var val=parseFloat(input.value);
+  var aviso=document.getElementById('odoAviso');
+  if(!aviso){
+    aviso=document.createElement('div');
+    aviso.id='odoAviso';
+    aviso.style.cssText='margin-top:6px;font-size:12px;padding:6px 10px;border-radius:6px;display:none;';
+    input.parentNode.insertBefore(aviso,input.nextSibling);
+  }
+  if(ODO_MIN>0 && !isNaN(val) && val<ODO_MIN){
+    aviso.style.display='block';
+    aviso.style.background='rgba(231,76,60,.15)';
+    aviso.style.color='#e74c3c';
+    aviso.style.border='1px solid rgba(231,76,60,.4)';
+    aviso.innerHTML='⚠️ Valor inferior ao último registrado (<strong>'+ODO_MIN.toLocaleString('pt-BR')+' km</strong>). Confirme se está correto.';
+  } else {
+    aviso.style.display='none';
+  }
 }
 
 
@@ -536,7 +560,13 @@ function validarEtapa(){
   esconderErro();var ok=true;
   if(ETAPA_ATUAL===1){
     if(!document.getElementById('prefixo').value){marcarInvalido('prefixo',true);ok=false;}
-    if(!parseFloat(document.getElementById('odometroInicial').value)){marcarInvalido('odometroInicial',true);ok=false;}
+    var odoVal=parseFloat(document.getElementById('odometroInicial').value);
+    if(!odoVal||odoVal<=0){marcarInvalido('odometroInicial',true);ok=false;}
+    // Aviso se menor que o mínimo, mas NÃO bloqueia (permite registrar mesmo assim)
+    if(ok && ODO_MIN>0 && odoVal<ODO_MIN){
+      // Apenas garante que o aviso esteja visível — não bloqueia
+      verificarOdometro(document.getElementById('odometroInicial'));
+    }
   }
   if(ETAPA_ATUAL===2){
     var setor=document.getElementById('setor').value;
