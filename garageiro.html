@@ -1020,8 +1020,18 @@ async function carregarManut() {
     ]);
     dados.oficinas=of.status==='fulfilled'?(of.value||[]):[];
     dados.oleo=ol.status==='fulfilled'?(ol.value||[]):[];
-    var saVal=sa.status==="fulfilled"?sa.value:null;
-    dados.saldo=Array.isArray(saVal)?saVal:(saVal&&Array.isArray(saVal.alertas)?saVal.alertas:[]);
+
+    // Normaliza saldo: aceita array direto, {alertas:[]}, saldo numérico ou string
+    var saRaw=sa.status==='fulfilled'?sa.value:null;
+    var saArr=Array.isArray(saRaw)?saRaw:(saRaw&&Array.isArray(saRaw.alertas)?saRaw.alertas:[]);
+    dados.saldo=saArr.map(function(item){
+      var rawSaldo=item.saldo!==undefined?item.saldo:(item.saldoNum!==undefined?item.saldoNum:0);
+      var numVal=typeof rawSaldo==='number'?rawSaldo:parseFloat(String(rawSaldo).replace(/[^0-9,.-]/g,'').replace(',','.'))||0;
+      var saldoStr='R$ '+numVal.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+      var dataStr=item.data||(item.dataRegistro?(item.dataRegistro instanceof Date?item.dataRegistro.toLocaleString('pt-BR'):String(item.dataRegistro)):'--');
+      return {prefixo:item.prefixo||'--',modelo:item.modelo||'--',saldo:saldoStr,saldoNum:numVal,data:dataStr,motorista:item.motorista||'--'};
+    }).filter(function(item){return item.saldoNum>0;});
+
     renderManut(dados);
   } catch(e) { document.getElementById('manutBody').innerHTML='<div style="color:var(--txt);padding:40px;text-align:center">Erro ao carregar: '+esc(e.message)+'</div>'; }
 }
@@ -1036,7 +1046,7 @@ function renderManut(dados) {
   // Saldo cartão
   html+='<div class="manut-section"><div class="manut-title" style="color:#a78bfa;border-bottom-color:rgba(167,139,250,.2)"><i class="fas fa-credit-card"></i> Saldo de Cartão — Alerta ('+sa.length+')</div>';
   if(!sa.length) html+='<div class="manut-empty">✅ Nenhuma viatura com saldo em alerta.</div>';
-  else { html+='<div class="manut-grid">'+sa.map(function(item){var sN=parseFloat(String(item.saldo||'').replace(/[^0-9,.-]/g,'').replace(',','.'));var cor=(!isNaN(sN)&&sN<=0)?'color:#b91c1c;font-weight:700':'color:#92400e;font-weight:700';return'<div class="manut-card saldo"><div class="mc-top"><div><div class="mc-prefixo">'+esc(item.prefixo||'--')+'</div><div class="mc-modelo">'+esc(item.modelo||'--')+'</div></div><span class="bp b-atencao">💳 SALDO BAIXO</span></div><div class="mc-row">💳 Saldo: <span style="'+cor+'">'+esc(item.saldo||'--')+'</span></div>'+(item.data&&item.data!=='--'?'<div class="mc-row">📅 Última saída: <span>'+esc(item.data)+'</span></div>':'')+(item.motorista&&item.motorista!=='--'?'<div class="mc-row">👤 Motorista: <span>'+esc(item.motorista)+'</span></div>':'')+'</div>';}).join('')+'</div>'; }
+  else { html+='<div class="manut-grid">'+sa.map(function(item){var sN=item.saldoNum||parseFloat(String(item.saldo||'').replace(/[^0-9,.-]/g,'').replace(',','.'));var cor=(!isNaN(sN)&&sN<=0)?'color:#b91c1c;font-weight:700':'color:#92400e;font-weight:700';return'<div class="manut-card saldo"><div class="mc-top"><div><div class="mc-prefixo">'+esc(item.prefixo||'--')+'</div><div class="mc-modelo">'+esc(item.modelo||'--')+'</div></div><span class="bp b-atencao">💳 SALDO BAIXO</span></div><div class="mc-row">💳 Saldo: <span style="'+cor+'">'+esc(item.saldo||'--')+'</span></div>'+(item.data&&item.data!=='--'?'<div class="mc-row">📅 Última saída: <span>'+esc(item.data)+'</span></div>':'')+(item.motorista&&item.motorista!=='--'?'<div class="mc-row">👤 Motorista: <span>'+esc(item.motorista)+'</span></div>':'')+'</div>';}).join('')+'</div>'; }
   html+='</div>';
 
   // Oficinas
