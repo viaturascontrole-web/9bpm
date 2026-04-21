@@ -236,6 +236,13 @@ tr:hover td{background:rgba(245,166,35,.025)}
 /* wa */
 .wa-btn{display:inline-block;background:#25D366;color:#fff;padding:1px 7px;border-radius:7px;text-decoration:none;font-size:10px;font-weight:600}
 
+/* mov paginação */
+.mov-pag{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:6px}
+.mov-pag-info{font-size:10px;color:var(--txt2);font-family:var(--mono);flex:1}
+.mov-pag-btn{width:26px;height:26px;border:1px solid var(--bd);background:var(--bg3);color:var(--txt);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all var(--tr)}
+.mov-pag-btn:hover:not(:disabled){border-color:var(--ac);color:var(--ac)}
+.mov-pag-btn:disabled{opacity:.3;cursor:not-allowed}
+
 /* mov */
 .mov-tw{background:var(--bg2);border:1px solid var(--bd);border-radius:8px;overflow:auto;max-height:340px}
 .mov-tw table{width:100%;border-collapse:collapse;font-size:12px}
@@ -385,6 +392,11 @@ tr:hover td{background:rgba(245,166,35,.025)}
         </tr></thead>
         <tbody id="tbUltEntradas"><tr><td colspan="8" class="erow">Carregando...</td></tr></tbody></table>
       </div>
+      <div class="mov-pag">
+        <span class="mov-pag-info" id="movEPagInfo"></span>
+        <button class="mov-pag-btn" id="movEPrev" onclick="movPagE(-1)" disabled title="Página anterior"><i class="fas fa-chevron-left"></i></button>
+        <button class="mov-pag-btn" id="movENext" onclick="movPagE(1)" disabled title="Próxima página"><i class="fas fa-chevron-right"></i></button>
+      </div>
     </div>
 
     <!-- ÚLTIMAS SAÍDAS -->
@@ -405,6 +417,11 @@ tr:hover td{background:rgba(245,166,35,.025)}
           <th>Data/Hora</th><th>Viatura</th><th>Motorista</th><th>Comandante</th><th>Setor</th><th>Odômetro</th><th>Abasteceu</th><th>Saldo</th><th>Pendência</th><th>Sinistro</th>
         </tr></thead>
         <tbody id="tbUltSaidas"><tr><td colspan="10" class="erow">Carregando...</td></tr></tbody></table>
+      </div>
+      <div class="mov-pag">
+        <span class="mov-pag-info" id="movSPagInfo"></span>
+        <button class="mov-pag-btn" id="movSPrev" onclick="movPagS(-1)" disabled title="Página anterior"><i class="fas fa-chevron-left"></i></button>
+        <button class="mov-pag-btn" id="movSNext" onclick="movPagS(1)" disabled title="Próxima página"><i class="fas fa-chevron-right"></i></button>
       </div>
     </div>
   </div>
@@ -1152,96 +1169,137 @@ async function salvarSenha(){
 }
 
 // ═══════════════════════════════════════════════════════
-//  ÚLTIMAS MOVIMENTAÇÕES
+//  ÚLTIMAS MOVIMENTAÇÕES — com paginação
 // ═══════════════════════════════════════════════════════
+var _movEntradas = [], _movSaidas = [];
+var _movEPag = 1,      _movSPag = 1;
+var MOV_POR_PAG = 5;
+
+function _renderMovEntradas() {
+  var tb   = document.getElementById('tbUltEntradas');
+  var info = document.getElementById('movEPagInfo');
+  var prev = document.getElementById('movEPrev');
+  var next = document.getElementById('movENext');
+  var total = _movEntradas.length;
+  var totalPag = Math.max(1, Math.ceil(total / MOV_POR_PAG));
+  if (_movEPag > totalPag) _movEPag = totalPag;
+  var ini = (_movEPag - 1) * MOV_POR_PAG;
+  var pag = _movEntradas.slice(ini, ini + MOV_POR_PAG);
+
+  if (info) info.textContent = total ? 'Página '+_movEPag+' de '+totalPag+' ('+total+' registros)' : '';
+  if (prev) prev.disabled = _movEPag <= 1;
+  if (next) next.disabled = _movEPag >= totalPag;
+
+  if (!pag.length) { tb.innerHTML = '<tr><td colspan="8" class="erow">📭 Sem registros no período</td></tr>'; return; }
+  tb.innerHTML = pag.map(function(r){
+    var temA = r.alteracoes&&r.alteracoes!=='--'&&r.alteracoes!=='-'&&r.alteracoes!=='Sem alteração'&&r.alteracoes.toUpperCase()!=='NÃO';
+    var telL = String(r.telefone||'').replace(/\D/g,'');
+    var wa   = telL ? '<br><a class="wa-btn" href="https://wa.me/55'+telL+'" target="_blank">📱 WA</a>' : '';
+    return '<tr>'+
+      '<td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(r.data||'--')+'</td>'+
+      '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+'</td>'+
+      '<td>'+esc(r.motorista||'--')+wa+'</td>'+
+      '<td>'+esc(r.comandante||'--')+'</td>'+
+      '<td>'+esc(r.setor||'--')+'</td>'+
+      '<td style="font-family:var(--mono)">'+esc(r.odometro||r.odometroInicial||'--')+'</td>'+
+      '<td style="font-size:11px">'+nivelBadge(r.nivelOleo||r.oleo,'🛢️')+' '+nivelBadge(r.nivelAgua||r.agua,'💧')+'</td>'+
+      '<td style="font-size:11px;max-width:160px;white-space:normal">'+(temA?'<span style="color:#92400e;font-weight:700">⚠️ '+esc(r.alteracoes)+'</span>':'<span style="color:var(--txt3)">Sem alteração</span>')+'</td>'+
+    '</tr>';
+  }).join('');
+}
+
+function _renderMovSaidas() {
+  var tb   = document.getElementById('tbUltSaidas');
+  var info = document.getElementById('movSPagInfo');
+  var prev = document.getElementById('movSPrev');
+  var next = document.getElementById('movSNext');
+  var total = _movSaidas.length;
+  var totalPag = Math.max(1, Math.ceil(total / MOV_POR_PAG));
+  if (_movSPag > totalPag) _movSPag = totalPag;
+  var ini = (_movSPag - 1) * MOV_POR_PAG;
+  var pag = _movSaidas.slice(ini, ini + MOV_POR_PAG);
+
+  if (info) info.textContent = total ? 'Página '+_movSPag+' de '+totalPag+' ('+total+' registros)' : '';
+  if (prev) prev.disabled = _movSPag <= 1;
+  if (next) next.disabled = _movSPag >= totalPag;
+
+  if (!pag.length) { tb.innerHTML = '<tr><td colspan="10" class="erow">📭 Sem registros no período</td></tr>'; return; }
+  tb.innerHTML = pag.map(function(r){
+    var temP = String(r.pendencia||'').toUpperCase()==='SIM'||String(r.sinistro||'').toUpperCase()==='SIM';
+    var telL = String(r.telefone||'').replace(/\D/g,'');
+    var wa   = telL ? '<br><a class="wa-btn" href="https://wa.me/55'+telL+'" target="_blank">📱 WA</a>' : '';
+    return '<tr'+(temP?' style="background:rgba(231,76,60,.06)"':'')+'>'+
+      '<td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(r.data||'--')+'</td>'+
+      '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+'</td>'+
+      '<td>'+esc(r.motorista||'--')+wa+'</td>'+
+      '<td>'+esc(r.comandante||'--')+'</td>'+
+      '<td>'+esc(r.setor||'--')+'</td>'+
+      '<td style="font-family:var(--mono)">'+esc(r.odometro||r.odometroFinal||'--')+'</td>'+
+      '<td>'+badgeSN(r.abastecimento)+'</td>'+
+      '<td>'+esc(r.saldoCartao||r.saldo||'--')+'</td>'+
+      '<td>'+badgeSN(r.pendencia)+(r.qualPendencia?'<br><small style="color:#b91c1c;font-size:10px">'+esc(r.qualPendencia)+'</small>':'')+'</td>'+
+      '<td>'+badgeSN(r.sinistro)+'</td>'+
+    '</tr>';
+  }).join('');
+}
+
+function movPagE(dir) { _movEPag += dir; _renderMovEntradas(); }
+function movPagS(dir) { _movSPag += dir; _renderMovSaidas(); }
+
 async function carregarUltimasMovimentacoes() {
   var tbE = document.getElementById('tbUltEntradas');
   var tbS = document.getElementById('tbUltSaidas');
   if (!tbE || !tbS) return;
   tbE.innerHTML = '<tr><td colspan="8" class="erow"><i class="fas fa-spinner fa-spin"></i></td></tr>';
   tbS.innerHTML = '<tr><td colspan="10" class="erow"><i class="fas fa-spinner fa-spin"></i></td></tr>';
+  // Desabilita botões durante carregamento
+  ['movEPrev','movENext','movSPrev','movSNext'].forEach(function(id){ var el=document.getElementById(id); if(el) el.disabled=true; });
+
   var hoje = new Date();
   var mes30 = new Date(); mes30.setDate(hoje.getDate() - 30);
-  var hj = hoje.toISOString().split('T')[0];
+  var hj  = hoje.toISOString().split('T')[0];
   var m30 = mes30.toISOString().split('T')[0];
   try {
     var [rE, rS] = await Promise.allSettled([
       api({tipo:'pesquisarEntradas', token:_token, filtros:{dataInicio:m30, dataFim:hj}}),
       api({tipo:'pesquisarSaidas',   token:_token, filtros:{dataInicio:m30, dataFim:hj}})
     ]);
-    var entradas = rE.status==='fulfilled' ? (Array.isArray(rE.value) ? rE.value : (rE.value.registros||[])) : [];
-    var saidas   = rS.status==='fulfilled' ? (Array.isArray(rS.value) ? rS.value : (rS.value.registros||[])) : [];
+    _movEntradas = rE.status==='fulfilled' ? (Array.isArray(rE.value) ? rE.value : (rE.value.registros||[])) : [];
+    _movSaidas   = rS.status==='fulfilled' ? (Array.isArray(rS.value) ? rS.value : (rS.value.registros||[])) : [];
+
+    // Reset para página 1 a cada recarga
+    _movEPag = 1; _movSPag = 1;
 
     // ── Stats Entradas ──────────────────────────────────
     var ePref={}, eMot={}, eAlter=0;
-    entradas.forEach(function(r){
+    _movEntradas.forEach(function(r){
       if(r.prefixo) ePref[r.prefixo.toUpperCase()]=true;
       var m=r.motorista||''; if(m&&m!=='-'&&m!=='--') eMot[m.toUpperCase()]=true;
       var a=r.alteracoes||''; if(a&&a!=='-'&&a!=='--'&&a.toUpperCase()!=='NÃO'&&a.toUpperCase()!=='NAO'&&a!=='Sem alteração') eAlter++;
     });
     var setEl = function(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; };
-    setEl('movEStT', entradas.length);
+    setEl('movEStT', _movEntradas.length);
     setEl('movEStV', Object.keys(ePref).length);
     setEl('movEStM', Object.keys(eMot).length);
     setEl('movEStA', eAlter);
 
     // ── Stats Saídas ────────────────────────────────────
     var sPref={}, sMot={}, sSin=0, sAbs=0;
-    saidas.forEach(function(r){
+    _movSaidas.forEach(function(r){
       if(r.prefixo) sPref[r.prefixo.toUpperCase()]=true;
       var m=r.motorista||''; if(m&&m!=='-'&&m!=='--') sMot[m.toUpperCase()]=true;
       if(String(r.sinistro||'').toUpperCase()==='SIM') sSin++;
       if(String(r.abastecimento||'').toUpperCase()==='SIM') sAbs++;
     });
-    setEl('movSStT', saidas.length);
+    setEl('movSStT', _movSaidas.length);
     setEl('movSStV', Object.keys(sPref).length);
     setEl('movSStM', Object.keys(sMot).length);
     setEl('movSStSin', sSin);
     setEl('movSStAbs', sAbs);
 
-    // ── Render Entradas (mesmas colunas da aba Entradas) ─
-    if (!entradas.length) {
-      tbE.innerHTML = '<tr><td colspan="8" class="erow">📭 Sem registros no período</td></tr>';
-    } else {
-      tbE.innerHTML = entradas.map(function(r){
-        var temA = r.alteracoes&&r.alteracoes!=='--'&&r.alteracoes!=='-'&&r.alteracoes!=='Sem alteração'&&r.alteracoes.toUpperCase()!=='NÃO';
-        var telL = String(r.telefone||'').replace(/\D/g,'');
-        var wa   = telL ? '<br><a class="wa-btn" href="https://wa.me/55'+telL+'" target="_blank">📱 WA</a>' : '';
-        return '<tr>'+
-          '<td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(r.data||'--')+'</td>'+
-          '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+'</td>'+
-          '<td>'+esc(r.motorista||'--')+wa+'</td>'+
-          '<td>'+esc(r.comandante||'--')+'</td>'+
-          '<td>'+esc(r.setor||'--')+'</td>'+
-          '<td style="font-family:var(--mono)">'+esc(r.odometro||r.odometroInicial||'--')+'</td>'+
-          '<td style="font-size:11px">'+nivelBadge(r.nivelOleo||r.oleo,'🛢️')+' '+nivelBadge(r.nivelAgua||r.agua,'💧')+'</td>'+
-          '<td style="font-size:11px;max-width:160px;white-space:normal">'+(temA?'<span style="color:#92400e;font-weight:700">⚠️ '+esc(r.alteracoes)+'</span>':'<span style="color:var(--txt3)">Sem alteração</span>')+'</td>'+
-        '</tr>';
-      }).join('');
-    }
-
-    // ── Render Saídas (mesmas colunas da aba Saídas) ────
-    if (!saidas.length) {
-      tbS.innerHTML = '<tr><td colspan="10" class="erow">📭 Sem registros no período</td></tr>';
-    } else {
-      tbS.innerHTML = saidas.map(function(r){
-        var temP = String(r.pendencia||'').toUpperCase()==='SIM'||String(r.sinistro||'').toUpperCase()==='SIM';
-        var telL = String(r.telefone||'').replace(/\D/g,'');
-        var wa   = telL ? '<br><a class="wa-btn" href="https://wa.me/55'+telL+'" target="_blank">📱 WA</a>' : '';
-        return '<tr'+(temP?' style="background:rgba(231,76,60,.06)"':'')+'>'+
-          '<td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(r.data||'--')+'</td>'+
-          '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+'</td>'+
-          '<td>'+esc(r.motorista||'--')+wa+'</td>'+
-          '<td>'+esc(r.comandante||'--')+'</td>'+
-          '<td>'+esc(r.setor||'--')+'</td>'+
-          '<td style="font-family:var(--mono)">'+esc(r.odometro||r.odometroFinal||'--')+'</td>'+
-          '<td>'+badgeSN(r.abastecimento)+'</td>'+
-          '<td>'+esc(r.saldoCartao||r.saldo||'--')+'</td>'+
-          '<td>'+badgeSN(r.pendencia)+(r.qualPendencia?'<br><small style="color:#b91c1c;font-size:10px">'+esc(r.qualPendencia)+'</small>':'')+'</td>'+
-          '<td>'+badgeSN(r.sinistro)+'</td>'+
-        '</tr>';
-      }).join('');
-    }
+    // Renderiza primeira página
+    _renderMovEntradas();
+    _renderMovSaidas();
 
     var ts = document.getElementById('movTimestamp');
     if (ts) { var d=new Date(); ts.textContent='— atualizado às '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); }
