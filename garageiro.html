@@ -611,8 +611,8 @@ tr:hover td{background:rgba(245,166,35,.025)}
           <option value="2">2º Turno (19h–07h)</option>
         </select>
       </div>
-      <div class="pd-grp"><label class="pd-lbl">Garageiro (Posto/Nome/Matrícula)</label><input class="pd-inp" id="pdGarageiro" placeholder="2º SGT PM 1000***01 JOSÉ"></div>
-      <div class="pd-grp"><label class="pd-lbl">Substituto (Posto/Nome/Matrícula)</label><input class="pd-inp" id="pdSubstituto" placeholder="CB PM JOÃO 1000***02"></div>
+      <div class="pd-grp"><label class="pd-lbl">Garageiro (Posto/Nome/Matrícula)</label><input class="pd-inp" id="pdGarageiro" placeholder="2º SGT PM 1000***04 ARAGÃO"></div>
+      <div class="pd-grp"><label class="pd-lbl">Substituto (Posto/Nome/Matrícula)</label><input class="pd-inp" id="pdSubstituto" placeholder="CB PM GEOVANI 1000***46"></div>
 
       <div class="pd-sec" style="margin-top:14px">🚓 Viaturas Empenhadas</div>
       <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">
@@ -2010,7 +2010,7 @@ function pdRenderVtr() {
       '<div class="pd-grp"><label class="pd-lbl">Modelo</label><input class="pd-inp" value="'+esc(v.modelo)+'" onchange="pdSetVtr('+i+',\'modelo\',this.value)" placeholder="ONIX"></div>'+
       '<div class="pd-2col">'+
         '<div class="pd-grp"><label class="pd-lbl">O.I</label><input class="pd-inp" value="'+esc(v.oi)+'" onchange="pdSetVtr('+i+',\'oi\',this.value)"></div>'+
-        '<div class="pd-grp"><label class="pd-lbl">O.F</label><input class="pd-inp" value="'+esc(v.of||\'*******\')+'" onchange="pdSetVtr('+i+',\'of\',this.value)"></div>'+
+        '<div class="pd-grp"><label class="pd-lbl">O.F</label><input class="pd-inp" value="'+esc(v.of||"*******")+'" onchange="pdSetVtr('+i+',\'of\',this.value)"></div>'+
       '</div>'+
       '<div class="pd-2col">'+
         '<div class="pd-grp"><label class="pd-lbl">H.I</label><input class="pd-inp" value="'+esc(v.hi)+'" onchange="pdSetVtr('+i+',\'hi\',this.value)" placeholder="07:00"></div>'+
