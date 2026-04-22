@@ -813,9 +813,10 @@ function _iniciar() {
   }
   definirDatasDefault();
   carregarDropdowns();
-  init();
+  // init() deve terminar antes de carregarUltimasMovimentacoes para que
+  // _todasViaturas já esteja populado no momento do cruzamento de placas.
+  init().then(function(){ carregarUltimasMovimentacoes(); });
   carregarManut();
-  carregarUltimasMovimentacoes();
   monitorarSessao();
 }
 
@@ -899,7 +900,7 @@ async function atualizarTudo() {
   loading('Atualizando dados...');
   try {
     await api({tipo:'atualizarSistemaCompleto', token:_token});
-    unload(); toast('Dados atualizados!','ok'); init(); carregarManut(); carregarUltimasMovimentacoes();
+    unload(); toast('Dados atualizados!','ok'); init().then(function(){ carregarUltimasMovimentacoes(); }); carregarManut();
   } catch(e) { unload(); toast('Erro: '+e.message,'err'); }
 }
 
@@ -1195,9 +1196,10 @@ function _renderMovEntradas() {
     var temA = r.alteracoes&&r.alteracoes!=='--'&&r.alteracoes!=='-'&&r.alteracoes!=='Sem alteração'&&r.alteracoes.toUpperCase()!=='NÃO';
     var telL = String(r.telefone||'').replace(/\D/g,'');
     var wa   = telL ? '<br><a class="wa-btn" href="https://wa.me/55'+telL+'" target="_blank">📱 WA</a>' : '';
+    var placa = _placaPorPrefixo(r.prefixo);
     return '<tr>'+
       '<td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(r.data||'--')+'</td>'+
-      '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+'</td>'+
+      '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+(placa?'<br><span style="font-size:10px;color:var(--txt2);font-weight:400">'+esc(placa)+'</span>':'')+'</td>'+
       '<td>'+esc(r.motorista||'--')+wa+'</td>'+
       '<td>'+esc(r.comandante||'--')+'</td>'+
       '<td>'+esc(r.setor||'--')+'</td>'+
@@ -1228,9 +1230,10 @@ function _renderMovSaidas() {
     var temP = String(r.pendencia||'').toUpperCase()==='SIM'||String(r.sinistro||'').toUpperCase()==='SIM';
     var telL = String(r.telefone||'').replace(/\D/g,'');
     var wa   = telL ? '<br><a class="wa-btn" href="https://wa.me/55'+telL+'" target="_blank">📱 WA</a>' : '';
+    var placa = _placaPorPrefixo(r.prefixo);
     return '<tr'+(temP?' style="background:rgba(231,76,60,.06)"':'')+'>'+
       '<td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(r.data||'--')+'</td>'+
-      '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+'</td>'+
+      '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+(placa?'<br><span style="font-size:10px;color:var(--txt2);font-weight:400">'+esc(placa)+'</span>':'')+'</td>'+
       '<td>'+esc(r.motorista||'--')+wa+'</td>'+
       '<td>'+esc(r.comandante||'--')+'</td>'+
       '<td>'+esc(r.setor||'--')+'</td>'+
@@ -1245,6 +1248,22 @@ function _renderMovSaidas() {
 
 function movPagE(dir) { _movEPag += dir; _renderMovEntradas(); }
 function movPagS(dir) { _movSPag += dir; _renderMovSaidas(); }
+
+// Normaliza prefixo removendo espaços ao redor do traço e espaços extras
+// "RPL 25 - 430" → "RPL25-430"  |  "RPL 25-430" → "RPL25-430"
+function _normPref(s) {
+  return String(s||'').replace(/\s*-\s*/g,'-').replace(/\s+/g,' ').trim().toUpperCase();
+}
+
+// Busca a placa em _todasViaturas comparando prefixos normalizados
+function _placaPorPrefixo(prefixo) {
+  if (!prefixo || !_todasViaturas || !_todasViaturas.length) return '';
+  var norm = _normPref(prefixo);
+  var v = _todasViaturas.find(function(x) {
+    return _normPref(x.prefixo) === norm;
+  });
+  return (v && v.placa && v.placa !== '--') ? v.placa : '';
+}
 
 async function carregarUltimasMovimentacoes() {
   var tbE = document.getElementById('tbUltEntradas');
