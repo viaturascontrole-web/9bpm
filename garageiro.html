@@ -1197,9 +1197,13 @@ function _renderMovEntradas() {
     var telL = String(r.telefone||'').replace(/\D/g,'');
     var wa   = telL ? '<br><a class="wa-btn" href="https://wa.me/55'+telL+'" target="_blank">📱 WA</a>' : '';
     var placa = _placaPorPrefixo(r.prefixo);
+    var viat  = _viaturaByPrefixo(r.prefixo);
+    // Se o prefixo do registro é incompleto (sem traço), usa o cadastrado
+    var prefixoExibir = (viat && _normPref(viat.prefixo) !== _normPref(r.prefixo))
+      ? viat.prefixo : (r.prefixo||'--');
     return '<tr>'+
       '<td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(r.data||'--')+'</td>'+
-      '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+(placa?'<br><span style="font-size:10px;color:var(--txt2);font-weight:400">'+esc(placa)+'</span>':'')+'</td>'+
+      '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(prefixoExibir)+(placa?'<br><span style="font-size:10px;color:var(--txt2);font-weight:400">'+esc(placa)+'</span>':'')+'</td>'+
       '<td>'+esc(r.motorista||'--')+wa+'</td>'+
       '<td>'+esc(r.comandante||'--')+'</td>'+
       '<td>'+esc(r.setor||'--')+'</td>'+
@@ -1231,9 +1235,12 @@ function _renderMovSaidas() {
     var telL = String(r.telefone||'').replace(/\D/g,'');
     var wa   = telL ? '<br><a class="wa-btn" href="https://wa.me/55'+telL+'" target="_blank">📱 WA</a>' : '';
     var placa = _placaPorPrefixo(r.prefixo);
+    var viat  = _viaturaByPrefixo(r.prefixo);
+    var prefixoExibir = (viat && _normPref(viat.prefixo) !== _normPref(r.prefixo))
+      ? viat.prefixo : (r.prefixo||'--');
     return '<tr'+(temP?' style="background:rgba(231,76,60,.06)"':'')+'>'+
       '<td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(r.data||'--')+'</td>'+
-      '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+(placa?'<br><span style="font-size:10px;color:var(--txt2);font-weight:400">'+esc(placa)+'</span>':'')+'</td>'+
+      '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(prefixoExibir)+(placa?'<br><span style="font-size:10px;color:var(--txt2);font-weight:400">'+esc(placa)+'</span>':'')+'</td>'+
       '<td>'+esc(r.motorista||'--')+wa+'</td>'+
       '<td>'+esc(r.comandante||'--')+'</td>'+
       '<td>'+esc(r.setor||'--')+'</td>'+
@@ -1250,18 +1257,34 @@ function movPagE(dir) { _movEPag += dir; _renderMovEntradas(); }
 function movPagS(dir) { _movSPag += dir; _renderMovSaidas(); }
 
 // Normaliza prefixo removendo espaços ao redor do traço e espaços extras
-// "RPL 25 - 430" → "RPL25-430"  |  "RPL 25-430" → "RPL25-430"
+// "RPL 25 - 430" → "RPL 25-430"  |  "RPL 25-430" → "RPL 25-430"
 function _normPref(s) {
   return String(s||'').replace(/\s*-\s*/g,'-').replace(/\s+/g,' ').trim().toUpperCase();
 }
 
-// Busca a placa em _todasViaturas comparando prefixos normalizados
-function _placaPorPrefixo(prefixo) {
-  if (!prefixo || !_todasViaturas || !_todasViaturas.length) return '';
+// Busca a viatura em _todasViaturas comparando prefixos normalizados.
+// Se não encontrar exato, tenta match parcial (prefixo do registro é início do cadastrado).
+// Retorna o objeto viatura ou null.
+function _viaturaByPrefixo(prefixo) {
+  if (!prefixo || !_todasViaturas || !_todasViaturas.length) return null;
   var norm = _normPref(prefixo);
-  var v = _todasViaturas.find(function(x) {
-    return _normPref(x.prefixo) === norm;
+  // 1. Busca exata
+  var v = _todasViaturas.find(function(x) { return _normPref(x.prefixo) === norm; });
+  if (v) return v;
+  // 2. Busca parcial: prefixo do registro sem traço é início do prefixo cadastrado
+  //    Ex: "RPL 25" bate com "RPL 25-430"
+  var semTraco = norm.replace(/-.*$/,'').trim(); // "RPL 25-430" → "RPL 25"
+  var candidatos = _todasViaturas.filter(function(x) {
+    var nx = _normPref(x.prefixo);
+    return nx === semTraco || nx.startsWith(semTraco + '-') || nx.startsWith(semTraco + ' ');
   });
+  // Se só um candidato, retorna ele; se mais de um, ambíguo — retorna null
+  return candidatos.length === 1 ? candidatos[0] : null;
+}
+
+// Busca a placa em _todasViaturas
+function _placaPorPrefixo(prefixo) {
+  var v = _viaturaByPrefixo(prefixo);
   return (v && v.placa && v.placa !== '--') ? v.placa : '';
 }
 
@@ -1275,13 +1298,13 @@ async function carregarUltimasMovimentacoes() {
   ['movEPrev','movENext','movSPrev','movSNext'].forEach(function(id){ var el=document.getElementById(id); if(el) el.disabled=true; });
 
   var hoje = new Date();
-  var mes30 = new Date(); mes30.setDate(hoje.getDate() - 30);
+  var mes90 = new Date(); mes90.setDate(hoje.getDate() - 90);
   var hj  = hoje.toISOString().split('T')[0];
-  var m30 = mes30.toISOString().split('T')[0];
+  var m90 = mes90.toISOString().split('T')[0];
   try {
     var [rE, rS] = await Promise.allSettled([
-      api({tipo:'pesquisarEntradas', token:_token, filtros:{dataInicio:m30, dataFim:hj}}),
-      api({tipo:'pesquisarSaidas',   token:_token, filtros:{dataInicio:m30, dataFim:hj}})
+      api({tipo:'pesquisarEntradas', token:_token, filtros:{dataInicio:m90, dataFim:hj}}),
+      api({tipo:'pesquisarSaidas',   token:_token, filtros:{dataInicio:m90, dataFim:hj}})
     ]);
     _movEntradas = rE.status==='fulfilled' ? (Array.isArray(rE.value) ? rE.value : (rE.value.registros||[])) : [];
     _movSaidas   = rS.status==='fulfilled' ? (Array.isArray(rS.value) ? rS.value : (rS.value.registros||[])) : [];
@@ -1457,17 +1480,22 @@ function abrirFormNovaViatura() {
   document.getElementById('viatForm').style.display = 'block';
   document.getElementById('viatFormTitulo').textContent = 'Nova Viatura';
   ['viatPrefixo','viatTipo','viatPlaca','viatAno'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('viatPrefixo').dataset.prefixoOriginal = '';
   document.getElementById('viatStatus').value = 'DISPONÍVEL';
   document.getElementById('viatPrefixo').readOnly = false;
 }
 
 function editarViatura(prefixo) {
+  // Busca tolerante: ignora espaços ao redor do traço
   var v = _viaturasLista.find(function(x){ return x.prefixo === prefixo; });
-  if (!v) return;
+  if (!v) v = _viaturasLista.find(function(x){ return _normPref(x.prefixo) === _normPref(prefixo); });
+  if (!v) { toast('Viatura não encontrada.','err'); return; }
+  // Guarda o prefixo original para o GAS saber qual registro editar
+  document.getElementById('viatPrefixo').dataset.prefixoOriginal = v.prefixo;
   document.getElementById('viatForm').style.display = 'block';
-  document.getElementById('viatFormTitulo').textContent = 'Editar Viatura — ' + prefixo;
+  document.getElementById('viatFormTitulo').textContent = 'Editar Viatura — ' + v.prefixo;
   document.getElementById('viatPrefixo').value = v.prefixo;
-  document.getElementById('viatPrefixo').readOnly = true;
+  document.getElementById('viatPrefixo').readOnly = false; // permite corrigir o prefixo
   document.getElementById('viatTipo').value = v.tipo || v.modelo || '';
   document.getElementById('viatPlaca').value = v.placa || '';
   document.getElementById('viatAno').value = v.ano || '';
@@ -1475,22 +1503,28 @@ function editarViatura(prefixo) {
 }
 
 async function salvarViatura() {
+  var prefixoOriginal = document.getElementById('viatPrefixo').dataset.prefixoOriginal || '';
+  var isEditar = !!prefixoOriginal;
   var dados = {
-    prefixo: document.getElementById('viatPrefixo').value.trim().toUpperCase(),
+    prefixo:         document.getElementById('viatPrefixo').value.trim().toUpperCase(),
+    prefixoOriginal: prefixoOriginal.trim().toUpperCase(), // para o GAS localizar a linha
     tipo:    document.getElementById('viatTipo').value.trim().toUpperCase(),
     placa:   document.getElementById('viatPlaca').value.trim().toUpperCase(),
     ano:     document.getElementById('viatAno').value.trim(),
     status:  document.getElementById('viatStatus').value
   };
   if (!dados.prefixo || !dados.tipo) { toast('Prefixo e tipo são obrigatórios.','err'); return; }
-  var isEditar = document.getElementById('viatPrefixo').readOnly;
   loading('Salvando viatura...');
   try {
     var r = await api({tipo: isEditar ? 'editarViatura' : 'adicionarViatura', token:_token, dados:dados});
     unload();
     var ok = r && (r.sucesso !== false);
     toast(ok ? 'Viatura salva!' : (r.mensagem||'Erro ao salvar.'), ok ? 'ok' : 'err');
-    if (ok) { document.getElementById('viatForm').style.display='none'; await carregarListaViaturas(); }
+    if (ok) {
+      document.getElementById('viatPrefixo').dataset.prefixoOriginal = '';
+      document.getElementById('viatForm').style.display='none';
+      await carregarListaViaturas();
+    }
   } catch(e) { unload(); toast('Erro: '+e.message,'err'); }
 }
 
