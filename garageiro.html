@@ -63,7 +63,51 @@ html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--b
 .sb-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;font-size:13px;font-weight:600;color:var(--txt);border-left:3px solid transparent;transition:all var(--tr)}
 .sb-item:hover{background:var(--bg3);color:var(--txt)}
 .sb-item.active{background:var(--ac-dim);color:var(--ac);border-left-color:var(--ac)}
-.sb-item.active.b2{color:#60a5fa;background:rgba(26,115,232,.08);border-left-color:#60a5fa}
+.sb-item.active.bpd{color:#00c896;background:rgba(0,200,150,.08);border-left-color:#00c896}
+.sb-item.active.bpd .si-ico{background:rgba(0,200,150,.12)}
+
+/* ══ PARTE DIÁRIA ════════════════════════════════════ */
+.pd-shell{display:grid;grid-template-columns:320px 1fr;gap:0;height:calc(100vh - var(--hdr-h) - 32px);overflow:hidden}
+.pd-form{overflow-y:auto;padding-right:14px;height:100%}
+.pd-preview{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rad);overflow-y:auto;height:100%;padding:18px}
+.pd-sec{font-family:var(--mono);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:#00c896;padding:10px 0 6px;border-bottom:1px solid var(--bd);margin-bottom:11px;display:flex;align-items:center;gap:7px}
+.pd-grp{display:flex;flex-direction:column;gap:4px;margin-bottom:9px}
+.pd-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--txt2)}
+.pd-inp{background:var(--bg3);border:1px solid var(--bd);color:var(--txt);padding:7px 10px;border-radius:6px;font-size:12px;font-family:var(--sans);outline:none;transition:border-color .2s;width:100%}
+.pd-inp:focus{border-color:#00c896}
+select.pd-inp{cursor:pointer}
+textarea.pd-inp{resize:vertical;min-height:65px}
+.pd-2col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pd-vcard{background:var(--bg3);border:1px solid var(--bd);border-left:3px solid #00c896;border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.pd-vcard-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.pd-vnum{font-family:var(--mono);font-size:10px;font-weight:700;color:#00c896}
+.pd-vrm{background:none;border:none;color:var(--txt3);cursor:pointer;font-size:13px;transition:color .2s}
+.pd-vrm:hover{color:var(--red)}
+/* Doc SEI */
+.sei-doc{background:#fff;color:#000;font-family:Arial,sans-serif;font-size:10pt;line-height:1.45;padding:24px 28px;border-radius:6px;box-shadow:0 6px 32px rgba(0,0,0,.35)}
+.sei-doc *{box-sizing:border-box}
+.sei-title{text-align:center;margin-bottom:14px;font-size:9.5pt}
+.sei-title .sei-pdnum{font-size:12pt;font-weight:700;margin-top:5px}
+.sei-visto{border:1px solid #999;padding:9px 14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;font-size:9pt}
+.sei-intro{margin-bottom:12px;font-size:9.5pt;text-align:justify}
+.sei-item{margin-bottom:9px;font-size:9.5pt}
+.sei-tbl{width:100%;border-collapse:collapse;font-size:8pt;margin:7px 0 11px}
+.sei-tbl caption{font-weight:700;font-size:8.5pt;background:#1a3a5c;color:#fff;padding:4px 8px;text-align:center;border:1px solid #1a3a5c}
+.sei-tbl th{background:#1a3a5c;color:#fff;padding:3px 5px;text-align:center;border:1px solid #aaa;white-space:nowrap;font-size:7.5pt}
+.sei-tbl td{padding:3px 5px;border:1px solid #ccc;text-align:center;vertical-align:middle;font-size:8pt}
+.sei-tbl tr:nth-child(even) td{background:#f5f8ff}
+.sei-quad{width:100%;border-collapse:collapse;font-size:8pt;margin:6px 0 12px}
+.sei-quad caption{font-weight:700;font-size:8.5pt;background:#1a3a5c;color:#fff;padding:4px 8px;text-align:center;border:1px solid #1a3a5c}
+.sei-quad th{background:#1a3a5c;color:#fff;padding:3px 6px;text-align:center;border:1px solid #aaa;font-size:7.5pt}
+.sei-quad td{padding:3px 6px;border:1px solid #ccc;vertical-align:middle;font-size:8pt}
+.sei-quad tr:nth-child(even) td{background:#f5f8ff}
+.st-ok{color:#155724;font-weight:700}.st-baixa{color:#721c24;font-weight:700}.st-ofic{color:#856404;font-weight:700}
+.sei-pass{margin-top:16px;border-top:1px solid #ccc;padding-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:20px;font-size:9pt}
+.sei-pass-bloco{text-align:center}
+.sei-pass-linha{border-top:1px solid #000;width:80%;margin:22px auto 4px}
+.sei-pass-nome{font-weight:700}
+.sei-pass-cargo{font-size:8pt}
+@media print{.pg:not(#pgParte){display:none!important}.hdr,.sidebar,.sb-backdrop,.pd-form,.pd-preview .pd-preview-bar{display:none!important}.pd-shell{display:block;height:auto}.pd-preview{border:none;box-shadow:none;padding:0}.sei-doc{box-shadow:none;padding:10mm 12mm}}
 .sb-item.active.borng{color:#fb923c;background:rgba(251,146,60,.08);border-left-color:#fb923c}
 .si-ico{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;background:var(--bg3);transition:background var(--tr)}
 .sb-item.active .si-ico{background:var(--ac-dim)}.sb-item.active.b2 .si-ico{background:rgba(26,115,232,.12)}.sb-item.active.borng .si-ico{background:rgba(251,146,60,.12)}
@@ -310,6 +354,12 @@ tr:hover td{background:rgba(245,166,35,.025)}
       <span class="si-lbl">Manutenção Preventiva</span>
     </div>
     <div class="sb-divider"></div>
+    <div class="sb-section">DOCUMENTOS</div>
+    <div class="sb-item" id="navParte" onclick="navTo('pgParte','navParte','bpd')" style="--pd-c:#00c896">
+      <div class="si-ico"><i class="fas fa-file-alt"></i></div>
+      <span class="si-lbl">Parte Diária</span>
+    </div>
+    <div class="sb-divider"></div>
     <div class="sb-item admin-only" id="navAdmin" onclick="navTo('pgAdmin','navAdmin')">
       <div class="si-ico"><i class="fas fa-shield-alt"></i></div>
       <span class="si-lbl">Administração</span>
@@ -539,6 +589,81 @@ tr:hover td{background:rgba(245,166,35,.025)}
         <button class="adm-btn ay" onclick="carregarUsuarios()"><div class="adm-ico"><i class="fas fa-sync-alt"></i></div><div><div class="adm-lbl">Atualizar Lista</div><div class="adm-sub">Recarregar usuários</div></div></button>
       </div>
       <div class="tw-sm"><table><thead><tr><th>Matrícula</th><th>Nome de Guerra</th><th>Perfil</th><th style="text-align:center">Status</th><th>Último Acesso</th><th style="text-align:center">Ações</th></tr></thead><tbody id="tbUsr"><tr><td colspan="6" class="erow">Carregando...</td></tr></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PG PARTE DIÁRIA ═══ -->
+<div class="pg" id="pgParte">
+  <div class="pd-shell">
+
+    <!-- FORMULÁRIO -->
+    <div class="pd-form">
+
+      <div class="pd-sec">📄 Identificação</div>
+      <div class="pd-2col">
+        <div class="pd-grp"><label class="pd-lbl">Nº da Parte</label><input class="pd-inp" id="pdNumParte" placeholder="238/2026"></div>
+        <div class="pd-grp"><label class="pd-lbl">Data</label><input class="pd-inp" id="pdData" type="date"></div>
+      </div>
+      <div class="pd-grp"><label class="pd-lbl">Turno</label>
+        <select class="pd-inp" id="pdTurno">
+          <option value="1">1º Turno (07h–19h)</option>
+          <option value="2">2º Turno (19h–07h)</option>
+        </select>
+      </div>
+      <div class="pd-grp"><label class="pd-lbl">Garageiro (Posto/Nome/Matrícula)</label><input class="pd-inp" id="pdGarageiro" placeholder="2º SGT PM 1000***04 ARAGÃO"></div>
+      <div class="pd-grp"><label class="pd-lbl">Substituto (Posto/Nome/Matrícula)</label><input class="pd-inp" id="pdSubstituto" placeholder="CB PM GEOVANI 1000***46"></div>
+
+      <div class="pd-sec" style="margin-top:14px">🚓 Viaturas Empenhadas</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">
+        <button class="btn btn-s" style="width:100%;justify-content:center;font-size:12px" onclick="pdImportarHoje()">⬇️ Importar Entradas de Hoje</button>
+        <button class="btn btn-s" style="width:100%;justify-content:center;font-size:12px;border-color:#00c896;color:#00c896" onclick="pdAddViatura()">+ Adicionar Manualmente</button>
+      </div>
+      <div id="pdListaVtr"></div>
+
+      <div class="pd-sec" style="margin-top:14px">📊 Quadro Geral de Viaturas</div>
+      <div style="margin-bottom:8px">
+        <button class="btn btn-s" style="width:100%;justify-content:center;font-size:12px" onclick="pdCarregarQuadro()">⬇️ Carregar do Sistema</button>
+      </div>
+      <div id="pdListaQuadro"></div>
+      <button class="btn btn-s" style="width:100%;justify-content:center;font-size:12px;margin-top:4px" onclick="pdAddQuadro()">+ Adicionar ao Quadro</button>
+
+      <div class="pd-sec" style="margin-top:14px">📝 Itens</div>
+      <div class="pd-2col">
+        <div class="pd-grp"><label class="pd-lbl">1. Rendição</label><select class="pd-inp" id="pdRen"><option>S/A</option><option>C/A</option></select></div>
+        <div class="pd-grp"><label class="pd-lbl">2. Controle Desloc.</label><select class="pd-inp" id="pdDes"><option>S/A</option><option>C/A</option></select></div>
+        <div class="pd-grp"><label class="pd-lbl">3. Alterações Serv.</label><select class="pd-inp" id="pdAlt"><option>S/A</option><option>C/A</option></select></div>
+        <div class="pd-grp"><label class="pd-lbl">4. Limpeza Viaturas</label><select class="pd-inp" id="pdLim"><option>S/A</option><option>C/A</option></select></div>
+      </div>
+      <div class="pd-grp"><label class="pd-lbl">Texto Limpeza (se C/A)</label><textarea class="pd-inp" id="pdLimTxt" placeholder="INFORMO QUE NÃO FORA FEITO..."></textarea></div>
+      <div class="pd-2col">
+        <div class="pd-grp"><label class="pd-lbl">5. Vtr Recebidas</label><select class="pd-inp" id="pdVtrRec"><option>S/A</option><option>C/A</option></select></div>
+        <div class="pd-grp"><label class="pd-lbl">6. Passagem Serv.</label><select class="pd-inp" id="pdPass"><option>S/A</option><option>C/A</option></select></div>
+      </div>
+      <div class="pd-grp"><label class="pd-lbl">Observações item 5 (01. INFORMO QUE...)</label><textarea class="pd-inp" id="pdObs" style="min-height:90px" placeholder="01. INFORMO QUE...&#10;02. INFORMO QUE..."></textarea></div>
+
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:14px;padding-bottom:20px">
+        <button class="btn" style="background:#00c896;color:#000;width:100%;justify-content:center" onclick="pdGerarPreview()">⚙️ Gerar Prévia</button>
+        <button class="btn btn-s" style="width:100%;justify-content:center" onclick="pdCopiar()">📋 Copiar Texto para SEI</button>
+        <button class="btn btn-s" style="width:100%;justify-content:center" onclick="window.print()">🖨️ Imprimir</button>
+      </div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="pd-preview">
+      <div class="pd-preview-bar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2)">📄 Prévia do Documento</span>
+        <div style="display:flex;gap:7px">
+          <button class="btn btn-s sm" onclick="pdGerarPreview()">🔄 Atualizar</button>
+          <button class="btn sm" style="background:#00c896;color:#000" onclick="pdCopiar()">📋 Copiar</button>
+        </div>
+      </div>
+      <div id="pdPreview">
+        <div style="text-align:center;padding:60px 20px;color:var(--txt3)">
+          <div style="font-size:36px;margin-bottom:12px">📋</div>
+          <div style="font-size:12px;font-family:var(--mono)">Preencha o formulário e clique em<br><strong style="color:#00c896">⚙️ Gerar Prévia</strong></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -834,7 +959,7 @@ function closeSidebar() {
   document.getElementById('sbBackdrop').classList.remove('on');
 }
 
-var _pgMeta={pgViaturas:{title:'Viaturas',icon:'fa-car',lbl:'Frota',cor:'var(--ac)'},pgEntrada:{title:'Entradas de Serviço',icon:'fa-sign-in-alt',lbl:'Entradas',cor:'#1d4ed8'},pgSaida:{title:'Saídas de Serviço',icon:'fa-sign-out-alt',lbl:'Saídas',cor:'#1d4ed8'},pgManut:{title:'Manutenção Preventiva',icon:'fa-tools',lbl:'Manutenção',cor:'#fb923c'},pgAdmin:{title:'Administração',icon:'fa-shield-alt',lbl:'Admin',cor:'#92400e'}};
+var _pgMeta={pgViaturas:{title:'Viaturas',icon:'fa-car',lbl:'Frota',cor:'var(--ac)'},pgEntrada:{title:'Entradas de Serviço',icon:'fa-sign-in-alt',lbl:'Entradas',cor:'#1d4ed8'},pgSaida:{title:'Saídas de Serviço',icon:'fa-sign-out-alt',lbl:'Saídas',cor:'#1d4ed8'},pgManut:{title:'Manutenção Preventiva',icon:'fa-tools',lbl:'Manutenção',cor:'#fb923c'},pgParte:{title:'Parte Diária',icon:'fa-file-alt',lbl:'Parte Diária',cor:'#00c896'},pgAdmin:{title:'Administração',icon:'fa-shield-alt',lbl:'Admin',cor:'#92400e'}};
 
 function navTo(pgId, navId, cls) {
   closeSidebar();
@@ -848,6 +973,7 @@ function navTo(pgId, navId, cls) {
   document.getElementById('hdrBadge').innerHTML='<i class="fas '+m.icon+'" style="color:'+m.cor+'"></i> '+m.lbl;
   if (pgId==='pgAdmin') carregarUsuarios();
   if (pgId==='pgManut') carregarManut();
+  if (pgId==='pgParte') pdInit();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1822,6 +1948,274 @@ function unload(){ document.getElementById('lov').classList.remove('on'); }
 function toast(msg,tipo){ var el=document.createElement('div'); el.className='toast-el '+(tipo||'info'); el.innerHTML='<span>'+(tipo==='ok'?'✅':tipo==='err'?'❌':'ℹ️')+'</span><span>'+esc(msg)+'</span>'; document.body.appendChild(el); setTimeout(function(){el.remove();},4000); }
 function nivelBadge(n,ico){ if(!n||n==='--'||n==='-') return (ico||'')+' --'; var u=n.toUpperCase(); if(u.includes('MIN')) return '<span class="nivel-badge nivel-min">'+(ico||'')+'🔴 '+esc(n)+'</span>'; if(u.includes('MED')||u.includes('MÉD')) return '<span class="nivel-badge nivel-med">'+(ico||'')+'🟡 '+esc(n)+'</span>'; if(u.includes('MAX')||u.includes('MÁX')) return '<span class="nivel-badge nivel-max">'+(ico||'')+'🟢 '+esc(n)+'</span>'; return (ico||'')+' '+esc(n); }
 function badgeSN(v){ var u=String(v||'').toUpperCase().trim(); if(u==='SIM') return '<span class="bp" style="background:rgba(231,76,60,.18);color:#b91c1c">⚠️ SIM</span>'; if(u==='NÃO'||u==='NAO') return '<span class="bp" style="background:rgba(39,174,96,.18);color:#86efac">✓ NÃO</span>'; return esc(v)||'--'; }
+
+// ═══════════════════════════════════════════════════════
+//  PARTE DIÁRIA
+// ═══════════════════════════════════════════════════════
+var _pdVtr   = [];  // viaturas empenhadas
+var _pdQuadro = []; // quadro geral
+
+function pdInit() {
+  var hoje = new Date();
+  document.getElementById('pdData').value = hoje.toISOString().split('T')[0];
+  document.getElementById('pdTurno').value = hoje.getHours() < 19 ? '1' : '2';
+  // Pré-preenche garageiro com o usuário logado
+  if (_ng) document.getElementById('pdGarageiro').value = _ng;
+  pdRenderVtr();
+  pdRenderQuadro();
+}
+
+// ── Importar entradas do dia ──────────────────────────
+async function pdImportarHoje() {
+  loading('Buscando entradas de hoje...');
+  try {
+    var hj = new Date().toISOString().split('T')[0];
+    var r  = await api({tipo:'pesquisarEntradas', token:_token, filtros:{dataInicio:hj, dataFim:hj}});
+    var regs = Array.isArray(r) ? r : (r.registros||[]);
+    _pdVtr = regs.map(function(reg) {
+      var vtr = _todasViaturas.find(function(v){ return pdNorm(v.prefixo)===pdNorm(reg.prefixo); }) || {};
+      return {
+        prefixo:    reg.prefixo||'', modelo:vtr.modelo||'', placa:vtr.placa||'',
+        oi: reg.odometro||'', of:'*******',
+        hi: pdExtrairHora(reg.data), hf:'',
+        setor:reg.setor||'', motorista:reg.motorista||'', comandante:reg.comandante||''
+      };
+    });
+    pdRenderVtr();
+    unload(); toast(_pdVtr.length+' viatura(s) importada(s)','ok');
+  } catch(e) { unload(); toast('Erro: '+e.message,'err'); }
+}
+
+function pdNorm(s){ return String(s||'').replace(/\s*-\s*/g,'-').replace(/\s+/g,' ').trim().toUpperCase(); }
+function pdExtrairHora(s){ var m=String(s||'').match(/(\d{2}:\d{2})/); return m?m[1]:''; }
+
+function pdAddViatura(d) {
+  _pdVtr.push(d||{prefixo:'',modelo:'',placa:'',oi:'',of:'*******',hi:'',hf:'',setor:'',motorista:'',comandante:''});
+  pdRenderVtr();
+}
+
+function pdRemVtr(i){ _pdVtr.splice(i,1); pdRenderVtr(); }
+function pdSetVtr(i,k,v){ if(_pdVtr[i]) _pdVtr[i][k]=v; }
+
+function pdRenderVtr() {
+  var el = document.getElementById('pdListaVtr');
+  if (!_pdVtr.length) { el.innerHTML='<div style="text-align:center;padding:12px;color:var(--txt3);font-size:11px">Nenhuma viatura adicionada.</div>'; return; }
+  el.innerHTML = _pdVtr.map(function(v,i){
+    return '<div class="pd-vcard">'+
+      '<div class="pd-vcard-hdr"><span class="pd-vnum">VTR '+(i+1)+'</span><button class="pd-vrm" onclick="pdRemVtr('+i+')">✕</button></div>'+
+      '<div class="pd-2col">'+
+        '<div class="pd-grp"><label class="pd-lbl">Prefixo</label><input class="pd-inp" value="'+esc(v.prefixo)+'" onchange="pdSetVtr('+i+',\'prefixo\',this.value)" placeholder="RPL 25-430"></div>'+
+        '<div class="pd-grp"><label class="pd-lbl">Placa</label><input class="pd-inp" value="'+esc(v.placa)+'" onchange="pdSetVtr('+i+',\'placa\',this.value)" placeholder="THM-7C36"></div>'+
+      '</div>'+
+      '<div class="pd-grp"><label class="pd-lbl">Modelo</label><input class="pd-inp" value="'+esc(v.modelo)+'" onchange="pdSetVtr('+i+',\'modelo\',this.value)" placeholder="ONIX"></div>'+
+      '<div class="pd-2col">'+
+        '<div class="pd-grp"><label class="pd-lbl">O.I</label><input class="pd-inp" value="'+esc(v.oi)+'" onchange="pdSetVtr('+i+',\'oi\',this.value)"></div>'+
+        '<div class="pd-grp"><label class="pd-lbl">O.F</label><input class="pd-inp" value="'+esc(v.of||\'*******\')+'" onchange="pdSetVtr('+i+',\'of\',this.value)"></div>'+
+      '</div>'+
+      '<div class="pd-2col">'+
+        '<div class="pd-grp"><label class="pd-lbl">H.I</label><input class="pd-inp" value="'+esc(v.hi)+'" onchange="pdSetVtr('+i+',\'hi\',this.value)" placeholder="07:00"></div>'+
+        '<div class="pd-grp"><label class="pd-lbl">H.F</label><input class="pd-inp" value="'+esc(v.hf)+'" onchange="pdSetVtr('+i+',\'hf\',this.value)" placeholder="19:00"></div>'+
+      '</div>'+
+      '<div class="pd-grp"><label class="pd-lbl">Setor</label><input class="pd-inp" value="'+esc(v.setor)+'" onchange="pdSetVtr('+i+',\'setor\',this.value)"></div>'+
+      '<div class="pd-grp"><label class="pd-lbl">Motorista</label><input class="pd-inp" value="'+esc(v.motorista)+'" onchange="pdSetVtr('+i+',\'motorista\',this.value)"></div>'+
+      '<div class="pd-grp"><label class="pd-lbl">Comandante</label><input class="pd-inp" value="'+esc(v.comandante)+'" onchange="pdSetVtr('+i+',\'comandante\',this.value)"></div>'+
+    '</div>';
+  }).join('');
+}
+
+// ── Quadro Geral ──────────────────────────────────────
+async function pdCarregarQuadro() {
+  loading('Carregando frota...');
+  try {
+    var r = await api({tipo:'getDadosParaDashboard', token:_token});
+    var vts = r.viaturas||[];
+    _pdQuadro = vts.map(function(v){
+      var st = String(v.status||'').toUpperCase();
+      var status = st.includes('OFICINA') ? 'BAIXADA OFICINA' :
+                   st.includes('SERVIÇO')||st.includes('SERVICO') ? 'EM CONDIÇÕES' : 'EM CONDIÇÕES';
+      return {prefixo:v.prefixo, modelo:v.modelo||'', placa:v.placa||'', local:'SEDE/ 9º BPM', status:status, obs:'S/A'};
+    });
+    pdRenderQuadro();
+    unload(); toast(_pdQuadro.length+' viaturas carregadas','ok');
+  } catch(e) { unload(); toast('Erro: '+e.message,'err'); }
+}
+
+function pdAddQuadro(){ _pdQuadro.push({prefixo:'',modelo:'',placa:'',local:'SEDE/ 9º BPM',status:'EM CONDIÇÕES',obs:'S/A'}); pdRenderQuadro(); }
+function pdRemQuadro(i){ _pdQuadro.splice(i,1); pdRenderQuadro(); }
+function pdSetQ(i,k,v){ if(_pdQuadro[i]) _pdQuadro[i][k]=v; }
+
+function pdRenderQuadro() {
+  var el = document.getElementById('pdListaQuadro');
+  if (!_pdQuadro.length) { el.innerHTML='<div style="text-align:center;padding:10px;color:var(--txt3);font-size:11px">Clique em "Carregar do Sistema".</div>'; return; }
+  var STATUS_OPTS = ['EM CONDIÇÕES','BAIXADA','BAIXADA OFICINA','BAIXADA NA SEDE','BAIXADA/ OFICINA','EM MISSÃO'];
+  el.innerHTML = _pdQuadro.map(function(v,i){
+    return '<div class="pd-vcard" style="border-left-color:var(--ylw)">'+
+      '<div class="pd-vcard-hdr"><span class="pd-vnum" style="color:var(--ylw)">#'+(i+1)+'</span><button class="pd-vrm" onclick="pdRemQuadro('+i+')">✕</button></div>'+
+      '<div class="pd-2col">'+
+        '<div class="pd-grp"><label class="pd-lbl">Prefixo</label><input class="pd-inp" value="'+esc(v.prefixo)+'" onchange="pdSetQ('+i+',\'prefixo\',this.value)"></div>'+
+        '<div class="pd-grp"><label class="pd-lbl">Placa</label><input class="pd-inp" value="'+esc(v.placa)+'" onchange="pdSetQ('+i+',\'placa\',this.value)"></div>'+
+      '</div>'+
+      '<div class="pd-2col">'+
+        '<div class="pd-grp"><label class="pd-lbl">Status</label><select class="pd-inp" onchange="pdSetQ('+i+',\'status\',this.value)">'+
+          STATUS_OPTS.map(function(s){ return '<option'+(v.status===s?' selected':'')+'>'+s+'</option>'; }).join('')+
+        '</select></div>'+
+        '<div class="pd-grp"><label class="pd-lbl">Local</label><input class="pd-inp" value="'+esc(v.local)+'" onchange="pdSetQ('+i+',\'local\',this.value)"></div>'+
+      '</div>'+
+      '<div class="pd-grp"><label class="pd-lbl">Observações</label><input class="pd-inp" value="'+esc(v.obs)+'" onchange="pdSetQ('+i+',\'obs\',this.value)"></div>'+
+    '</div>';
+  }).join('');
+}
+
+// ── Coletar dados ─────────────────────────────────────
+function pdColetar() {
+  var dataVal = document.getElementById('pdData').value;
+  var dataObj = dataVal ? new Date(dataVal+'T12:00:00') : new Date();
+  var MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  var dataFmt = dataObj.getDate()+' de '+MESES[dataObj.getMonth()]+' de '+dataObj.getFullYear();
+  var turno = document.getElementById('pdTurno').value;
+
+  // 2º turno: começa na noite do dia anterior (19h) → data da tabela é dia anterior
+  var dataEmp = new Date(dataObj);
+  if (turno === '2') dataEmp.setDate(dataEmp.getDate()-1);
+  var fmtDt = function(d){ return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear(); };
+
+  return {
+    numParte:   document.getElementById('pdNumParte').value||'___/2026',
+    dataFmt:    dataFmt,
+    dataTbl:    (turno==='1'?'1º TURNO ':' 2º TURNO ')+fmtDt(dataEmp),
+    turno:      turno,
+    turnoLabel: turno==='1'?'1º turno (07h às 19h)':'2º turno (19h às 07h)',
+    garageiro:  document.getElementById('pdGarageiro').value||'___',
+    substituto: document.getElementById('pdSubstituto').value||'___',
+    ren:  document.getElementById('pdRen').value,
+    des:  document.getElementById('pdDes').value,
+    alt:  document.getElementById('pdAlt').value,
+    lim:  document.getElementById('pdLim').value,
+    limTxt: document.getElementById('pdLimTxt').value,
+    vtrRec: document.getElementById('pdVtrRec').value,
+    obs:    document.getElementById('pdObs').value,
+    pass:   document.getElementById('pdPass').value,
+    empenhadas: _pdVtr,
+    quadro:     _pdQuadro
+  };
+}
+
+// ── Gerar HTML preview ────────────────────────────────
+function pdGerarPreview() {
+  var d = pdColetar();
+
+  var linhasEmp = d.empenhadas.map(function(v){
+    var pf = v.prefixo+(v.modelo?' ('+v.modelo+')':'')+(v.placa?' '+v.placa:'');
+    return '<tr><td style="text-align:left">'+esc(pf)+'</td><td>'+esc(v.oi)+'</td><td>'+esc(v.of||'*******')+'</td><td>'+esc(v.hi)+'</td><td>'+esc(v.hf)+'</td><td>'+esc(v.setor)+'</td><td>'+esc(v.motorista)+'</td><td>'+esc(v.comandante)+'</td></tr>';
+  }).join('');
+
+  var tblEmp = d.empenhadas.length
+    ? '<table class="sei-tbl"><caption>VIATURAS EMPENHADAS NO '+esc(d.dataTbl)+'</caption><thead><tr><th>VTR. PREFIXO</th><th>O.I</th><th>O.F</th><th>H.I</th><th>H.F</th><th>SETOR</th><th>MOTORISTA</th><th>COMANDANTE</th></tr></thead><tbody>'+linhasEmp+'</tbody></table>'
+    : '<p style="font-size:9pt;color:#777;margin:5px 0 10px">(nenhuma viatura empenhada)</p>';
+
+  var linhasQ = d.quadro.map(function(v,i){
+    var pf = v.prefixo+(v.modelo?' ('+v.modelo+')':'')+(v.placa?' '+v.placa:'');
+    var sc = v.status.includes('OFICINA')?'st-ofic':v.status.includes('BAIXADA')?'st-baixa':'st-ok';
+    return '<tr><td>'+('0'+(i+1)).slice(-2)+'</td><td style="text-align:left">'+esc(pf)+'</td><td>'+esc(v.local||'SEDE/ 9º BPM')+'</td><td class="'+sc+'">'+esc(v.status)+'</td><td style="text-align:left;font-size:7.5pt">'+esc(v.obs||'S/A')+'</td></tr>';
+  }).join('');
+
+  var tblQ = d.quadro.length
+    ? '<table class="sei-quad"><caption>QUADRO GERAL DE VIATURAS DO 9º BPM</caption><thead><tr><th>QTD</th><th>PREFIXO</th><th>LOCAL</th><th>STATUS</th><th>OBSERVAÇÕES</th></tr></thead><tbody>'+linhasQ+'</tbody></table>'
+    : '';
+
+  var linhaSep = function(label, val, largInterna){
+    return '<div class="sei-item"><strong>'+esc(label)+'</strong>'+
+      '<span style="display:inline-block;border-bottom:1px solid #000;width:'+largInterna+';margin:0 4px;vertical-align:bottom"> </span>'+
+      '<strong>'+esc(val)+'.</strong></div>';
+  };
+
+  var obsHtml = (d.vtrRec==='C/A'&&d.obs) ? '<div style="font-size:9pt;margin-top:4px;white-space:pre-line">'+esc(d.obs)+'</div>' : '';
+  var limHtml = (d.lim==='C/A'&&d.limTxt) ? '<div style="font-size:9pt;margin-top:4px">'+esc(d.limTxt)+'</div>' : '';
+
+  document.getElementById('pdPreview').innerHTML =
+    '<div class="sei-doc">'+
+      '<div class="sei-title"><p><strong>GOVERNO DO ESTADO DE RONDÔNIA</strong></p><p>Polícia Militar - PM</p><p class="sei-pdnum"><strong>PARTE DIÁRIA '+esc(d.numParte)+'</strong></p></div>'+
+      '<div class="sei-visto"><div><em>Visto conforme registro no sistema SEI.</em><br><br><strong>Comandante da SLP/P4 do 9º BPM</strong></div><div style="text-align:center;font-weight:700;font-size:9pt">9º BATALHÃO DE POLÍCIA MILITAR</div></div>'+
+      '<div class="sei-intro">Parte Diária do <strong>'+esc(d.garageiro)+'</strong>, Garageiro do 9º Batalhão, ao Sr. Chefe da P-4/9º BPM, referente ao serviço do dia <strong>'+esc(d.dataFmt)+', '+esc(d.turnoLabel)+'</strong>.</div>'+
+      linhaSep('1. RENDIÇÃO',''+d.ren,'calc(100% - 130px)')+
+      linhaSep('2. CONTROLE DE DESLOCAMENTO DE VIATURA',''+d.des,'calc(100% - 295px)')+
+      tblEmp+
+      linhaSep('3. ALTERAÇÕES NO SERVIÇO',''+d.alt,'calc(100% - 195px)')+
+      '<div class="sei-item"><strong>4. LIMPEZA VIATURAS</strong><span style="display:inline-block;border-bottom:1px solid #000;width:calc(100% - 165px);margin:0 4px;vertical-align:bottom"> </span><strong>'+esc(d.lim)+'.</strong>'+limHtml+'</div>'+
+      '<div class="sei-item"><strong>5. VIATURAS RECEBIDAS / ALTERAÇÕES</strong><span style="display:inline-block;border-bottom:1px solid #000;width:calc(100% - 250px);margin:0 4px;vertical-align:bottom"> </span><strong>'+esc(d.vtrRec)+'.</strong>'+obsHtml+'</div>'+
+      tblQ+
+      linhaSep('6. PASSAGEM DE SERVIÇO',''+d.pass,'calc(100% - 195px)')+
+      '<div style="font-size:9pt;margin-top:6px">Fiz ao meu substituto legal o <strong>'+esc(d.substituto)+'</strong>, a quem transmiti todas as ordens em vigor, bem como todas as viaturas existentes nesta garagem sob minha responsabilidade.</div>'+
+      '<div class="sei-pass">'+
+        '<div class="sei-pass-bloco"><div class="sei-pass-linha"></div><div class="sei-pass-nome">'+esc(d.garageiro)+'</div><div class="sei-pass-cargo">GARAGEIRO QUE SAI</div></div>'+
+        '<div class="sei-pass-bloco"><div class="sei-pass-linha"></div><div class="sei-pass-nome">'+esc(d.substituto)+'</div><div class="sei-pass-cargo">GARAGEIRO QUE ENTRA</div></div>'+
+      '</div>'+
+    '</div>';
+}
+
+// ── Copiar texto para SEI ─────────────────────────────
+function pdCopiar() {
+  pdGerarPreview();
+  var d = pdColetar();
+  var L = [];
+  var pad = function(s,n){ s=String(s||''); return s.length>=n?s.substring(0,n-1)+' ':s+' '.repeat(n-s.length); };
+
+  L.push('PARTE DIÁRIA '+d.numParte);
+  L.push('');
+  L.push('Parte Diária do '+d.garageiro+', Garageiro do 9º Batalhão, ao Sr. Chefe da P-4/9º BPM, referente ao serviço do dia '+d.dataFmt+', '+d.turnoLabel+'.');
+  L.push('');
+  L.push('1. RENDIÇÃO __________________________________________________________________________________'+d.ren+'.');
+  L.push('');
+  L.push('2. CONTROLE DE DESLOCAMENTO DE VIATURA _______________________________________________________'+d.des+'.');
+  L.push('');
+
+  if (d.empenhadas.length) {
+    L.push('VIATURAS EMPENHADAS NO'+d.dataTbl);
+    L.push('');
+    L.push(pad('VTR. PREFIXO',38)+pad('O.I',9)+pad('O.F',9)+pad('H.I',7)+pad('H.F',7)+pad('SETOR',22)+pad('MOTORISTA',22)+'COMANDANTE');
+    d.empenhadas.forEach(function(v){
+      var pf=v.prefixo+(v.modelo?' ('+v.modelo+')':'')+(v.placa?' '+v.placa:'');
+      L.push(pad(pf,38)+pad(v.oi,9)+pad(v.of||'*******',9)+pad(v.hi,7)+pad(v.hf,7)+pad(v.setor,22)+pad(v.motorista,22)+(v.comandante||''));
+    });
+    L.push('');
+  }
+
+  L.push('3. ALTERAÇÕES NO SERVIÇO _____________________________________________________________________'+d.alt+'.');
+  L.push('');
+  L.push('4. LIMPEZA VIATURAS __________________________________________________________________________'+d.lim+'.');
+  if (d.lim==='C/A'&&d.limTxt) L.push(d.limTxt);
+  L.push('');
+  L.push('5. VIATURAS RECEBIDAS / ALTERAÇÕES ___________________________________________________________'+d.vtrRec+'.');
+  if (d.vtrRec==='C/A'&&d.obs) L.push(d.obs);
+  L.push('');
+
+  if (d.quadro.length) {
+    L.push('QUADRO GERAL DE VIATURAS DO 9º BPM');
+    L.push('');
+    d.quadro.forEach(function(v,i){
+      var pf=v.prefixo+(v.modelo?' ('+v.modelo+')':'')+(v.placa?' '+v.placa:'');
+      L.push(('0'+(i+1)).slice(-2)+'  '+pad(pf,36)+pad(v.local||'SEDE/ 9º BPM',22)+pad(v.status,22)+(v.obs||'S/A'));
+    });
+    L.push('');
+  }
+
+  L.push('6. PASSAGEM DE SERVIÇO _______________________________________________________________________'+d.pass+'.');
+  L.push('');
+  L.push('Fiz ao meu substituto legal o '+d.substituto+', a quem transmiti todas as ordens em vigor, bem como todas as viaturas existentes nesta garagem sob minha responsabilidade.');
+  L.push('');
+  L.push(d.garageiro+'                    '+d.substituto);
+  L.push('GARAGEIRO QUE SAI                              GARAGEIRO QUE ENTRA');
+
+  var txt = L.join('\n');
+  navigator.clipboard.writeText(txt).then(function(){
+    toast('Texto copiado! Cole no SEI.','ok');
+  }).catch(function(){
+    var ta=document.createElement('textarea'); ta.value=txt; ta.style.cssText='position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+    toast('Texto copiado! Cole no SEI.','ok');
+  });
+}
+
 document.querySelectorAll('.ov').forEach(function(o){ o.addEventListener('click',function(e){ if(e.target===o) o.classList.remove('on'); }); });
 </script>
 </body>
