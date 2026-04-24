@@ -644,8 +644,8 @@ tr:hover td{background:rgba(245,166,35,.025)}
 
       <div style="display:flex;flex-direction:column;gap:6px;margin-top:14px;padding-bottom:20px">
         <button class="btn" style="background:#00c896;color:#000;width:100%;justify-content:center" onclick="pdGerarPreview()">⚙️ Gerar Prévia</button>
-        <button class="btn btn-s" style="width:100%;justify-content:center" onclick="pdCopiar()">📋 Copiar Texto para SEI</button>
-        <button class="btn btn-s" style="width:100%;justify-content:center" onclick="window.print()">🖨️ Imprimir</button>
+        <button class="btn btn-s" style="width:100%;justify-content:center" onclick="pdCopiarSEI()">📋 Copiar com Formatação para SEI</button>
+        <button class="btn btn-s" style="width:100%;justify-content:center;border-color:#e74c3c;color:#e74c3c" onclick="pdGerarPDF()">📄 Gerar PDF</button>
       </div>
     </div>
 
@@ -655,7 +655,8 @@ tr:hover td{background:rgba(245,166,35,.025)}
         <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2)">📄 Prévia do Documento</span>
         <div style="display:flex;gap:7px">
           <button class="btn btn-s sm" onclick="pdGerarPreview()">🔄 Atualizar</button>
-          <button class="btn sm" style="background:#00c896;color:#000" onclick="pdCopiar()">📋 Copiar</button>
+          <button class="btn sm" style="background:#00c896;color:#000" onclick="pdCopiarSEI()">📋 Copiar SEI</button>
+          <button class="btn sm" style="background:#e74c3c;color:#fff" onclick="pdGerarPDF()">📄 PDF</button>
         </div>
       </div>
       <div id="pdPreview">
@@ -2153,67 +2154,142 @@ function pdGerarPreview() {
     '</div>';
 }
 
-// ── Copiar texto para SEI ─────────────────────────────
-function pdCopiar() {
+// ── Copiar HTML formatado para SEI ────────────────────
+// O SEI usa um editor rico (TinyMCE). Ao colar text/html,
+// ele preserva tabelas, negrito e layout — sem perda de formatação.
+function pdCopiarSEI() {
   pdGerarPreview();
   var d = pdColetar();
-  var L = [];
-  var pad = function(s,n){ s=String(s||''); return s.length>=n?s.substring(0,n-1)+' ':s+' '.repeat(n-s.length); };
 
-  L.push('PARTE DIÁRIA '+d.numParte);
-  L.push('');
-  L.push('Parte Diária do '+d.garageiro+', Garageiro do 9º Batalhão, ao Sr. Chefe da P-4/9º BPM, referente ao serviço do dia '+d.dataFmt+', '+d.turnoLabel+'.');
-  L.push('');
-  L.push('1. RENDIÇÃO __________________________________________________________________________________'+d.ren+'.');
-  L.push('');
-  L.push('2. CONTROLE DE DESLOCAMENTO DE VIATURA _______________________________________________________'+d.des+'.');
-  L.push('');
+  // Estilos inline para garantir fidelidade no SEI (editor pode ignorar <style>)
+  var tblStyle  = 'border-collapse:collapse;width:100%;font-family:Arial,sans-serif;font-size:8pt;margin:6px 0 10px';
+  var thStyle   = 'background:#1a3a5c;color:#fff;padding:3px 5px;border:1px solid #aaa;text-align:center;font-size:7.5pt;white-space:nowrap';
+  var tdStyle   = 'padding:3px 5px;border:1px solid #ccc;text-align:center;vertical-align:middle;font-size:8pt';
+  var tdLStyle  = 'padding:3px 5px;border:1px solid #ccc;text-align:left;vertical-align:middle;font-size:8pt';
+  var capStyle  = 'background:#1a3a5c;color:#fff;padding:4px 8px;text-align:center;font-weight:700;font-size:8.5pt';
+  var lineStyle = 'border-bottom:1px solid #000;display:inline-block;width:60%;margin:0 4px;vertical-align:bottom';
+  var bodyStyle = 'font-family:Arial,sans-serif;font-size:10pt;line-height:1.5;color:#000';
+  var itemStyle = 'margin-bottom:8px;font-size:9.5pt';
 
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // Tabela de empenhadas
+  var tblEmp = '';
   if (d.empenhadas.length) {
-    L.push('VIATURAS EMPENHADAS NO'+d.dataTbl);
-    L.push('');
-    L.push(pad('VTR. PREFIXO',38)+pad('O.I',9)+pad('O.F',9)+pad('H.I',7)+pad('H.F',7)+pad('SETOR',22)+pad('MOTORISTA',22)+'COMANDANTE');
-    d.empenhadas.forEach(function(v){
-      var pf=v.prefixo+(v.modelo?' ('+v.modelo+')':'')+(v.placa?' '+v.placa:'');
-      L.push(pad(pf,38)+pad(v.oi,9)+pad(v.of||'*******',9)+pad(v.hi,7)+pad(v.hf,7)+pad(v.setor,22)+pad(v.motorista,22)+(v.comandante||''));
-    });
-    L.push('');
+    var rows = d.empenhadas.map(function(v){
+      var pf = esc(v.prefixo)+(v.modelo?' ('+esc(v.modelo)+')':'')+(v.placa?' '+esc(v.placa):'');
+      return '<tr><td style="'+tdLStyle+'">'+pf+'</td><td style="'+tdStyle+'">'+esc(v.oi)+'</td><td style="'+tdStyle+'">'+(v.of?esc(v.of):'*******')+'</td><td style="'+tdStyle+'">'+esc(v.hi)+'</td><td style="'+tdStyle+'">'+esc(v.hf)+'</td><td style="'+tdStyle+'">'+esc(v.setor)+'</td><td style="'+tdLStyle+'">'+esc(v.motorista)+'</td><td style="'+tdLStyle+'">'+esc(v.comandante||'')+'</td></tr>';
+    }).join('');
+    tblEmp = '<table style="'+tblStyle+'"><caption style="'+capStyle+'">VIATURAS EMPENHADAS NO '+esc(d.dataTbl)+'</caption><thead><tr><th style="'+thStyle+'">VTR. PREFIXO</th><th style="'+thStyle+'">O.I</th><th style="'+thStyle+'">O.F</th><th style="'+thStyle+'">H.I</th><th style="'+thStyle+'">H.F</th><th style="'+thStyle+'">SETOR</th><th style="'+thStyle+'">MOTORISTA</th><th style="'+thStyle+'">COMANDANTE</th></tr></thead><tbody>'+rows+'</tbody></table>';
   }
 
-  L.push('3. ALTERAÇÕES NO SERVIÇO _____________________________________________________________________'+d.alt+'.');
-  L.push('');
-  L.push('4. LIMPEZA VIATURAS __________________________________________________________________________'+d.lim+'.');
-  if (d.lim==='C/A'&&d.limTxt) L.push(d.limTxt);
-  L.push('');
-  L.push('5. VIATURAS RECEBIDAS / ALTERAÇÕES ___________________________________________________________'+d.vtrRec+'.');
-  if (d.vtrRec==='C/A'&&d.obs) L.push(d.obs);
-  L.push('');
-
+  // Tabela do quadro geral
+  var tblQuadro = '';
   if (d.quadro.length) {
-    L.push('QUADRO GERAL DE VIATURAS DO 9º BPM');
-    L.push('');
-    d.quadro.forEach(function(v,i){
-      var pf=v.prefixo+(v.modelo?' ('+v.modelo+')':'')+(v.placa?' '+v.placa:'');
-      L.push(('0'+(i+1)).slice(-2)+'  '+pad(pf,36)+pad(v.local||'SEDE/ 9º BPM',22)+pad(v.status,22)+(v.obs||'S/A'));
-    });
-    L.push('');
+    var qrows = d.quadro.map(function(v,i){
+      var pf = esc(v.prefixo)+(v.modelo?' ('+esc(v.modelo)+')':'')+(v.placa?' '+esc(v.placa):'');
+      return '<tr><td style="'+tdStyle+'">'+(i+1)+'</td><td style="'+tdLStyle+'">'+pf+'</td><td style="'+tdStyle+'">'+esc(v.local||'SEDE/ 9º BPM')+'</td><td style="'+tdStyle+'">'+esc(v.status)+'</td><td style="'+tdLStyle+'">'+esc(v.obs||'S/A')+'</td></tr>';
+    }).join('');
+    tblQuadro = '<table style="'+tblStyle+'"><caption style="'+capStyle+'">QUADRO GERAL DE VIATURAS DO 9º BPM</caption><thead><tr><th style="'+thStyle+'">QTD</th><th style="'+thStyle+'">PREFIXO</th><th style="'+thStyle+'">LOCAL</th><th style="'+thStyle+'">STATUS</th><th style="'+thStyle+'">OBSERVAÇÕES</th></tr></thead><tbody>'+qrows+'</tbody></table>';
   }
 
-  L.push('6. PASSAGEM DE SERVIÇO _______________________________________________________________________'+d.pass+'.');
-  L.push('');
-  L.push('Fiz ao meu substituto legal o '+d.substituto+', a quem transmiti todas as ordens em vigor, bem como todas as viaturas existentes nesta garagem sob minha responsabilidade.');
-  L.push('');
-  L.push(d.garageiro+'                    '+d.substituto);
-  L.push('GARAGEIRO QUE SAI                              GARAGEIRO QUE ENTRA');
+  // Observações item 5
+  var obsHtml = '';
+  if (d.vtrRec==='C/A' && d.obs) {
+    obsHtml = '<div style="margin-top:6px;font-size:9pt">'+d.obs.split('\n').map(function(l){ return esc(l); }).join('<br>')+'</div>';
+  }
+  var limHtml = '';
+  if (d.lim==='C/A' && d.limTxt) {
+    limHtml = '<div style="margin-top:6px;font-size:9pt">'+esc(d.limTxt)+'</div>';
+  }
 
-  var txt = L.join('\n');
-  navigator.clipboard.writeText(txt).then(function(){
-    toast('Texto copiado! Cole no SEI.','ok');
-  }).catch(function(){
-    var ta=document.createElement('textarea'); ta.value=txt; ta.style.cssText='position:fixed;opacity:0';
-    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
-    toast('Texto copiado! Cole no SEI.','ok');
-  });
+  // Montar HTML completo
+  var html = '<div style="'+bodyStyle+'">'
+    + '<p style="text-align:center;margin-bottom:4px"><strong>GOVERNO DO ESTADO DE RONDÔNIA</strong><br>Polícia Militar - PM<br><strong>PARTE DIÁRIA '+esc(d.numParte)+'</strong></p>'
+    + '<p style="font-size:9.5pt;text-align:justify;margin-bottom:10px">'
+      + 'Parte Diária do <strong>'+esc(d.garageiro)+'</strong>, Garageiro do 9º Batalhão, ao Sr. Chefe da P-4/9º BPM, referente ao serviço do dia <strong>'+esc(d.dataFmt)+', '+esc(d.turnoLabel)+'</strong>.'
+    + '</p>'
+    + '<p style="'+itemStyle+'"><strong>1. RENDIÇÃO</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.ren)+'.</strong></p>'
+    + '<p style="'+itemStyle+'"><strong>2. CONTROLE DE DESLOCAMENTO DE VIATURA</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.des)+'.</strong></p>'
+    + tblEmp
+    + '<p style="'+itemStyle+'"><strong>3. ALTERAÇÕES NO SERVIÇO</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.alt)+'.</strong></p>'
+    + '<p style="'+itemStyle+'"><strong>4. LIMPEZA VIATURAS</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.lim)+'.</strong>'+limHtml+'</p>'
+    + '<p style="'+itemStyle+'"><strong>5. VIATURAS RECEBIDAS / ALTERAÇÕES</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.vtrRec)+'.</strong>'+obsHtml+'</p>'
+    + tblQuadro
+    + '<p style="'+itemStyle+'"><strong>6. PASSAGEM DE SERVIÇO</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.pass)+'.</strong></p>'
+    + '<p style="font-size:9.5pt">Fiz ao meu substituto legal o '+esc(d.substituto)+', a quem transmiti todas as ordens em vigor, bem como todas as viaturas existentes nesta garagem sob minha responsabilidade.</p>'
+    + '<table style="width:100%;border:none;margin-top:20px;font-size:9pt"><tbody><tr>'
+      + '<td style="border:none;text-align:center;width:50%"><div style="border-top:1px solid #000;width:70%;margin:0 auto 4px"></div><strong>'+esc(d.garageiro)+'</strong><br>GARAGEIRO QUE SAI</td>'
+      + '<td style="border:none;text-align:center;width:50%"><div style="border-top:1px solid #000;width:70%;margin:0 auto 4px"></div><strong>'+esc(d.substituto)+'</strong><br>GARAGEIRO QUE ENTRA</td>'
+    + '</tr></tbody></table>'
+    + '</div>';
+
+  // Tentar copiar como text/html (SEI preserva formatação)
+  if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+    var blob = new Blob([html], {type:'text/html'});
+    navigator.clipboard.write([new ClipboardItem({'text/html': blob})]).then(function(){
+      toast('HTML copiado com formatação! Cole no SEI (Ctrl+V).','ok');
+    }).catch(function(){ pdCopiarFallback(html); });
+  } else {
+    pdCopiarFallback(html);
+  }
+}
+
+// Fallback: selecionar elemento HTML e usar execCommand('copy') para preservar formatação
+function pdCopiarFallback(html) {
+  var div = document.createElement('div');
+  div.innerHTML = html;
+  div.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+  document.body.appendChild(div);
+  var range = document.createRange();
+  range.selectNodeContents(div);
+  var sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  try { document.execCommand('copy'); toast('Copiado! Cole no SEI (Ctrl+V).','ok'); }
+  catch(e){ toast('Erro ao copiar. Tente pelo botão Gerar Prévia e Ctrl+A.','err'); }
+  sel.removeAllRanges();
+  document.body.removeChild(div);
+}
+
+// ── Gerar PDF via janela de impressão ─────────────────
+function pdGerarPDF() {
+  pdGerarPreview();
+  var previewEl = document.getElementById('pdPreview');
+  if (!previewEl || !previewEl.innerHTML.trim()) {
+    toast('Gere a prévia primeiro.','err'); return;
+  }
+  var conteudo = previewEl.innerHTML;
+  var win = window.open('','_blank','width=900,height=700');
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Parte Diária</title><style>'
+    + 'body{margin:15mm 20mm;font-family:Arial,sans-serif;font-size:10pt;line-height:1.45;color:#000}'
+    + '.sei-doc{background:#fff}'
+    + '.sei-title{text-align:center;margin-bottom:14px;font-size:9.5pt}'
+    + '.sei-title .sei-pdnum{font-size:12pt;font-weight:700;margin-top:5px}'
+    + '.sei-visto{border:1px solid #999;padding:9px 14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;font-size:9pt}'
+    + '.sei-intro{margin-bottom:12px;font-size:9.5pt;text-align:justify}'
+    + '.sei-item{margin-bottom:9px;font-size:9.5pt}'
+    + '.sei-tbl{width:100%;border-collapse:collapse;font-size:8pt;margin:7px 0 11px}'
+    + '.sei-tbl caption{font-weight:700;font-size:8.5pt;background:#1a3a5c;color:#fff;padding:4px 8px;text-align:center;border:1px solid #1a3a5c;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+    + '.sei-tbl th{background:#1a3a5c;color:#fff;padding:3px 5px;text-align:center;border:1px solid #aaa;white-space:nowrap;font-size:7.5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+    + '.sei-tbl td{padding:3px 5px;border:1px solid #ccc;text-align:center;vertical-align:middle;font-size:8pt}'
+    + '.sei-tbl tr:nth-child(even) td{background:#f5f8ff;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+    + '.sei-quad{width:100%;border-collapse:collapse;font-size:8pt;margin:6px 0 12px}'
+    + '.sei-quad caption{font-weight:700;font-size:8.5pt;background:#1a3a5c;color:#fff;padding:4px 8px;text-align:center;border:1px solid #1a3a5c;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+    + '.sei-quad th{background:#1a3a5c;color:#fff;padding:3px 6px;text-align:center;border:1px solid #aaa;font-size:7.5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+    + '.sei-quad td{padding:3px 6px;border:1px solid #ccc;vertical-align:middle;font-size:8pt}'
+    + '.sei-quad tr:nth-child(even) td{background:#f5f8ff;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+    + '.sei-pass{margin-top:16px;border-top:1px solid #ccc;padding-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:20px;font-size:9pt}'
+    + '.sei-pass-bloco{text-align:center}'
+    + '.sei-pass-linha{border-top:1px solid #000;width:80%;margin:22px auto 4px}'
+    + '.sei-pass-nome{font-weight:700}'
+    + '.sei-pass-cargo{font-size:8pt}'
+    + '@media print{body{margin:10mm 12mm}}'
+    + '</style></head><body>'
+    + conteudo
+    + '</body></html>');
+  win.document.close();
+  win.onload = function(){ win.focus(); win.print(); };
 }
 
 document.querySelectorAll('.ov').forEach(function(o){ o.addEventListener('click',function(e){ if(e.target===o) o.classList.remove('on'); }); });
