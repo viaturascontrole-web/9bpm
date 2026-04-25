@@ -67,6 +67,11 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
 .foto-upload-prog{background:var(--bg3);border-radius:4px;height:4px;margin-top:6px;display:none}.foto-upload-prog.on{display:block}
 .foto-upload-prog-fill{height:100%;background:var(--ac);border-radius:4px;transition:width .3s}
 .odometro-hint{background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.2);border-radius:7px;padding:8px 12px;font-size:12px;color:var(--ac);margin-top:6px}
+.saldo-hint{background:rgba(39,174,96,.08);border:1px solid rgba(39,174,96,.25);border-radius:7px;padding:8px 12px;font-size:12px;color:#4ade80;margin-top:6px;display:none}
+.saldo-alerta{background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.35);border-radius:10px;padding:13px 14px;margin-top:10px;display:none}
+.saldo-alerta-titulo{font-size:12px;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.saldo-alerta-texto{font-size:12px;color:#fde68a;line-height:1.55}
+.saldo-alerta-texto strong{color:#fbbf24}
 </style>
 </head>
 <body>
@@ -116,8 +121,17 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
         <input type="hidden" id="houvAbastecimento"><div class="msg-invalido" id="msgAbast">Selecione uma opção</div>
       </div>
       <div id="saldoGroup" style="display:none">
-        <div class="fg" style="margin-top:14px"><label>Saldo do cartão <span class="req">*</span></label><input type="text" id="saldoCartao" placeholder="Ex: 150.50" oninput="this.value=this.value.replace(/[^0-9.,]/g,\'\')"><div class="msg-invalido">Informe o saldo</div></div>
-        <div class="fg"><label>Ficou pendência no posto? <span class="req">*</span></label>
+        <div class="fg" style="margin-top:14px">
+          <label>Saldo do cartão após abastecimento <span class="req">*</span></label>
+          <input type="tel" id="saldoCartao" placeholder="Ex: 150,50" inputmode="decimal" autocomplete="off" oninput="formatarSaldoInput(this)" onkeydown="bloquearTeclasSaldo(event)" onpaste="colarSaldoNumerico(event)" onblur="normalizarSaldo(this)">
+          <div class="saldo-hint" id="saldoHint">💰 <span id="saldoHintVal"></span></div>
+          <div class="msg-invalido" id="msgSaldo">Informe o saldo do cartão</div>
+        </div>
+        <div class="saldo-alerta" id="saldoAlerta">
+          <div class="saldo-alerta-titulo">⚠️ Atenção — Informação crítica</div>
+          <div class="saldo-alerta-texto">O saldo é usado pelo setor de <strong>logística</strong> para controle financeiro das viaturas. Um saldo <strong>incorreto</strong> pode impedir a solicitação de <strong>suplementação de crédito</strong> junto ao comando, comprometendo abastecimentos futuros.<br><br>✅ Informe o saldo <strong>exato</strong> exibido no comprovante ou terminal do posto.</div>
+        </div>
+        <div class="fg" style="margin-top:14px"><label>Ficou pendência no posto? <span class="req">*</span></label>
           <div class="opcao-group">
             <div class="opcao-btn" id="pend_SIM" onclick="selecionarPendencia('SIM')"><div class="obi">⚠️</div><div class="obt">Sim, ficou pendência</div></div>
             <div class="opcao-btn" id="pend_NAO" onclick="selecionarPendencia('NÃO')"><div class="obi">✅</div><div class="obt">Sem pendência</div></div>
@@ -239,7 +253,7 @@ function carregarDados(){
 }
 
 function toggleSetorLivre(){var v=document.getElementById('setor').value;document.getElementById('setorLivreGroup').style.display=v==='OUTRO'?'block':'none';if(v!=='OUTRO')document.getElementById('setorLivre').value='';}
-function selecionarAbast(val){abastValor=val;document.getElementById('houvAbastecimento').value=val;document.getElementById('abast_SIM').className='opcao-btn'+(val==='SIM'?' sel-sim':'');document.getElementById('abast_NAO').className='opcao-btn'+(val==='NÃO'?' sel-nao':'');document.getElementById('saldoGroup').style.display=val==='SIM'?'block':'none';document.getElementById('msgAbast').style.display='none';if(val==='NÃO'){pendValor='';document.getElementById('pendenciaPostos').value='';}}
+function selecionarAbast(val){abastValor=val;document.getElementById('houvAbastecimento').value=val;document.getElementById('abast_SIM').className='opcao-btn'+(val==='SIM'?' sel-sim':'');document.getElementById('abast_NAO').className='opcao-btn'+(val==='NÃO'?' sel-nao':'');document.getElementById('saldoGroup').style.display=val==='SIM'?'block':'none';document.getElementById('msgAbast').style.display='none';if(val==='NÃO'){pendValor='';document.getElementById('pendenciaPostos').value='';}if(val==='SIM'){document.getElementById('saldoAlerta').style.display='block';buscarUltimoSaldo();}}
 function selecionarPendencia(val){pendValor=val;document.getElementById('pendenciaPostos').value=val;document.getElementById('pend_SIM').className='opcao-btn'+(val==='SIM'?' sel-sim':'');document.getElementById('pend_NAO').className='opcao-btn'+(val==='NÃO'?' sel-nao':'');document.getElementById('qualPendenciaGroup').style.display=val==='SIM'?'block':'none';document.getElementById('msgPend').style.display='none';}
 function selecionarSinistro(val){sinValor=val;document.getElementById('houveSinistro').value=val;document.getElementById('sin_SIM').className='opcao-btn'+(val==='SIM'?' sel-sim':'');document.getElementById('sin_NAO').className='opcao-btn'+(val==='NÃO'?' sel-nao':'');document.getElementById('descSinistroGroup').style.display=val==='SIM'?'block':'none';document.getElementById('msgSin').style.display='none';}
 
@@ -303,7 +317,7 @@ function validarEtapa(){esconderErro();var ok=true;
   }
   if(ETAPA_ATUAL===2){var setor=document.getElementById('setor').value;if(!setor){marcarInvalido('setor',true);ok=false;}if(setor==='OUTRO'&&!document.getElementById('setorLivre').value.trim()){marcarInvalido('setorLivre',true);ok=false;}}
   if(ETAPA_ATUAL===3){if(!document.getElementById('comandante').value.trim()){marcarInvalido('comandante',true);ok=false;}if(!document.getElementById('motorista').value.trim()){marcarInvalido('motorista',true);ok=false;}if(!document.getElementById('matricula').value.trim()||parseInt(document.getElementById('matricula').value)<1000){marcarInvalido('matricula',true);document.getElementById('msgMatricula').style.display='block';ok=false;}}
-  if(ETAPA_ATUAL===4){if(!abastValor){document.getElementById('msgAbast').style.display='block';ok=false;}if(abastValor==='SIM'){if(!document.getElementById('saldoCartao').value.trim()){marcarInvalido('saldoCartao',true);ok=false;}if(!pendValor){document.getElementById('msgPend').style.display='block';ok=false;}if(pendValor==='SIM'&&!document.getElementById('qualPendencia').value.trim()){marcarInvalido('qualPendencia',true);ok=false;}}}
+  if(ETAPA_ATUAL===4){if(!abastValor){document.getElementById('msgAbast').style.display='block';ok=false;}if(abastValor==='SIM'){var saldoVal=document.getElementById('saldoCartao').value.trim();var saldoNum=parseFloat(saldoVal.replace(',','.'));if(!saldoVal||isNaN(saldoNum)||saldoNum<0){marcarInvalido('saldoCartao',true);document.getElementById('msgSaldo').textContent='❌ Informe o saldo em números (ex: 150,50)';document.getElementById('msgSaldo').style.display='block';ok=false;}if(!pendValor){document.getElementById('msgPend').style.display='block';ok=false;}if(pendValor==='SIM'&&!document.getElementById('qualPendencia').value.trim()){marcarInvalido('qualPendencia',true);ok=false;}}}
   if(ETAPA_ATUAL===5){
     if(!entLimpaValor){document.getElementById('msgEntLimpa').style.display='block';ok=false;}
     if(entLimpaValor==='NÃO'&&!document.getElementById('justLimpaSaida').value.trim()){marcarInvalido('justLimpaSaida',true);ok=false;}
@@ -314,7 +328,7 @@ function validarEtapa(){esconderErro();var ok=true;
 
 function marcarInvalido(id,on){var el=document.getElementById(id);if(!el)return;on?el.classList.add('invalido'):el.classList.remove('invalido');}
 function mostrarErro(msg){document.getElementById('erroTexto').textContent=msg;document.getElementById('erroGlobal').className='erro-msg on';window.scrollTo({top:0,behavior:'smooth'});}
-function esconderErro(){document.getElementById('erroGlobal').className='erro-msg';document.querySelectorAll('.invalido').forEach(function(el){el.classList.remove('invalido');});['msgAbast','msgPend','msgSin','msgEntLimpa','msgOdometro','msgMatricula'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});}
+function esconderErro(){document.getElementById('erroGlobal').className='erro-msg';document.querySelectorAll('.invalido').forEach(function(el){el.classList.remove('invalido');});['msgAbast','msgPend','msgSin','msgEntLimpa','msgOdometro','msgMatricula','msgSaldo'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});}
 
 async function enviar(){
   if(!validarEtapa())return;
@@ -342,6 +356,87 @@ async function enviar(){
 }
 
 function novoRegistro(){window.location.reload();}
+
+function formatarSaldoInput(input){
+  // Remove tudo que não for dígito, vírgula ou ponto
+  var raw=input.value.replace(/[^0-9.,]/g,'');
+  // Substitui ponto por vírgula como separador decimal
+  raw=raw.replace('.',',');
+  // Permite apenas uma vírgula
+  var partes=raw.split(',');
+  if(partes.length>2) raw=partes[0]+','+(partes.slice(1).join(''));
+  // Limita a 2 casas decimais após a vírgula
+  if(partes.length===2 && partes[1].length>2) raw=partes[0]+','+partes[1].slice(0,2);
+  input.value=raw;
+}
+
+function bloquearTeclasSaldo(e){
+  // Teclas permitidas: dígitos (0-9), vírgula, ponto, backspace, delete, tab, setas, home/end
+  var permitidas=[8,9,35,36,37,38,39,40,46];
+  var tecla=e.keyCode||e.which;
+  var char=e.key;
+  // Permite teclas de controle
+  if(permitidas.indexOf(tecla)!==-1) return;
+  // Permite Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+  if(e.ctrlKey||e.metaKey) return;
+  // Permite apenas dígitos, vírgula e ponto
+  if(!/^[0-9,.]$/.test(char)){e.preventDefault();return;}
+  // Bloqueia segunda vírgula/ponto
+  var val=document.getElementById('saldoCartao').value;
+  if((char===','||char==='.')&&(val.indexOf(',')!==-1||val.indexOf('.')!==-1)){e.preventDefault();}
+}
+
+function colarSaldoNumerico(e){
+  e.preventDefault();
+  var texto=(e.clipboardData||window.clipboardData).getData('text');
+  // Extrai apenas números e separador decimal
+  var limpo=texto.replace(/[^0-9.,]/g,'').replace('.',',');
+  var partes=limpo.split(',');
+  if(partes.length>2) limpo=partes[0]+','+partes[1].slice(0,2);
+  else if(partes.length===2) limpo=partes[0]+','+partes[1].slice(0,2);
+  var input=document.getElementById('saldoCartao');
+  input.value=limpo;
+}
+
+function normalizarSaldo(input){
+  var val=input.value.trim();
+  if(!val) return;
+  // Converte para número e reformata
+  var num=parseFloat(val.replace(',','.'));
+  if(!isNaN(num)){
+    input.value=num.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  } else {
+    input.value='';
+    marcarInvalido('saldoCartao',true);
+    document.getElementById('msgSaldo').textContent='❌ Valor inválido — informe apenas números (ex: 150,50)';
+    document.getElementById('msgSaldo').style.display='block';
+  }
+}
+
+function buscarUltimoSaldo(){
+  var prefixo=document.getElementById('prefixo').value;
+  var hintEl=document.getElementById('saldoHint');
+  var hintVal=document.getElementById('saldoHintVal');
+  if(!prefixo){hintEl.style.display='none';return;}
+  hintEl.style.display='block';
+  hintVal.textContent='⏳ Buscando último saldo registrado...';
+  fetch(SCRIPT_URL+'?page=saldo&prefixo='+encodeURIComponent(prefixo))
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d&&d.saldo!==undefined&&d.saldo!==null&&d.saldo!==''){
+        var saldoNum=parseFloat(String(d.saldo).replace(',','.'));
+        if(!isNaN(saldoNum)){
+          var saldoFmt='R$ '+saldoNum.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+          hintVal.innerHTML='Último saldo registrado: <strong>'+saldoFmt+'</strong> — atualize se o valor mudou';
+        } else {
+          hintVal.textContent='Nenhum saldo anterior registrado para esta viatura';
+        }
+      } else {
+        hintVal.textContent='Nenhum saldo anterior registrado para esta viatura';
+      }
+    })
+    .catch(function(){hintEl.style.display='none';});
+}
 
 function liberarOdometroSaida(){
   var prefixo=document.getElementById('prefixo').value;
