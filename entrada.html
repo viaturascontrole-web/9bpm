@@ -71,6 +71,18 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
 .loading-txt{color:var(--txt2);font-size:14px}
 .odometro-hint{background:rgba(0,201,167,.08);border:1px solid rgba(0,201,167,.2);border-radius:7px;padding:8px 12px;font-size:12px;color:var(--ac);margin-top:6px;display:none}
 .odometro-hint.on{display:block}
+.bloqueio-saida{background:rgba(231,76,60,.10);border:2px solid rgba(231,76,60,.55);border-radius:12px;padding:16px;margin-top:12px;display:none}
+.bloqueio-saida.on{display:block}
+.bloqueio-saida-titulo{font-size:13px;font-weight:700;color:#f87171;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.bloqueio-saida-corpo{font-size:13px;color:var(--txt);line-height:1.6}
+.bloqueio-saida-corpo strong{color:#f87171}
+.bloqueio-saida-motorista{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.25);border-radius:8px;padding:10px 12px;margin-top:10px}
+.bloqueio-saida-linha{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--txt);margin-bottom:4px}
+.bloqueio-saida-linha:last-child{margin-bottom:0}
+.bloqueio-saida-linha span{color:var(--txt2);font-size:11px;min-width:70px}
+.bloqueio-saida-linha strong{color:var(--txt)}
+.btn-ligar{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:9px 16px;background:linear-gradient(135deg,#27ae60,#1a8a4a);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none}
+</style>
 .foto-area{border:2px dashed var(--bd);border-radius:10px;padding:16px;margin-top:8px}
 .foto-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .foto-btn{padding:12px 8px;border:1.5px solid var(--bd);border-radius:9px;background:var(--bg3);color:var(--txt);font-size:13px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .2s}
@@ -108,6 +120,16 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
           <option value="">Carregando viaturas...</option>
         </select>
         <div class="msg-invalido">Selecione a viatura</div>
+        <!-- Painel de bloqueio: saída não registrada -->
+        <div class="bloqueio-saida" id="bloqueioSaida">
+          <div class="bloqueio-saida-titulo">🚫 Entrada não permitida</div>
+          <div class="bloqueio-saida-corpo">
+            Esta viatura ainda está com <strong>saída em aberto</strong>. O policial que saiu com ela não registrou a baixa do serviço.<br>
+            Entre em contato e solicite que ele registre a saída antes de prosseguir.
+            <div class="bloqueio-saida-motorista" id="bloqueioMotoristaInfo"></div>
+            <a class="btn-ligar" id="bloqueioLigar" href="#" style="display:none" onclick="return false">📞 Ligar agora</a>
+          </div>
+        </div>
       </div>
       <div class="fg">
         <label>Odômetro Inicial (km) <span class="req">*</span></label>
@@ -329,13 +351,67 @@ function buscarUltimoOdometro(){
   var hint=document.getElementById('odometroHint');
   var inputOdo=document.getElementById('odometroInicial');
   ODO_MIN=0;
+  // Reseta painel de bloqueio sempre que trocar viatura
+  _esconderBloqueio();
   if(!prefixo){
     inputOdo.disabled=true;inputOdo.style.opacity='.5';inputOdo.style.cursor='not-allowed';
     inputOdo.placeholder='Selecione a viatura primeiro...';
     hint.className='odometro-hint';return;
   }
+  // Primeiro verifica se há saída pendente
   inputOdo.disabled=true;inputOdo.style.opacity='.5';inputOdo.style.cursor='not-allowed';
   inputOdo.value='';
+  hint.className='odometro-hint on';
+  document.getElementById('odometroHintVal').textContent='⏳ Verificando status da viatura...';
+  fetch(SCRIPT_URL+'?page=statusViatura&prefixo='+encodeURIComponent(prefixo))
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d&&d.saidaAberta){
+        // Bloqueia entrada
+        _mostrarBloqueio(d);
+        hint.className='odometro-hint';
+        inputOdo.disabled=true;inputOdo.style.opacity='.5';inputOdo.style.cursor='not-allowed';
+        inputOdo.placeholder='Entrada bloqueada — saída pendente';
+      } else {
+        // Libera normalmente e busca odômetro
+        _buscarOdometro(prefixo,hint,inputOdo);
+      }
+    })
+    .catch(function(){
+      // Em caso de erro de rede, permite continuar (fail-open)
+      _buscarOdometro(prefixo,hint,inputOdo);
+    });
+}
+
+function _esconderBloqueio(){
+  document.getElementById('bloqueioSaida').className='bloqueio-saida';
+  document.getElementById('bloqueioMotoristaInfo').innerHTML='';
+  var btnLigar=document.getElementById('bloqueioLigar');
+  btnLigar.style.display='none';
+  btnLigar.href='#';
+}
+
+function _mostrarBloqueio(d){
+  var painel=document.getElementById('bloqueioSaida');
+  var infoEl=document.getElementById('bloqueioMotoristaInfo');
+  var motorista=d.motorista||'Não identificado';
+  var telefone=String(d.telefone||'').replace(/\D/g,'');
+  var data=d.dataEntrada||'';
+  var html='';
+  html+='<div class="bloqueio-saida-linha"><span>Motorista</span><strong>'+motorista+'</strong></div>';
+  if(data) html+='<div class="bloqueio-saida-linha"><span>Entrou em</span><strong>'+data+'</strong></div>';
+  if(telefone){
+    html+='<div class="bloqueio-saida-linha"><span>Telefone</span><strong>'+(d.telefone||telefone)+'</strong></div>';
+    var btnLigar=document.getElementById('bloqueioLigar');
+    btnLigar.href='tel:+55'+telefone;
+    btnLigar.style.display='inline-flex';
+    btnLigar.onclick=function(){};
+  }
+  infoEl.innerHTML=html;
+  painel.className='bloqueio-saida on';
+}
+
+function _buscarOdometro(prefixo,hint,inputOdo){
   hint.className='odometro-hint on';
   document.getElementById('odometroHintVal').textContent='⏳ Buscando...';
   fetch(SCRIPT_URL+'?page=odometro&prefixo='+encodeURIComponent(prefixo))
@@ -355,7 +431,6 @@ function buscarUltimoOdometro(){
       inputOdo.disabled=false;inputOdo.style.opacity='1';inputOdo.style.cursor='';
       inputOdo.placeholder='Ex: 45230';
       inputOdo.focus();
-      // Liga aviso em tempo real
       inputOdo.oninput=function(){verificarOdometro(this);};
     })
     .catch(function(){
@@ -560,6 +635,11 @@ function validarEtapa(){
   esconderErro();var ok=true;
   if(ETAPA_ATUAL===1){
     if(!document.getElementById('prefixo').value){marcarInvalido('prefixo',true);ok=false;}
+    // Bloqueia se há saída pendente
+    if(document.getElementById('bloqueioSaida').classList.contains('on')){
+      mostrarErro('Esta viatura possui saída em aberto. O motorista anterior precisa registrar a baixa antes de uma nova entrada.');
+      return false;
+    }
     var odoVal=parseFloat(document.getElementById('odometroInicial').value);
     if(!odoVal||odoVal<=0){marcarInvalido('odometroInicial',true);ok=false;}
     // Aviso se menor que o mínimo, mas NÃO bloqueia (permite registrar mesmo assim)
