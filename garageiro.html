@@ -1125,7 +1125,7 @@ function exibirResultadosE(reg) {
   document.getElementById('tbEnt').innerHTML=reg.map(function(r){
     var temA=r.alteracoes&&r.alteracoes!=='--'&&r.alteracoes!=='-'&&r.alteracoes!=='Sem alteração'&&r.alteracoes.toUpperCase()!=='NÃO';
     var telL=String(r.telefone||'').replace(/\D/g,''); var wa=telL?'<br><a class="wa-btn" href="https://wa.me/55'+telL+'" target="_blank">📱 WA</a>':'';
-    return '<tr><td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(r.data||'--')+'</td><td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+'</td><td>'+esc(r.motorista||'--')+wa+'</td><td>'+esc(r.comandante||'--')+'</td><td>'+esc(r.setor||'--')+'</td><td style="font-family:var(--mono)">'+esc(r.odometro||'--')+'</td><td style="font-size:11px">'+nivelBadge(r.nivelOleo||r.oleo,'🛢️')+' '+nivelBadge(r.nivelAgua||r.agua,'💧')+'</td><td style="font-size:11px;max-width:150px;white-space:normal">'+(temA?'<span style="color:#92400e;font-weight:700">⚠️ '+esc(r.alteracoes)+'</span>':'<span style="color:var(--txt3)">Sem alteração</span>')+'</td></tr>';
+    return '<tr><td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(fmtData(r.data||'--'))+'</td><td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+'</td><td>'+esc(r.motorista||'--')+wa+'</td><td>'+esc(r.comandante||'--')+'</td><td>'+esc(r.setor||'--')+'</td><td style="font-family:var(--mono)">'+esc(r.odometro||'--')+'</td><td style="font-size:11px">'+nivelBadge(r.nivelOleo||r.oleo,'🛢️')+' '+nivelBadge(r.nivelAgua||r.agua,'💧')+'</td><td style="font-size:11px;max-width:150px;white-space:normal">'+(temA?'<span style="color:#92400e;font-weight:700">⚠️ '+esc(r.alteracoes)+'</span>':'<span style="color:var(--txt3)">Sem alteração</span>')+'</td></tr>';
   }).join('');
 }
 
@@ -1161,7 +1161,7 @@ function exibirResultadosS(reg) {
   document.getElementById('tbSai').innerHTML=reg.map(function(r){
     var temP=String(r.pendencia||'').toUpperCase()==='SIM'||String(r.sinistro||'').toUpperCase()==='SIM';
     var telL=String(r.telefone||'').replace(/\D/g,''); var wa=telL?'<br><a class="wa-btn" href="https://wa.me/55'+telL+'" target="_blank">📱 WA</a>':'';
-    return '<tr'+(temP?' style="background:rgba(231,76,60,.06)"':'')+'><td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(r.data||'--')+'</td><td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+'</td><td>'+esc(r.motorista||'--')+wa+'</td><td>'+esc(r.comandante||'--')+'</td><td>'+esc(r.setor||'--')+'</td><td style="font-family:var(--mono)">'+esc(r.odometro||'--')+'</td><td>'+badgeSN(r.abastecimento)+'</td><td>'+esc(r.saldoCartao||r.saldo||'--')+'</td><td>'+badgeSN(r.pendencia)+(r.qualPendencia?'<br><small style="color:#b91c1c;font-size:10px">'+esc(r.qualPendencia)+'</small>':'')+'</td><td>'+badgeSN(r.sinistro)+'</td></tr>';
+    return '<tr'+(temP?' style="background:rgba(231,76,60,.06)"':'')+'><td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(fmtData(r.data||'--'))+'</td><td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+'</td><td>'+esc(r.motorista||'--')+wa+'</td><td>'+esc(r.comandante||'--')+'</td><td>'+esc(r.setor||'--')+'</td><td style="font-family:var(--mono)">'+esc(r.odometro||'--')+'</td><td>'+badgeSN(r.abastecimento)+'</td><td>'+esc(r.saldoCartao||r.saldo||'--')+'</td><td>'+badgeSN(r.pendencia)+(r.qualPendencia?'<br><small style="color:#b91c1c;font-size:10px">'+esc(r.qualPendencia)+'</small>':'')+'</td><td>'+badgeSN(r.sinistro)+'</td></tr>';
   }).join('');
 }
 
@@ -1214,13 +1214,13 @@ function renderManut(dados) {
   // Saldo cartão
   html+='<div class="manut-section"><div class="manut-title" style="color:#a78bfa;border-bottom-color:rgba(167,139,250,.2)"><i class="fas fa-credit-card"></i> Saldo de Cartão — Alerta ('+sa.length+')</div>';
   if(!sa.length) html+='<div class="manut-empty">✅ Nenhuma viatura com saldo em alerta.</div>';
-  else { html+='<div class="manut-grid">'+sa.map(function(item){var sN=item.saldoNum||parseFloat(String(item.saldo||'').replace(/[^0-9,.-]/g,'').replace(',','.'));var cor=(!isNaN(sN)&&sN<=0)?'color:#b91c1c;font-weight:700':'color:#92400e;font-weight:700';return'<div class="manut-card saldo"><div class="mc-top"><div><div class="mc-prefixo">'+esc(item.prefixo||'--')+'</div><div class="mc-modelo">'+esc(item.modelo||'--')+'</div></div><span class="bp b-atencao">💳 SALDO BAIXO</span></div><div class="mc-row">💳 Saldo: <span style="'+cor+'">'+esc(item.saldo||'--')+'</span></div>'+(item.data&&item.data!=='--'?'<div class="mc-row">📅 Última saída: <span>'+esc(item.data)+'</span></div>':'')+(item.motorista&&item.motorista!=='--'?'<div class="mc-row">👤 Motorista: <span>'+esc(item.motorista)+'</span></div>':'')+'</div>';}).join('')+'</div>'; }
+  else { html+='<div class="manut-grid">'+sa.map(function(item){var sN=item.saldoNum||parseFloat(String(item.saldo||'').replace(/[^0-9,.-]/g,'').replace(',','.'));var cor=(!isNaN(sN)&&sN<=0)?'color:#b91c1c;font-weight:700':'color:#92400e;font-weight:700';return'<div class="manut-card saldo"><div class="mc-top"><div><div class="mc-prefixo">'+esc(item.prefixo||'--')+'</div><div class="mc-modelo">'+esc(item.modelo||'--')+'</div></div><span class="bp b-atencao">💳 SALDO BAIXO</span></div><div class="mc-row">💳 Saldo: <span style="'+cor+'">'+esc(item.saldo||'--')+'</span></div>'+(item.data&&item.data!=='--'?'<div class="mc-row">📅 Última saída: <span>'+esc(fmtData(item.data))+'</span></div>':'')+(item.motorista&&item.motorista!=='--'?'<div class="mc-row">👤 Motorista: <span>'+esc(item.motorista)+'</span></div>':'')+'</div>';}).join('')+'</div>'; }
   html+='</div>';
 
   // Oficinas
   html+='<div class="manut-section"><div class="manut-title" style="color:#fb923c;border-bottom-color:rgba(251,146,60,.2)"><i class="fas fa-wrench"></i> Em Oficina ('+of.length+')</div>';
   if(!of.length) html+='<div class="manut-empty">✅ Nenhuma viatura em oficina no momento.</div>';
-  else { html+='<div class="manut-grid">'+of.map(function(v){return'<div class="manut-card oficina"><div class="mc-top"><div><div class="mc-prefixo">'+esc(v.viatura||v.prefixo||'--')+'</div><div class="mc-modelo">'+esc(v.modelo||'--')+'</div></div><span class="bp" style="background:rgba(251,146,60,.15);color:#fb923c">OFICINA</span></div><div class="mc-row">🏢 Oficina: <span>'+esc(v.oficina||'--')+'</span></div><div class="mc-row">⚠️ Motivo: <span>'+esc(v.motivo||'--')+'</span></div><div class="mc-row">📅 Entrada: <span>'+esc(v.dataEntrada||v.entrada||'--')+'</span></div></div>';}).join('')+'</div>'; }
+  else { html+='<div class="manut-grid">'+of.map(function(v){return'<div class="manut-card oficina"><div class="mc-top"><div><div class="mc-prefixo">'+esc(v.viatura||v.prefixo||'--')+'</div><div class="mc-modelo">'+esc(v.modelo||'--')+'</div></div><span class="bp" style="background:rgba(251,146,60,.15);color:#fb923c">OFICINA</span></div><div class="mc-row">🏢 Oficina: <span>'+esc(v.oficina||'--')+'</span></div><div class="mc-row">⚠️ Motivo: <span>'+esc(v.motivo||'--')+'</span></div><div class="mc-row">📅 Entrada: <span>'+esc(fmtData(v.dataEntrada||v.entrada||'--'))+'</span></div></div>';}).join('')+'</div>'; }
   html+='</div>';
 
   // Óleo urgente
@@ -1329,7 +1329,7 @@ function _renderMovEntradas() {
     var prefixoExibir = (viat && _normPref(viat.prefixo) !== _normPref(r.prefixo))
       ? viat.prefixo : (r.prefixo||'--');
     return '<tr>'+
-      '<td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(r.data||'--')+'</td>'+
+      '<td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(fmtData(r.data||'--'))+'</td>'+
       '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(prefixoExibir)+(placa?'<br><span style="font-size:10px;color:var(--txt2);font-weight:400">'+esc(placa)+'</span>':'')+'</td>'+
       '<td>'+esc(r.motorista||'--')+wa+'</td>'+
       '<td>'+esc(r.comandante||'--')+'</td>'+
@@ -1366,7 +1366,7 @@ function _renderMovSaidas() {
     var prefixoExibir = (viat && _normPref(viat.prefixo) !== _normPref(r.prefixo))
       ? viat.prefixo : (r.prefixo||'--');
     return '<tr'+(temP?' style="background:rgba(231,76,60,.06)"':'')+'>'+
-      '<td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(r.data||'--')+'</td>'+
+      '<td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(fmtData(r.data||'--'))+'</td>'+
       '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(prefixoExibir)+(placa?'<br><span style="font-size:10px;color:var(--txt2);font-weight:400">'+esc(placa)+'</span>':'')+'</td>'+
       '<td>'+esc(r.motorista||'--')+wa+'</td>'+
       '<td>'+esc(r.comandante||'--')+'</td>'+
@@ -1779,8 +1779,8 @@ async function carregarListaOf(apenasEmOficina) {
         '<td style="font-weight:700;color:var(--ac)">'+esc(v.viatura||v.prefixo||'--')+'</td>' +
         '<td>'+esc(v.oficina||'--')+'</td>' +
         '<td>'+esc(v.motivo||'--')+'</td>' +
-        '<td>'+esc(v.dataEntrada||'--')+'</td>' +
-        '<td>'+esc(v.previsaoSaida||v.previsao||'--')+'</td>' +
+        '<td>'+esc(fmtData(v.dataEntrada||'--'))+'</td>' +
+        '<td>'+esc(fmtData(v.previsaoSaida||v.previsao||'--'))+'</td>' +
         '<td><span class="bp '+(emOf?'b-ofic':'b-ativ')+'">'+esc(v.status||'--')+'</span></td>' +
         '<td style="text-align:center">' +
           (emOf ? '<button class="btn btn-g sm" onclick="registrarRetornoOf(\''+esc(v.viatura||v.prefixo)+'\')">✅ Retorno</button> ' : '') +
@@ -1944,6 +1944,7 @@ async function excluirSetorM(indice, nome) {
 // ═══════════════════════════════════════════════════════
 function fechar(id){ document.getElementById(id).classList.remove('on'); }
 function esc(v){ return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtData(s){if(!s||s==='--')return s;try{var d=new Date(s);if(isNaN(d.getTime()))return s;var dia=String(d.getDate()).padStart(2,'0');var mes=String(d.getMonth()+1).padStart(2,'0');var ano=d.getFullYear();var h=String(d.getHours()).padStart(2,'0');var m=String(d.getMinutes()).padStart(2,'0');return dia+'/'+mes+'/'+ano+' às '+h+'h'+m;}catch(e){return s;}}
 function loading(txt){ document.getElementById('lovTxt').textContent=txt||'Processando...'; document.getElementById('lov').classList.add('on'); }
 function unload(){ document.getElementById('lov').classList.remove('on'); }
 function toast(msg,tipo){ var el=document.createElement('div'); el.className='toast-el '+(tipo||'info'); el.innerHTML='<span>'+(tipo==='ok'?'✅':tipo==='err'?'❌':'ℹ️')+'</span><span>'+esc(msg)+'</span>'; document.body.appendChild(el); setTimeout(function(){el.remove();},4000); }
