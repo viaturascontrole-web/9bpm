@@ -385,6 +385,11 @@ tr:hover td{background:rgba(245,166,35,.025)}
     </div>
   </div>
   <div class="hdr-right">
+    <div class="hdr-badge" id="onlineBadge" title="Usuários online agora" style="cursor:default;gap:7px;display:flex;align-items:center">
+      <i class="fas fa-users" style="color:#86efac;font-size:13px"></i>
+      <span id="onlineCount" style="font-size:13px;font-weight:800;color:#86efac;min-width:14px;text-align:center">–</span>
+      <span style="font-size:10px;color:var(--txt2);font-weight:400">online</span>
+    </div>
     <div class="hdr-badge" id="hdrBadge"><i class="fas fa-car" style="color:var(--ac)"></i> Frota</div>
   </div>
 </div>
@@ -944,6 +949,8 @@ function _iniciar() {
   init().then(function(){ carregarUltimasMovimentacoes(); });
   carregarManut();
   monitorarSessao();
+  atualizarOnline();
+  setInterval(atualizarOnline, 60000);
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1001,6 +1008,43 @@ async function fazerLogout() {
   try { await api({tipo:'garageiroLogout',token:_token}); } catch(e) {}
   sessionStorage.clear(); unload();
   window.location.href='garageiro-login.html';
+}
+
+// ═══════════════════════════════════════════════════════
+//  USUÁRIOS ONLINE
+// ═══════════════════════════════════════════════════════
+async function atualizarOnline() {
+  try {
+    var r = await api({ tipo: 'usuariosListar', token: _token });
+    if (!r || !r.sucesso || !r.dados) return;
+    // Considera online quem acessou nos últimos 30 minutos
+    var limite = new Date(Date.now() - 30 * 60 * 1000);
+    var online = r.dados.filter(function(u) {
+      if (!u.ultimoAcesso || u.ultimoAcesso === '—' || u.ultimoAcesso === '--') return false;
+      // ultimoAcesso vem em dd/MM/yyyy HH:mm ou similar
+      var partes = String(u.ultimoAcesso).match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})/);
+      if (!partes) return false;
+      var dt = new Date(partes[3], partes[2]-1, partes[1], partes[4], partes[5]);
+      return dt >= limite;
+    });
+    var count = online.length;
+    // Garante que o próprio usuário logado apareça
+    if (count === 0) count = 1;
+    var el = document.getElementById('onlineCount');
+    if (el) {
+      el.textContent = count;
+      // Tooltip com nomes
+      var badge = document.getElementById('onlineBadge');
+      if (badge) {
+        var nomes = online.map(function(u){ return u.nomeGuerra || u.matricula; }).join(', ');
+        badge.title = count === 1
+          ? 'Você está online'
+          : count + ' usuários online: ' + (nomes || 'você e outros');
+      }
+    }
+  } catch(e) {
+    // Silencioso — não interrompe o fluxo
+  }
 }
 
 function monitorarSessao() {
@@ -1071,7 +1115,7 @@ function renderViaturas(lista) {
     var s=String(v.status||'').trim().toUpperCase(), cls=resolverCls(s), lbl=resolverLbl(s), bp=resolverBp(cls);
     var det='';
     var odo=v.odometro||v.odometroInicial||'';
-    if(cls==='servico'||cls==='semretorno'){det=(v.motorista&&v.motorista!=='--'?'<div class="v-row">👤 <span>'+esc(v.motorista)+'</span></div>':'')+(v.comandante&&v.comandante!=='--'?'<div class="v-row">👨‍✈️ <span>'+esc(v.comandante)+'</span></div>':'')+(v.setor&&v.setor!=='--'?'<div class="v-row">📍 <span>'+esc(v.setor)+'</span></div>':'')+(odo!==''&&odo!=='--'&&odo!==null&&odo!==undefined?'<div class="v-row">🔢 <span style="font-family:var(--mono)">'+esc(String(odo))+' km</span></div>':'')+(v.tempo&&v.tempo!=='--'?'<div class="v-row">⏱️ <span>'+esc(v.tempo)+'</span></div>':'');}
+    if(cls==='servico'||cls==='semretorno'){det=(v.motorista&&v.motorista!=='--'?'<div class="v-row">👤 <span>'+esc(v.motorista)+'</span></div>':'')+(v.comandante&&v.comandante!=='--'?'<div class="v-row">👨‍✈️ <span>'+esc(v.comandante)+'</span></div>':'')+(v.setor&&v.setor!=='--'?'<div class="v-row">📍 <span>'+esc(v.setor)+'</span></div>':'')+(odo!==''&&odo!=='--'&&odo!==null&&odo!==undefined?'<div class="v-row" style="flex-direction:column;gap:1px"><span style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--txt2);opacity:.7">Odômetro</span><span style="font-family:var(--mono)">🔢 '+esc(String(odo))+' km</span></div>':'')+(v.tempo&&v.tempo!=='--'?'<div class="v-row" style="flex-direction:column;gap:1px"><span style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--txt2);opacity:.7">Tempo de serviço</span><span>⏱️ '+esc(v.tempo)+'</span></div>':'');}
     else if(cls==='oficina'){det=(v.setor&&v.setor!=='--'?'<div class="v-row">🏢 <span>'+esc(v.setor)+'</span></div>':'')+(v.tempo&&v.tempo!=='--'?'<div class="v-row">⏱️ <span>'+esc(v.tempo)+'</span></div>':'');}
     return '<div class="v-card '+cls+'"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px"><div><div class="v-prefixo">'+esc(v.prefixo)+'</div><div class="v-modelo">'+esc(v.modelo)+(v.placa&&v.placa!=='--'?' · '+esc(v.placa):'')+'</div></div><span class="bp '+bp+'">'+lbl+'</span></div>'+det+'</div>';
   }).join('');
