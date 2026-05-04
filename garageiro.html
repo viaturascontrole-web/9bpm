@@ -583,7 +583,8 @@ tr:hover td{background:rgba(245,166,35,.025)}
         <button class="adm-btn ap" onclick="admRel('oficinas')"><div class="adm-ico"><i class="fas fa-wrench"></i></div><div><div class="adm-lbl">Relatório de Oficinas</div><div class="adm-sub">Histórico de manutenções externas</div></div></button>
         <button class="adm-btn ap" onclick="admRel('cobranca')"><div class="adm-ico"><i class="fas fa-file-invoice-dollar"></i></div><div><div class="adm-lbl">Relatório de Cobrança</div><div class="adm-sub">Viaturas que excederam limite</div></div></button>
         <button class="adm-btn ap" onclick="admRel('atualizarOleo')"><div class="adm-ico"><i class="fas fa-sync-alt"></i></div><div><div class="adm-lbl">Atualizar Controle de Óleo</div><div class="adm-sub">Recalcular KM de todas viaturas</div></div></button>
-        <button class="adm-btn ap" onclick="admRel('indice')"><div class="adm-ico"><i class="fas fa-list-alt"></i></div><div><div class="adm-lbl">Atualizar Índice de Viaturas</div><div class="adm-sub">Reconstruir índice da frota</div></div></button>
+        <button class="adm-btn ap" onclick="admRel('indice')"><div class="adm-ico"><i class="fas fa-list-alt"></i></div><div><div class="adm-lbl">Atualizar Índice de Viaturas</div><div class="adm-sub">Reconstruir índice da frota na planilha</div></div></button>
+        <button class="adm-btn ap" onclick="admRel('pdf-indice')"><div class="adm-ico"><i class="fas fa-file-pdf"></i></div><div><div class="adm-lbl">PDF do Índice de Viaturas</div><div class="adm-sub">Exportar índice completo como PDF</div></div></button>
         <button class="adm-btn ap" onclick="admRel('arquivar')"><div class="adm-ico"><i class="fas fa-archive"></i></div><div><div class="adm-lbl">Arquivar Registros Antigos</div><div class="adm-sub">Mover registros &gt;90 dias</div></div></button>
       </div>
     </div>
@@ -1556,6 +1557,7 @@ async function sincronizarPastas() {
 // ═══════════════════════════════════════════════════════
 async function admRel(tipo){
   if(tipo==='personalizado'){document.getElementById('ovRelMes').classList.add('on');return;}
+  if(tipo==='pdf-indice'){admPDFIndice();return;}
   loading('Processando...');
   var acoes = {
     mensal:        'gerarRelatorioMesAtualPDF',
@@ -2338,6 +2340,20 @@ function pdGerarPDF() {
 }
 
 document.querySelectorAll('.ov').forEach(function(o){ o.addEventListener('click',function(e){ if(e.target===o) o.classList.remove('on'); }); });
+
+async function admPDFIndice() {
+  loading('Atualizando índice e gerando PDF...');
+  try {
+    var r = await api({tipo:'gerarPDFIndiceViaturas', token:_token});
+    unload();
+    if (r && r.sucesso && r.url) {
+      toast('✅ ' + r.mensagem, 'ok');
+      setTimeout(function(){ window.open(r.url, '_blank'); }, 600);
+    } else {
+      toast((r && r.mensagem) || 'Erro ao gerar PDF.', 'err');
+    }
+  } catch(e) { unload(); toast('Erro: ' + e.message, 'err'); }
+}
 </script>
 </body>
 </html>
