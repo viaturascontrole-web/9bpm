@@ -1131,11 +1131,15 @@ async function carregarDropdowns() {
     ['eViat','sViat'].forEach(function(id){
       var sel=document.getElementById(id);
       while(sel.options.length>1) sel.remove(1);
-      (v||[]).forEach(function(x){var o=document.createElement('option');o.value=typeof x==='object'?x.prefixo:x;o.textContent=typeof x==='object'?x.prefixo:x;sel.appendChild(o);});
+      (v||[]).forEach(function(x){
+        var o=document.createElement('option');
+        o.value       = typeof x==='object' ? x.prefixo : String(x).split(' - ')[0].trim();
+        o.textContent = typeof x==='object' ? (x.texto||x.prefixo) : x;
+        sel.appendChild(o);
+      });
     });
   } catch(e) {}
 }
-
 function definirDatasDefault() {
   var hoje=new Date(), mes30=new Date(); mes30.setDate(hoje.getDate()-30);
   var hj=hoje.toISOString().split('T')[0], m30=mes30.toISOString().split('T')[0];
