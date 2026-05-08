@@ -1128,6 +1128,7 @@ function renderViaturas(lista) {
 async function carregarDropdowns() {
   try {
     var v = await api({tipo:'obterViaturasParaDropdown'});
+     console.log('DROPDOWN RAW:', JSON.stringify(v));
     ['eViat','sViat'].forEach(function(id){
       var sel=document.getElementById(id);
       while(sel.options.length>1) sel.remove(1);
