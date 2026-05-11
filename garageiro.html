@@ -2034,22 +2034,51 @@ function pdInit() {
 
 // ── Importar entradas do dia ──────────────────────────
 async function pdImportarHoje() {
-  loading('Buscando entradas de hoje...');
+  loading('Buscando entradas e saídas de hoje...');
   try {
     var hj = new Date().toISOString().split('T')[0];
-    var r  = await api({tipo:'pesquisarEntradas', token:_token, filtros:{dataInicio:hj, dataFim:hj}});
-    var regs = Array.isArray(r) ? r : (r.registros||[]);
-    _pdVtr = regs.map(function(reg) {
-      var vtr = _todasViaturas.find(function(v){ return pdNorm(v.prefixo)===pdNorm(reg.prefixo); }) || {};
+
+    var [rE, rS] = await Promise.allSettled([
+      api({tipo:'pesquisarEntradas', token:_token, filtros:{dataInicio:hj, dataFim:hj}}),
+      api({tipo:'pesquisarSaidas',   token:_token, filtros:{dataInicio:hj, dataFim:hj}})
+    ]);
+
+    var entradas = rE.status==='fulfilled' ? (Array.isArray(rE.value) ? rE.value : (rE.value.registros||[])) : [];
+    var saidas   = rS.status==='fulfilled' ? (Array.isArray(rS.value) ? rS.value : (rS.value.registros||[])) : [];
+
+    var saidaMap = {};
+    saidas.forEach(function(s) {
+      var pref = pdNorm(s.prefixo);
+      if (!saidaMap[pref]) {
+        saidaMap[pref] = s;
+      } else {
+        if (String(s.data||'') > String(saidaMap[pref].data||'')) {
+          saidaMap[pref] = s;
+        }
+      }
+    });
+
+    _pdVtr = entradas.map(function(reg) {
+      var vtr   = _todasViaturas.find(function(v){ return pdNorm(v.prefixo)===pdNorm(reg.prefixo); }) || {};
+      var saida = saidaMap[pdNorm(reg.prefixo)] || null;
       return {
-        prefixo:    reg.prefixo||'', modelo:vtr.modelo||'', placa:vtr.placa||'',
-        oi: reg.odometro||'', of:'*******',
-        hi: pdExtrairHora(reg.data), hf:'',
-        setor:reg.setor||'', motorista:reg.motorista||'', comandante:reg.comandante||''
+        prefixo:    reg.prefixo||'',
+        modelo:     vtr.modelo||'',
+        placa:      vtr.placa||'',
+        oi:         reg.odometro||reg.odometroInicial||'',
+        of:         saida ? (saida.odometro||saida.odometroFinal||'*******') : '*******',
+        hi:         pdExtrairHora(reg.data),
+        hf:         saida ? pdExtrairHora(saida.data) : '',
+        setor:      reg.setor||'',
+        motorista:  reg.motorista||'',
+        comandante: reg.comandante||''
       };
     });
+
     pdRenderVtr();
-    unload(); toast(_pdVtr.length+' viatura(s) importada(s)','ok');
+    unload();
+    var comSaida = Object.keys(saidaMap).length;
+    toast(_pdVtr.length+' viatura(s) importada(s)'+(comSaida?' · '+comSaida+' com saída completa':''),'ok');
   } catch(e) { unload(); toast('Erro: '+e.message,'err'); }
 }
 
