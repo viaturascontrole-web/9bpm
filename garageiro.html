@@ -1995,7 +1995,21 @@ async function excluirSetorM(indice, nome) {
 // ═══════════════════════════════════════════════════════
 function fechar(id){ document.getElementById(id).classList.remove('on'); }
 function esc(v){ return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function fmtData(s){if(!s||s==='--')return s;try{var d=new Date(s);if(isNaN(d.getTime()))return s;var dia=String(d.getDate()).padStart(2,'0');var mes=String(d.getMonth()+1).padStart(2,'0');var ano=d.getFullYear();var h=String(d.getHours()).padStart(2,'0');var m=String(d.getMinutes()).padStart(2,'0');return dia+'/'+mes+'/'+ano+' às '+h+'h'+m;}catch(e){return s;}}
+function fmtData(s){
+  if(!s||s==='--'||s==='-')return s;
+  // Backend retorna "dd/MM/yyyy HH:mm" — parsear manualmente para não inverter dia/mês
+  var m=String(s).trim().match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
+  if(m){
+    var dia=m[1],mes=m[2],ano=m[3],h=m[4]||'00',min=m[5]||'00';
+    return dia+'/'+mes+'/'+ano+(m[4]?' às '+h+'h'+min:'');
+  }
+  // Fallback: tenta parsear como ISO ou outro formato
+  try{
+    var d=new Date(s);
+    if(isNaN(d.getTime()))return s;
+    return('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear()+(s.includes(':')?(' às '+('0'+d.getHours()).slice(-2)+'h'+('0'+d.getMinutes()).slice(-2)):'');
+  }catch(e){return s;}
+}
 function loading(txt){ document.getElementById('lovTxt').textContent=txt||'Processando...'; document.getElementById('lov').classList.add('on'); }
 function unload(){ document.getElementById('lov').classList.remove('on'); }
 function toast(msg,tipo){ var el=document.createElement('div'); el.className='toast-el '+(tipo||'info'); el.innerHTML='<span>'+(tipo==='ok'?'✅':tipo==='err'?'❌':'ℹ️')+'</span><span>'+esc(msg)+'</span>'; document.body.appendChild(el); setTimeout(function(){el.remove();},4000); }
