@@ -1134,7 +1134,7 @@ async function carregarDropdowns() {
       while(sel.options.length>1) sel.remove(1);
       (v||[]).forEach(function(x){
         var o=document.createElement('option');
-        o.value       = typeof x==='object' ? x.prefixo : String(x).split(' - ')[0].trim();
+        o.value = typeof x==='object' ? x.prefixo : String(x).replace(/\s-\s.*$/, '').trim();
         o.textContent = typeof x==='object' ? (x.texto||x.prefixo) : x;
         sel.appendChild(o);
       });
