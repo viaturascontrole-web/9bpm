@@ -123,7 +123,7 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
       <div id="saldoGroup" style="display:none">
         <div class="fg" style="margin-top:14px">
           <label>Saldo do cartão após abastecimento <span class="req">*</span></label>
-          <input type="tel" id="saldoCartao" placeholder="Ex: 150,50" inputmode="decimal" autocomplete="off" oninput="formatarSaldoInput(this)" onkeydown="bloquearTeclasSaldo(event)" onpaste="colarSaldoNumerico(event)" onblur="normalizarSaldo(this)">
+          <input type="tel" id="saldoCartao" placeholder="Ex: 150,50" inputmode="decimal" autocomplete="off" oninput="formatarSaldoInput(this)" onkeydown="bloquearTeclasSaldo(event)" onpaste="colarSaldoNumerico(event)" onblur="normalizarSaldo(this)" style="font-weight: normal;">
           <div class="saldo-hint" id="saldoHint">💰 <span id="saldoHintVal"></span></div>
           <div class="msg-invalido" id="msgSaldo">Informe o saldo do cartão</div>
         </div>
