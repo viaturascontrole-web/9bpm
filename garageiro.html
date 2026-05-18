@@ -1241,13 +1241,23 @@ async function carregarManut() {
     // Normaliza saldo: aceita array direto, {alertas:[]}, saldo numérico ou string
     var saRaw=sa.status==='fulfilled'?sa.value:null;
     var saArr=Array.isArray(saRaw)?saRaw:(saRaw&&Array.isArray(saRaw.alertas)?saRaw.alertas:[]);
-    dados.saldo=saArr.map(function(item){
+    // Deduplica por prefixo normalizado — mantém o mais recente (menor saldo = mais crítico)
+    var saMap={};
+    saArr.forEach(function(item){
       var rawSaldo=item.saldo!==undefined?item.saldo:(item.saldoNum!==undefined?item.saldoNum:0);
       var numVal=typeof rawSaldo==='number'?rawSaldo:parseFloat(String(rawSaldo).replace(/[^0-9,.-]/g,'').replace(',','.'))||0;
+      if(numVal<=0) return;
       var saldoStr='R$ '+numVal.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
       var dataStr=item.data||(item.dataRegistro?(item.dataRegistro instanceof Date?item.dataRegistro.toLocaleString('pt-BR'):String(item.dataRegistro)):'--');
-      return {prefixo:item.prefixo||'--',modelo:item.modelo||'--',saldo:saldoStr,saldoNum:numVal,data:dataStr,motorista:item.motorista||'--'};
-    }).filter(function(item){return item.saldoNum>0;});
+      // Normaliza prefixo: remove sufixo de localidade e espaços extras
+      var prefixoNorm=String(item.prefixo||'').trim().toUpperCase().split(' - ')[0].trim().replace(/\s+/g,' ');
+      var key=prefixoNorm.replace(/\s/g,'');
+      // Mantém o de menor saldo (mais crítico) em caso de duplicata
+      if(!saMap[key]||numVal<saMap[key].saldoNum){
+        saMap[key]={prefixo:prefixoNorm,modelo:item.modelo||'--',saldo:saldoStr,saldoNum:numVal,data:dataStr,motorista:item.motorista||'--'};
+      }
+    });
+    dados.saldo=Object.values(saMap).sort(function(a,b){return a.saldoNum-b.saldoNum;});
 
     renderManut(dados);
   } catch(e) { document.getElementById('manutBody').innerHTML='<div style="color:var(--txt);padding:40px;text-align:center">Erro ao carregar: '+esc(e.message)+'</div>'; }
@@ -1257,13 +1267,13 @@ function renderManut(dados) {
   var of=dados.oficinas||[], ol=dados.oleo||[], sa=dados.saldo||[];
   var urgente=[],atencao=[];
   ol.forEach(function(i){
-    var stRaw=String(i.status||'');
-    // Normaliza: remove acentos para comparação robusta (ATENÇÃO → ATENCAO)
-    var st=stRaw.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-    // Fallback numérico direto — não depende só do campo status
-    var falt=(i.kmProximaTroca>0&&i.kmAtual>0)?(i.kmProximaTroca-i.kmAtual):null;
-    var isUrgente=st.includes('URGENTE')||st.includes('VENCIDO')||stRaw.includes('🔴')||(falt!==null&&falt<=500);
-    var isAtencao=!isUrgente&&(st.includes('ATENCAO')||st.includes('ALERTA')||stRaw.includes('🟠')||(falt!==null&&falt>500&&falt<=1000));
+    // Usa faltam numérico como critério principal — independe do texto/emoji do status
+    var kmA=Number(i.kmAtual)||0, kmP=Number(i.kmProximaTroca)||0;
+    var falt=(kmP>0&&kmA>0)?(kmP-kmA):null;
+    // Fallback: lê o campo status sem depender de acentos ou emojis
+    var stU=String(i.status||'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    var isUrgente=(falt!==null&&falt<=500)||(falt===null&&(stU.includes('VENCIDO')||stU.includes('URGENTE')));
+    var isAtencao=!isUrgente&&((falt!==null&&falt>500&&falt<=1000)||(falt===null&&stU.includes('ATENCAO')));
     if(isUrgente) urgente.push(i);
     else if(isAtencao) atencao.push(i);
   });
@@ -1298,13 +1308,9 @@ function renderManut(dados) {
 }
 
 function cardOleo(item,cls,badge){
-  // Filtra KM implausível (digitação errada: ex matrícula caiu na coluna)
-  var KM_MAX=999999;
-  var kmAtualVal=(item.kmAtual>0&&item.kmAtual<=KM_MAX)?item.kmAtual:0;
-  var kmProxVal=(item.kmProximaTroca>0&&item.kmProximaTroca<=KM_MAX)?item.kmProximaTroca:0;
-  var kmA=kmAtualVal>0?Number(kmAtualVal).toLocaleString('pt-BR')+' km':'--';
-  var kmP=kmProxVal>0?Number(kmProxVal).toLocaleString('pt-BR')+' km':'--';
-  var falt=(kmProxVal>0&&kmAtualVal>0)?(kmProxVal-kmAtualVal):null;
+  var kmA=item.kmAtual>0?Number(item.kmAtual).toLocaleString('pt-BR')+' km':'--';
+  var kmP=item.kmProximaTroca>0?Number(item.kmProximaTroca).toLocaleString('pt-BR')+' km':'--';
+  var falt=item.kmProximaTroca>0&&item.kmAtual>0?item.kmProximaTroca-item.kmAtual:null;
   var faltStr=falt!=null?(falt<=0?'⚠️ '+Math.abs(falt).toLocaleString('pt-BR')+' km vencido':falt.toLocaleString('pt-BR')+' km'):'--';
   var cor=falt!=null?(falt<=0?'color:#b91c1c;font-weight:700':falt<=1000?'color:#92400e;font-weight:700':''):'';
   return '<div class="manut-card '+cls+'"><div class="mc-top"><div><div class="mc-prefixo">'+esc(item.prefixo||'--')+'</div><div class="mc-modelo">'+esc(item.modelo||'--')+'</div></div><span class="bp b-'+cls+'">'+badge+'</span></div><div class="mc-row">🛢️ KM Atual: <span>'+kmA+'</span></div><div class="mc-row">🎯 Próxima troca: <span>'+kmP+'</span></div><div class="mc-row">📏 Faltam: <span style="'+cor+'">'+faltStr+'</span></div></div>';
@@ -1756,29 +1762,15 @@ async function carregarTabelaOleo() {
   try {
     var lista = await api({tipo:'buscarTodosKmOleo', token:_token});
     if (!lista||!lista.length) { document.getElementById('oleoTbody').innerHTML='<tr><td colspan="5" class="erow">Sem dados de óleo.</td></tr>'; return; }
-    var KM_MAX=999999;
     document.getElementById('oleoTbody').innerHTML = lista.map(function(item) {
-      var stRaw = String(item.status||'');
-      var st = stRaw.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-      var kmA = (item.kmAtual>0&&item.kmAtual<=KM_MAX) ? item.kmAtual : 0;
-      var kmP = (item.kmProximaTroca>0&&item.kmProximaTroca<=KM_MAX) ? item.kmProximaTroca : 0;
-      // Recalcula status com KM filtrado
-      var falt = (kmP>0&&kmA>0) ? (kmP-kmA) : null;
-      var stFinal = stRaw;
-      if (kmP>0&&kmA>0) {
-        if(falt<=0) stFinal='🔴 VENCIDO';
-        else if(falt<=500) stFinal='🔴 URGENTE';
-        else if(falt<=1000) stFinal='🟠 ATENÇÃO';
-        else stFinal='🟢 OK';
-      }
-      var stN = stFinal.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-      var cor = stN.includes('URGENTE')||stN.includes('VENCIDO') ? 'color:#b91c1c;font-weight:700' : stN.includes('ATENCAO') ? 'color:#92400e;font-weight:700' : stN.includes('OK') ? 'color:#15803d' : 'color:var(--txt2)';
+      var st = String(item.status||'').toUpperCase();
+      var cor = st.includes('URGENTE')||st.includes('VENCIDO') ? 'color:#b91c1c;font-weight:700' : st.includes('ALERTA')||st.includes('ATENC') ? 'color:#92400e;font-weight:700' : st.includes('OK') ? 'color:#15803d' : 'color:var(--txt2)';
       return '<tr>' +
         '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(item.prefixo||'--')+'</td>' +
         '<td>'+esc(item.modelo||'--')+'</td>' +
-        '<td style="font-family:var(--mono)">'+(kmA>0 ? Number(kmA).toLocaleString('pt-BR')+' km':'--')+'</td>' +
-        '<td style="font-family:var(--mono)">'+(kmP>0 ? Number(kmP).toLocaleString('pt-BR')+' km':'--')+'</td>' +
-        '<td><span style="'+cor+'">'+esc(stFinal||'--')+'</span></td>' +
+        '<td style="font-family:var(--mono)">'+(item.kmAtual>0 ? Number(item.kmAtual).toLocaleString('pt-BR')+' km':'--')+'</td>' +
+        '<td style="font-family:var(--mono)">'+(item.kmProximaTroca>0 ? Number(item.kmProximaTroca).toLocaleString('pt-BR')+' km':'--')+'</td>' +
+        '<td><span style="'+cor+'">'+esc(item.status||'--')+'</span></td>' +
       '</tr>';
     }).join('');
   } catch(e) {
