@@ -1256,7 +1256,18 @@ async function carregarManut() {
 function renderManut(dados) {
   var of=dados.oficinas||[], ol=dados.oleo||[], sa=dados.saldo||[];
   var urgente=[],atencao=[];
-  ol.forEach(function(i){ var st=String(i.status||'').toUpperCase(); if(st.includes('URGENTE')||st.includes('VENCIDO')||st.includes('🔴')) urgente.push(i); else if(st.includes('ALERTA')||st.includes('ATENC')||st.includes('🟠')) atencao.push(i); });
+  ol.forEach(function(i){
+    // Normaliza: remove acentos + maiúsculo para comparação robusta
+    var stRaw=String(i.status||'');
+    var st=stRaw.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    // Urgente/Vencido: KM zerado ou negativo também vai para urgente
+    var falt=i.kmProximaTroca>0&&i.kmAtual>0 ? i.kmProximaTroca-i.kmAtual : null;
+    if(st.includes('URGENTE')||st.includes('VENCIDO')||stRaw.includes('🔴')||(falt!==null&&falt<=500)){
+      urgente.push(i);
+    } else if(st.includes('ATENCAO')||st.includes('ALERTA')||stRaw.includes('🟠')||(falt!==null&&falt<=1000)){
+      atencao.push(i);
+    }
+  });
   document.getElementById('mStOf').textContent=of.length; document.getElementById('mStUr').textContent=urgente.length; document.getElementById('mStAt').textContent=atencao.length; document.getElementById('mStSa').textContent=sa.length;
   var html='';
 
@@ -1763,11 +1774,15 @@ async function selecionarViaturaOleo() {
   if (!prefixo) { document.getElementById('oleoKmAtual').value=''; document.getElementById('oleoKmProx').value=''; return; }
   loading('Buscando dados...');
   try {
+    // Primeiro sincroniza o KM da planilha de saída, depois busca
+    await api({tipo:'sincronizarKmOleoAtualizar', token:_token}).catch(function(){});
     var r = await api({tipo:'buscarKmAtualViatura', token:_token, prefixo:prefixo});
     unload();
     if (r && r.sucesso) {
       document.getElementById('oleoKmAtual').value = r.kmAtual || '';
       document.getElementById('oleoKmProx').value = r.kmProximaTroca || '';
+    } else {
+      toast('Viatura não encontrada ou sem KM registrado.','err');
     }
   } catch(e) { unload(); toast('Erro: '+e.message,'err'); }
 }
