@@ -1238,22 +1238,36 @@ async function carregarManut() {
     dados.oficinas=of.status==='fulfilled'?(of.value||[]):[];
     dados.oleo=ol.status==='fulfilled'?(ol.value||[]):[];
 
-    // Normaliza saldo: aceita array direto, {alertas:[]}, saldo numérico ou string
+    // Normaliza saldo: aceita array direto ou {alertas:[]}
+    // O backend (verificarSaldoCartao v4) já entrega apenas 1 registro por viatura
+    // (o mais recente com saldo válido), então a deduplicação aqui é só segurança extra.
     var saRaw=sa.status==='fulfilled'?sa.value:null;
     var saArr=Array.isArray(saRaw)?saRaw:(saRaw&&Array.isArray(saRaw.alertas)?saRaw.alertas:[]);
-    // Deduplica por prefixo normalizado — mantém o mais recente (menor saldo = mais crítico)
+
+    // ── Função: normaliza prefixo removendo sufixo geográfico e espaços ao redor do hífen
+    // "CPL 20-1290 - RIO PARDO" → "CPL20-1290"  |  "RPL 25 - 430" → "RPL25-430"
+    function normPrefManut(p){
+      var s=String(p||'').trim().toUpperCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      s=s.replace(/\s+-\s+[A-Z].*$/,'');   // remove sufixo geográfico
+      s=s.replace(/\s*-\s*(?=\d)/g,'-');   // normaliza hífen numérico
+      return s.replace(/\s+/g,'');
+    }
+
     var saMap={};
     saArr.forEach(function(item){
       var rawSaldo=item.saldo!==undefined?item.saldo:(item.saldoNum!==undefined?item.saldoNum:0);
       var numVal=typeof rawSaldo==='number'?rawSaldo:parseFloat(String(rawSaldo).replace(/[^0-9,.-]/g,'').replace(',','.'))||0;
-      if(numVal<=0) return;
-      var saldoStr='R$ '+numVal.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+      // ✅ CORRIGIDO: não descarta saldo=0 (viaturas com R$0,00 SÃO alerta crítico)
+      if(isNaN(numVal)||numVal<0) return;
+      var saldoStr=numVal===0?'R$ 0,00':'R$ '+numVal.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
       var dataStr=item.data||(item.dataRegistro?(item.dataRegistro instanceof Date?item.dataRegistro.toLocaleString('pt-BR'):String(item.dataRegistro)):'--');
-      // Normaliza prefixo: remove sufixo de localidade e espaços extras
-      var prefixoNorm=String(item.prefixo||'').trim().toUpperCase().split(' - ')[0].trim().replace(/\s+/g,' ');
-      var key=prefixoNorm.replace(/\s/g,'');
-      // Mantém o de menor saldo (mais crítico) em caso de duplicata
-      if(!saMap[key]||numVal<saMap[key].saldoNum){
+      // ✅ CORRIGIDO: normalização que trata sufixo geográfico E espaços ao redor do hífen
+      var key=normPrefManut(item.prefixo);
+      var prefixoNorm=String(item.prefixo||'').trim().toUpperCase().replace(/\s+-\s+[A-Z].*$/,'').trim();
+      // ✅ CORRIGIDO: o backend já garante o mais recente; aqui em caso de duplicata
+      //    mantém o que vier PRIMEIRO no array (mais recente), não o de menor saldo
+      if(!saMap[key]){
         saMap[key]={prefixo:prefixoNorm,modelo:item.modelo||'--',saldo:saldoStr,saldoNum:numVal,data:dataStr,motorista:item.motorista||'--'};
       }
     });
@@ -1283,7 +1297,13 @@ function renderManut(dados) {
   // Saldo cartão
   html+='<div class="manut-section"><div class="manut-title" style="color:#a78bfa;border-bottom-color:rgba(167,139,250,.2)"><i class="fas fa-credit-card"></i> Saldo de Cartão — Alerta ('+sa.length+')</div>';
   if(!sa.length) html+='<div class="manut-empty">✅ Nenhuma viatura com saldo em alerta.</div>';
-  else { html+='<div class="manut-grid">'+sa.map(function(item){var sN=item.saldoNum||parseFloat(String(item.saldo||'').replace(/[^0-9,.-]/g,'').replace(',','.'));var cor=(!isNaN(sN)&&sN<=0)?'color:#b91c1c;font-weight:700':'color:#92400e;font-weight:700';return'<div class="manut-card saldo"><div class="mc-top"><div><div class="mc-prefixo">'+esc(item.prefixo||'--')+'</div><div class="mc-modelo">'+esc(item.modelo||'--')+'</div></div><span class="bp b-atencao">💳 SALDO BAIXO</span></div><div class="mc-row">💳 Saldo: <span style="'+cor+'">'+esc(item.saldo||'--')+'</span></div>'+(item.data&&item.data!=='--'?'<div class="mc-row">📅 Última saída: <span>'+esc(fmtData(item.data))+'</span></div>':'')+(item.motorista&&item.motorista!=='--'?'<div class="mc-row">👤 Motorista: <span>'+esc(item.motorista)+'</span></div>':'')+'</div>';}).join('')+'</div>'; }
+  else { html+='<div class="manut-grid">'+sa.map(function(item){
+    var sN=item.saldoNum!==undefined?item.saldoNum:parseFloat(String(item.saldo||'').replace(/[^0-9,.-]/g,'').replace(',','.'));
+    // ✅ CORRIGIDO: saldo=0 também é vermelho crítico
+    var cor=(!isNaN(sN)&&sN<=200)?'color:#b91c1c;font-weight:700':(!isNaN(sN)&&sN<=350)?'color:#d97706;font-weight:700':'color:#92400e;font-weight:700';
+    var urgBadge=(!isNaN(sN)&&sN<=200)?'<span class="bp b-urgente">🔴 CRÍTICO</span>':(!isNaN(sN)&&sN<=350)?'<span class="bp b-atencao">🟠 BAIXO</span>':'<span class="bp b-atencao">🟡 ATENÇÃO</span>';
+    return'<div class="manut-card saldo"><div class="mc-top"><div><div class="mc-prefixo">'+esc(item.prefixo||'--')+'</div><div class="mc-modelo">'+esc(item.modelo||'--')+'</div></div>'+urgBadge+'</div><div class="mc-row">💳 Saldo: <span style="'+cor+'">'+esc(item.saldo||'--')+'</span></div>'+(item.data&&item.data!=='--'?'<div class="mc-row">📅 Último saldo: <span>'+esc(fmtData(item.data))+'</span></div>':'')+'</div>';
+  }).join('')+'</div>'; }
   html+='</div>';
 
   // Oficinas
