@@ -1244,6 +1244,10 @@ async function carregarManut() {
     var saRaw=sa.status==='fulfilled'?sa.value:null;
     var saArr=Array.isArray(saRaw)?saRaw:(saRaw&&Array.isArray(saRaw.alertas)?saRaw.alertas:[]);
 
+    // ── Diagnóstico: exibe o que chegou do backend no console ─────────────────
+    console.log('[Garageiro] getAlertasSaldoCartao → raw:', saRaw);
+    console.log('[Garageiro] saArr ('+saArr.length+' itens):', saArr);
+
     // ── Função: normaliza prefixo removendo sufixo geográfico e espaços ao redor do hífen
     // "CPL 20-1290 - RIO PARDO" → "CPL20-1290"  |  "RPL 25 - 430" → "RPL25-430"
     function normPrefManut(p){
@@ -1257,16 +1261,30 @@ async function carregarManut() {
     var saMap={};
     saArr.forEach(function(item){
       var rawSaldo=item.saldo!==undefined?item.saldo:(item.saldoNum!==undefined?item.saldoNum:0);
-      var numVal=typeof rawSaldo==='number'?rawSaldo:parseFloat(String(rawSaldo).replace(/[^0-9,.-]/g,'').replace(',','.'))||0;
+      // ✅ CRÍTICO: não usa ||0 para não perder saldo=0 legítimo
+      var numVal;
+      if(typeof rawSaldo==='number'){
+        numVal=rawSaldo;
+      } else {
+        var parsed=parseFloat(String(rawSaldo).replace(/[^0-9,.-]/g,'').replace(',','.'));
+        numVal=isNaN(parsed)?0:parsed;
+      }
       // ✅ CORRIGIDO: não descarta saldo=0 (viaturas com R$0,00 SÃO alerta crítico)
       if(isNaN(numVal)||numVal<0) return;
       var saldoStr=numVal===0?'R$ 0,00':'R$ '+numVal.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
       var dataStr=item.data||(item.dataRegistro?(item.dataRegistro instanceof Date?item.dataRegistro.toLocaleString('pt-BR'):String(item.dataRegistro)):'--');
       // ✅ CORRIGIDO: normalização que trata sufixo geográfico E espaços ao redor do hífen
       var key=normPrefManut(item.prefixo);
-      var prefixoNorm=String(item.prefixo||'').trim().toUpperCase().replace(/\s+-\s+[A-Z].*$/,'').trim();
-      // ✅ CORRIGIDO: o backend já garante o mais recente; aqui em caso de duplicata
-      //    mantém o que vier PRIMEIRO no array (mais recente), não o de menor saldo
+      // ✅ prefixoNorm usa a mesma lógica de normPrefManut para exibição consistente:
+      //    remove sufixo geográfico E normaliza espaços ao redor do hífen numérico
+      //    "CPL 24-2005 - UNIÃO BANDEIRANTES" → "CPL 24-2005"
+      //    "RPL 25 - 430"                     → "RPL 25-430"
+      var prefixoNorm=String(item.prefixo||'').trim().toUpperCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+        .replace(/\s+-\s+[A-Z].*$/,'')      // remove sufixo geográfico
+        .replace(/\s*-\s*(?=\d)/g,'-')      // normaliza hífen numérico
+        .trim();
+      // ✅ mantém o que vier PRIMEIRO no array (mais recente), não o de menor saldo
       if(!saMap[key]){
         saMap[key]={prefixo:prefixoNorm,modelo:item.modelo||'--',saldo:saldoStr,saldoNum:numVal,data:dataStr,motorista:item.motorista||'--'};
       }
