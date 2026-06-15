@@ -296,6 +296,21 @@ tr:hover td{background:rgba(245,166,35,.025)}
 .mov-tw tr:hover td{background:rgba(245,166,35,.025)}
 .mov-tw .erow td{text-align:center!important;padding:24px!important;color:var(--txt3);font-size:13px}
 
+/* ══ DETALHES EXPANSÍVEIS (PATCH) ════════════════════ */
+.det-row{background:var(--bg3);border-bottom:1px solid var(--bd)}
+.det-row td{padding:9px 12px!important;white-space:normal!important;max-width:none!important}
+.det-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.det-bloco{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;padding:8px 10px}
+.det-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt2);margin-bottom:3px}
+.det-val{font-size:12px;color:var(--txt);word-break:break-word}
+.det-val a{color:var(--ac);text-decoration:none}
+.det-val a:hover{text-decoration:underline}
+.toggle-det{background:none;border:1px solid var(--bd);border-radius:5px;color:var(--txt2);cursor:pointer;font-size:10px;padding:1px 6px;transition:all .2s}
+.toggle-det:hover{border-color:var(--ac);color:var(--ac)}
+.alerta-campo{color:#92400e;font-weight:700}
+.ok-campo{color:#15803d}
+.warn-campo{color:#b91c1c;font-weight:700}
+
 @media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}.fg{grid-template-columns:1fr}.f2{grid-column:span 1}.filtros-grid{grid-template-columns:1fr 1fr}.adm-btn{width:100%}}
 </style>
 </head>
@@ -433,7 +448,6 @@ tr:hover td{background:rgba(245,166,35,.025)}
       <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#60a5fa;margin-bottom:7px;display:flex;align-items:center;gap:6px">
         <i class="fas fa-sign-in-alt"></i> Últimas Entradas de Serviço
       </div>
-      <!-- Stats mini entradas -->
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:8px">
         <div class="scp"><div class="scp-val" style="color:var(--ac);font-size:20px" id="movEStT">—</div><div class="scp-lbl">Total</div></div>
         <div class="scp"><div class="scp-val" style="color:#60a5fa;font-size:20px" id="movEStV">—</div><div class="scp-lbl">Viaturas</div></div>
@@ -458,7 +472,6 @@ tr:hover td{background:rgba(245,166,35,.025)}
       <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#4ade80;margin-bottom:7px;display:flex;align-items:center;gap:6px">
         <i class="fas fa-sign-out-alt"></i> Últimas Saídas de Serviço
       </div>
-      <!-- Stats mini saídas -->
       <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:8px">
         <div class="scp"><div class="scp-val" style="color:var(--ac);font-size:20px" id="movSStT">—</div><div class="scp-lbl">Total</div></div>
         <div class="scp"><div class="scp-val" style="color:#60a5fa;font-size:20px" id="movSStV">—</div><div class="scp-lbl">Viaturas</div></div>
@@ -505,8 +518,8 @@ tr:hover td{background:rgba(245,166,35,.025)}
     <div class="scp"><div class="scp-val" style="color:var(--ylw)" id="eStA">0</div><div class="scp-lbl">Com Alteração</div></div>
   </div>
   <div class="tw">
-    <table><thead><tr><th>Data/Hora</th><th>Viatura</th><th>Motorista</th><th>Comandante</th><th>Setor</th><th>Odômetro</th><th>Óleo/Água</th><th>Alterações</th></tr></thead>
-    <tbody id="tbEnt"><tr><td colspan="8" class="erow">🔍 Use os filtros e clique em Pesquisar</td></tr></tbody></table>
+    <table><thead><tr><th>Data/Hora</th><th>Viatura</th><th>Motorista</th><th>Comandante</th><th>Setor</th><th>Odômetro</th><th>Óleo/Água</th><th>Alterações</th><th></th></tr></thead>
+    <tbody id="tbEnt"><tr><td colspan="9" class="erow">🔍 Use os filtros e clique em Pesquisar</td></tr></tbody></table>
   </div>
 </div>
 
@@ -537,8 +550,8 @@ tr:hover td{background:rgba(245,166,35,.025)}
     <div class="scp"><div class="scp-val" style="color:#4facfe" id="sStAbs">0</div><div class="scp-lbl">Abastecimentos</div></div>
   </div>
   <div class="tw">
-    <table><thead><tr><th>Data/Hora</th><th>Viatura</th><th>Motorista</th><th>Comandante</th><th>Setor</th><th>Odômetro</th><th>Abasteceu</th><th>Saldo</th><th>Pendência</th><th>Sinistro</th></tr></thead>
-    <tbody id="tbSai"><tr><td colspan="10" class="erow">🔍 Use os filtros e clique em Pesquisar</td></tr></tbody></table>
+    <table><thead><tr><th>Data/Hora</th><th>Viatura</th><th>Motorista</th><th>Comandante</th><th>Setor</th><th>Odômetro</th><th>Abasteceu</th><th>Saldo</th><th>Pendência</th><th>Sinistro</th><th></th></tr></thead>
+    <tbody id="tbSai"><tr><td colspan="11" class="erow">🔍 Use os filtros e clique em Pesquisar</td></tr></tbody></table>
   </div>
 </div>
 
@@ -601,10 +614,7 @@ tr:hover td{background:rgba(245,166,35,.025)}
 <!-- ═══ PG PARTE DIÁRIA ═══ -->
 <div class="pg" id="pgParte">
   <div class="pd-shell">
-
-    <!-- FORMULÁRIO -->
     <div class="pd-form">
-
       <div class="pd-sec">📄 Identificação</div>
       <div class="pd-2col">
         <div class="pd-grp"><label class="pd-lbl">Nº da Parte</label><input class="pd-inp" id="pdNumParte" placeholder="238/2026"></div>
@@ -654,7 +664,6 @@ tr:hover td{background:rgba(245,166,35,.025)}
       </div>
     </div>
 
-    <!-- PREVIEW -->
     <div class="pd-preview">
       <div class="pd-preview-bar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
         <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2)">📄 Prévia do Documento</span>
@@ -680,7 +689,6 @@ tr:hover td{background:rgba(245,166,35,.025)}
 
 <!-- ══ MODAIS ══ -->
 
-<!-- Novo Usuário -->
 <div class="ov" id="ovNovoUsr">
   <div class="modal"><div class="mh"><div class="mt"><div class="mico">👤</div> Cadastrar Usuário</div><button class="mx" onclick="fechar('ovNovoUsr')">✕</button></div>
   <div class="mb"><div class="fg">
@@ -692,7 +700,6 @@ tr:hover td{background:rgba(245,166,35,.025)}
   <div class="mf"><button class="btn btn-s" onclick="fechar('ovNovoUsr')">Cancelar</button><button class="btn btn-g" onclick="salvarNovoUsr()"><i class="fas fa-user-plus"></i> Cadastrar</button></div></div>
 </div>
 
-<!-- Alterar Senha -->
 <div class="ov" id="ovSenha">
   <div class="modal" style="max-width:400px"><div class="mh"><div class="mt"><div class="mico">🔑</div> Alterar Senha</div><button class="mx" onclick="fechar('ovSenha')">✕</button></div>
   <div class="mb"><div class="fg" style="grid-template-columns:1fr">
@@ -703,7 +710,6 @@ tr:hover td{background:rgba(245,166,35,.025)}
   <div class="mf"><button class="btn btn-s" onclick="fechar('ovSenha')">Cancelar</button><button class="btn btn-g" onclick="salvarSenha()"><i class="fas fa-save"></i> Salvar</button></div></div>
 </div>
 
-<!-- Relatório Personalizado -->
 <div class="ov" id="ovRelMes">
   <div class="modal" style="max-width:360px"><div class="mh"><div class="mt"><div class="mico">📅</div> Relatório Personalizado</div><button class="mx" onclick="fechar('ovRelMes')">✕</button></div>
   <div class="mb"><div class="fg">
@@ -713,7 +719,6 @@ tr:hover td{background:rgba(245,166,35,.025)}
   <div class="mf"><button class="btn btn-s" onclick="fechar('ovRelMes')">Cancelar</button><button class="btn btn-p" onclick="gerarRelPersonalizado()"><i class="fas fa-file-pdf"></i> Gerar PDF</button></div></div>
 </div>
 
-<!-- ══ MODAL: VIATURAS ══ -->
 <div class="ov" id="ovViaturas">
   <div class="modal modal-lg">
     <div class="mh"><div class="mt"><div class="mico">🚗</div> Cadastro de Viaturas</div><button class="mx" onclick="fechar('ovViaturas')">✕</button></div>
@@ -744,7 +749,6 @@ tr:hover td{background:rgba(245,166,35,.025)}
   </div>
 </div>
 
-<!-- ══ MODAL: ÓLEO ══ -->
 <div class="ov" id="ovOleo">
   <div class="modal modal-lg">
     <div class="mh"><div class="mt"><div class="mico">🛢️</div> Gerenciar Troca de Óleo</div><button class="mx" onclick="fechar('ovOleo')">✕</button></div>
@@ -766,7 +770,6 @@ tr:hover td{background:rgba(245,166,35,.025)}
   </div>
 </div>
 
-<!-- ══ MODAL: OFICINAS ══ -->
 <div class="ov" id="ovOficinas">
   <div class="modal modal-lg">
     <div class="mh"><div class="mt"><div class="mico">🔧</div> Gerenciar Oficinas</div><button class="mx" onclick="fechar('ovOficinas')">✕</button></div>
@@ -795,7 +798,6 @@ tr:hover td{background:rgba(245,166,35,.025)}
   </div>
 </div>
 
-<!-- ══ MODAL: CONFIG OFICINAS/MOTIVOS ══ -->
 <div class="ov" id="ovCfgOf">
   <div class="modal" style="max-width:660px">
     <div class="mh"><div class="mt"><div class="mico">⚙️</div> Configurar Oficinas e Motivos</div><button class="mx" onclick="fechar('ovCfgOf')">✕</button></div>
@@ -816,7 +818,6 @@ tr:hover td{background:rgba(245,166,35,.025)}
   </div>
 </div>
 
-<!-- ══ MODAL: SETORES ══ -->
 <div class="ov" id="ovSetores">
   <div class="modal" style="max-width:500px">
     <div class="mh"><div class="mt"><div class="mico">🗂️</div> Cadastrar Setores</div><button class="mx" onclick="fechar('ovSetores')">✕</button></div>
@@ -870,15 +871,13 @@ async function api(payload) {
 }
 
 // ═══════════════════════════════════════════════════════
-//  INICIALIZAÇÃO — verifica sessão
+//  INICIALIZAÇÃO
 // ═══════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', async function() {
-  // Parâmetro hk na URL?
   var urlParams = new URLSearchParams(window.location.search);
   var hk = urlParams.get('hk');
 
   if (hk) {
-    // Consome o handoff no servidor
     loading('Iniciando sessão...');
     try {
       var dados = await api({ tipo: 'garageiroConsumirHandoff', key: hk });
@@ -890,7 +889,6 @@ window.addEventListener('DOMContentLoaded', async function() {
       }
       _token=dados.token; _ng=dados.nomeGuerra; _mat=dados.matricula; _perfil=dados.perfil;
       salvarSessaoLocal();
-      // Remove hk da URL sem recarregar
       history.replaceState(null,'',window.location.pathname);
     } catch(e) {
       unload();
@@ -899,7 +897,6 @@ window.addEventListener('DOMContentLoaded', async function() {
       return;
     }
   } else {
-    // Sem handoff — verifica sessionStorage
     var tk = sessionStorage.getItem('gar_token');
     var mat = sessionStorage.getItem('gar_matricula');
     var expira = parseInt(sessionStorage.getItem('gar_expira')||'0');
@@ -919,7 +916,6 @@ window.addEventListener('DOMContentLoaded', async function() {
       _token=tk; _ng=sessao.nomeGuerra; _mat=sessao.matricula; _perfil=sessao.perfil;
     } catch(e) {
       unload();
-      // Tolerância offline: usa dados locais
       _token=tk; _ng=sessionStorage.getItem('gar_nomeGuerra')||''; _mat=mat; _perfil=sessionStorage.getItem('gar_perfil')||'OPERADOR';
     }
   }
@@ -938,14 +934,11 @@ function salvarSessaoLocal() {
 
 function _iniciar() {
   renderUsrCard();
-  // Exibe itens restritos ao ADMIN — suporte a ambas as classes por segurança
   if (_perfil==='ADMIN') {
     document.querySelectorAll('.admin-only, .tab-admin-only').forEach(function(el){ el.style.display='flex'; });
   }
   definirDatasDefault();
   carregarDropdowns();
-  // init() deve terminar antes de carregarUltimasMovimentacoes para que
-  // _todasViaturas já esteja populado no momento do cruzamento de placas.
   init().then(function(){ carregarUltimasMovimentacoes(); });
   carregarManut();
   monitorarSessao();
@@ -1017,34 +1010,26 @@ async function atualizarOnline() {
   try {
     var r = await api({ tipo: 'usuariosListar', token: _token });
     if (!r || !r.sucesso || !r.dados) return;
-    // Considera online quem acessou nos últimos 30 minutos
     var limite = new Date(Date.now() - 30 * 60 * 1000);
     var online = r.dados.filter(function(u) {
       if (!u.ultimoAcesso || u.ultimoAcesso === '—' || u.ultimoAcesso === '--') return false;
-      // ultimoAcesso vem em dd/MM/yyyy HH:mm ou similar
       var partes = String(u.ultimoAcesso).match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})/);
       if (!partes) return false;
       var dt = new Date(partes[3], partes[2]-1, partes[1], partes[4], partes[5]);
       return dt >= limite;
     });
     var count = online.length;
-    // Garante que o próprio usuário logado apareça
     if (count === 0) count = 1;
     var el = document.getElementById('onlineCount');
     if (el) {
       el.textContent = count;
-      // Tooltip com nomes
       var badge = document.getElementById('onlineBadge');
       if (badge) {
         var nomes = online.map(function(u){ return u.nomeGuerra || u.matricula; }).join(', ');
-        badge.title = count === 1
-          ? 'Você está online'
-          : count + ' usuários online: ' + (nomes || 'você e outros');
+        badge.title = count === 1 ? 'Você está online' : count + ' usuários online: ' + (nomes || 'você e outros');
       }
     }
-  } catch(e) {
-    // Silencioso — não interrompe o fluxo
-  }
+  } catch(e) {}
 }
 
 function monitorarSessao() {
@@ -1052,7 +1037,7 @@ function monitorarSessao() {
 }
 
 // ═══════════════════════════════════════════════════════
-//  INIT — carrega viaturas e stats
+//  INIT
 // ═══════════════════════════════════════════════════════
 async function init() {
   loading('Carregando dados...');
@@ -1093,13 +1078,12 @@ function renderStats(d) {
 //  VIATURAS
 // ═══════════════════════════════════════════════════════
 function filtrarViaturas() {
-  var fSt=document.getElementById('fStatus').value, fBu='';
+  var fSt=document.getElementById('fStatus').value;
   var lista=_todasViaturas.filter(function(v){
     var cls=resolverCls(String(v.status||'').toUpperCase());
     if(fSt==='servico'&&cls!=='servico'&&cls!=='semretorno')return false;
     if(fSt==='oficina'&&cls!=='oficina')return false;
     if(fSt==='disponivel'&&cls!=='disponivel')return false;
-    if(fBu){var b=[v.prefixo,v.modelo,v.placa,v.setor,v.motorista].join(' ').toLowerCase();if(!b.includes(fBu))return false;}
     return true;
   });
   renderViaturas(lista);
@@ -1127,7 +1111,6 @@ function renderViaturas(lista) {
 async function carregarDropdowns() {
   try {
     var v = await api({tipo:'obterViaturasParaDropdown'});
-     console.log('DROPDOWN RAW:', JSON.stringify(v));
     ['eViat','sViat'].forEach(function(id){
       var sel=document.getElementById(id);
       while(sel.options.length>1) sel.remove(1);
@@ -1151,12 +1134,12 @@ function definirDatasDefault() {
 }
 
 // ═══════════════════════════════════════════════════════
-//  PESQUISA ENTRADAS
+//  PESQUISA ENTRADAS — versão com detalhes expansíveis
 // ═══════════════════════════════════════════════════════
 async function pesquisarEntradas() {
   var filtros={viatura:document.getElementById('eViat').value,motorista:document.getElementById('eMot').value.trim(),comandante:document.getElementById('eCom').value.trim(),setor:document.getElementById('eSec').value.trim(),dataInicio:document.getElementById('eDi').value,dataFim:document.getElementById('eDf').value};
   var btn=document.getElementById('btnPesqE'); btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>';
-  document.getElementById('tbEnt').innerHTML='<tr><td colspan="8" class="erow"><i class="fas fa-spinner fa-spin"></i> Pesquisando...</td></tr>';
+  document.getElementById('tbEnt').innerHTML='<tr><td colspan="9" class="erow"><i class="fas fa-spinner fa-spin"></i> Pesquisando...</td></tr>';
   try {
     var r=await api({tipo:'pesquisarEntradas',token:_token,filtros:filtros});
     btn.disabled=false; btn.innerHTML='<i class="fas fa-search"></i> Pesquisar';
@@ -1166,15 +1149,62 @@ async function pesquisarEntradas() {
 }
 
 function exibirResultadosE(reg) {
-  var prefixos={},motoristas={},comAlter=0;
-  reg.forEach(function(r){ var p=r.prefixo||''; if(p) prefixos[p.toUpperCase()]=true; var m=r.motorista||''; if(m&&m!=='-'&&m!=='--') motoristas[m.toUpperCase()]=true; var a=r.alteracoes||''; if(a&&a!=='-'&&a!=='--'&&a.toUpperCase()!=='NÃO'&&a.toUpperCase()!=='NAO'&&a!=='Sem alteração') comAlter++; });
-  document.getElementById('eStT').textContent=reg.length; document.getElementById('eStV').textContent=Object.keys(prefixos).length; document.getElementById('eStM').textContent=Object.keys(motoristas).length; document.getElementById('eStA').textContent=comAlter;
+  var prefixos={}, motoristas={}, comAlter=0;
+  reg.forEach(function(r){
+    var p=r.prefixo||''; if(p) prefixos[p.toUpperCase()]=true;
+    var m=r.motorista||''; if(m&&m!=='-'&&m!=='--') motoristas[m.toUpperCase()]=true;
+    var a=r.alteracoes||''; if(a&&a!=='-'&&a!=='--'&&a.toUpperCase()!=='NÃO'&&a.toUpperCase()!=='NAO'&&a!=='Sem alteração') comAlter++;
+  });
+  document.getElementById('eStT').textContent=reg.length;
+  document.getElementById('eStV').textContent=Object.keys(prefixos).length;
+  document.getElementById('eStM').textContent=Object.keys(motoristas).length;
+  document.getElementById('eStA').textContent=comAlter;
   document.getElementById('infoE').textContent=reg.length?reg.length+' registro(s) encontrado(s)':'';
-  if(!reg||!reg.length){document.getElementById('tbEnt').innerHTML='<tr><td colspan="8" class="erow">📭 Nenhum registro encontrado.</td></tr>';return;}
-  document.getElementById('tbEnt').innerHTML=reg.map(function(r){
-    var temA=r.alteracoes&&r.alteracoes!=='--'&&r.alteracoes!=='-'&&r.alteracoes!=='Sem alteração'&&r.alteracoes.toUpperCase()!=='NÃO';
-    var telL=String(r.telefone||'').replace(/\D/g,''); var wa=telL?'<br><a class="wa-btn" href="https://wa.me/55'+telL+'" target="_blank">📱 WA</a>':'';
-    return '<tr><td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(fmtData(r.data||'--'))+'</td><td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+'</td><td>'+esc(r.motorista||'--')+wa+'</td><td>'+esc(r.comandante||'--')+'</td><td>'+esc(r.setor||'--')+'</td><td style="font-family:var(--mono)">'+esc(r.odometro||'--')+'</td><td style="font-size:11px">'+nivelBadge(r.nivelOleo||r.oleo,'🛢️')+' '+nivelBadge(r.nivelAgua||r.agua,'💧')+'</td><td style="font-size:11px;max-width:150px;white-space:normal">'+(temA?'<span style="color:#92400e;font-weight:700">⚠️ '+esc(r.alteracoes)+'</span>':'<span style="color:var(--txt3)">Sem alteração</span>')+'</td></tr>';
+
+  if(!reg||!reg.length){
+    document.getElementById('tbEnt').innerHTML='<tr><td colspan="9" class="erow">📭 Nenhum registro encontrado.</td></tr>';
+    return;
+  }
+
+  document.getElementById('tbEnt').innerHTML = reg.map(function(r, idx){
+    var temA = r.alteracoes&&r.alteracoes!=='--'&&r.alteracoes!=='-'&&r.alteracoes!=='Sem alteração'&&r.alteracoes.toUpperCase()!=='NÃO';
+    var telL = String(r.telefone||'').replace(/\D/g,'');
+    var wa   = telL?'<br><a class="wa-btn" href="https://wa.me/55'+telL+'" target="_blank">📱 WA</a>':'';
+
+    var limpa   = String(r.viaturaLimpaEntrada||'').trim();
+    var descLim = String(r.descLimpaEntrada||'').trim();
+    var descAv  = String(r.descricao||'').trim();
+    var link    = String(r.linkImagens||'').trim();
+    var cartao  = String(r.cartaoConferePlaca||'').trim();
+    var diverg  = String(r.divergenciaCartao||'').trim();
+
+    var limpaClass = limpa.toUpperCase()==='SIM'?'ok-campo':limpa.toUpperCase()==='NÃO'||limpa.toUpperCase()==='NAO'?'warn-campo':'';
+    var cartaoClass= cartao.toUpperCase()==='SIM'?'ok-campo':cartao.toUpperCase()==='NÃO'||cartao.toUpperCase()==='NAO'?'warn-campo':'';
+
+    var temExtras = limpa||descLim||descAv||link||cartao;
+
+    var linhaDetalhe = '<tr class="det-row" id="det-e-'+idx+'" style="display:none"><td colspan="9"><div class="det-grid">';
+    if(limpa) linhaDetalhe+='<div class="det-bloco"><div class="det-lbl">🧹 Viatura Limpa na Assunção?</div><div class="det-val '+limpaClass+'">'+esc(limpa)+(descLim?'<br><small style="font-weight:400;color:var(--txt2)">'+esc(descLim)+'</small>':'')+'</div></div>';
+    if(descAv&&descAv!=='--') linhaDetalhe+='<div class="det-bloco"><div class="det-lbl">⚠️ Avarias / Alterações Elétricas</div><div class="det-val warn-campo">'+esc(descAv)+'</div></div>';
+    if(link) linhaDetalhe+='<div class="det-bloco"><div class="det-lbl">📸 Imagens</div><div class="det-val"><a href="'+esc(link)+'" target="_blank">🔗 Ver imagens</a></div></div>';
+    if(cartao) linhaDetalhe+='<div class="det-bloco"><div class="det-lbl">💳 Cartão confere com a placa?</div><div class="det-val '+cartaoClass+'">'+esc(cartao)+(diverg?'<br><small style="color:#b91c1c">'+esc(diverg)+'</small>':'')+'</div></div>';
+    linhaDetalhe += '</div></td></tr>';
+
+    var toggleBtn = temExtras
+      ? '<button class="toggle-det" onclick="toggleDet(\'det-e-'+idx+'\',this)" title="Ver detalhes">▼</button>'
+      : '';
+
+    return '<tr>'+
+      '<td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(fmtData(r.data||'--'))+'</td>'+
+      '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+'</td>'+
+      '<td>'+esc(r.motorista||'--')+wa+'</td>'+
+      '<td>'+esc(r.comandante||'--')+'</td>'+
+      '<td>'+esc(r.setor||'--')+'</td>'+
+      '<td style="font-family:var(--mono)">'+esc(r.odometro||'--')+'</td>'+
+      '<td style="font-size:11px">'+nivelBadge(r.nivelOleo||r.oleo,'🛢️')+' '+nivelBadge(r.nivelAgua||r.agua,'💧')+'</td>'+
+      '<td style="font-size:11px;max-width:150px;white-space:normal">'+(temA?'<span class="alerta-campo">⚠️ '+esc(r.alteracoes)+'</span>':'<span style="color:var(--txt3)">Sem alteração</span>')+'</td>'+
+      '<td style="text-align:center">'+toggleBtn+'</td>'+
+    '</tr>'+linhaDetalhe;
   }).join('');
 }
 
@@ -1183,16 +1213,16 @@ function limparE(){
   definirDatasDefault();
   ['eStT','eStV','eStM','eStA'].forEach(function(id){document.getElementById(id).textContent='0';});
   document.getElementById('infoE').textContent='';
-  document.getElementById('tbEnt').innerHTML='<tr><td colspan="8" class="erow">🔍 Use os filtros e clique em Pesquisar</td></tr>';
+  document.getElementById('tbEnt').innerHTML='<tr><td colspan="9" class="erow">🔍 Use os filtros e clique em Pesquisar</td></tr>';
 }
 
 // ═══════════════════════════════════════════════════════
-//  PESQUISA SAÍDAS
+//  PESQUISA SAÍDAS — versão com detalhes expansíveis
 // ═══════════════════════════════════════════════════════
 async function pesquisarSaidas() {
   var filtros={viatura:document.getElementById('sViat').value,motorista:document.getElementById('sMot').value.trim(),comandante:document.getElementById('sCom').value.trim(),setor:document.getElementById('sSec').value.trim(),dataInicio:document.getElementById('sDi').value,dataFim:document.getElementById('sDf').value,sinistro:document.getElementById('sSin').value,abastecimento:document.getElementById('sAbs').value};
   var btn=document.getElementById('btnPesqS'); btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>';
-  document.getElementById('tbSai').innerHTML='<tr><td colspan="10" class="erow"><i class="fas fa-spinner fa-spin"></i> Pesquisando...</td></tr>';
+  document.getElementById('tbSai').innerHTML='<tr><td colspan="11" class="erow"><i class="fas fa-spinner fa-spin"></i> Pesquisando...</td></tr>';
   try {
     var r=await api({tipo:'pesquisarSaidas',token:_token,filtros:filtros});
     btn.disabled=false; btn.innerHTML='<i class="fas fa-search"></i> Pesquisar';
@@ -1202,15 +1232,62 @@ async function pesquisarSaidas() {
 }
 
 function exibirResultadosS(reg) {
-  var prefixos={},motoristas={},sinistros=0,abastec=0;
-  reg.forEach(function(r){ var p=r.prefixo||''; if(p) prefixos[p.toUpperCase()]=true; var m=r.motorista||''; if(m&&m!=='-'&&m!=='--') motoristas[m.toUpperCase()]=true; if(String(r.sinistro||'').toUpperCase()==='SIM') sinistros++; if(String(r.abastecimento||'').toUpperCase()==='SIM') abastec++; });
-  document.getElementById('sStT').textContent=reg.length; document.getElementById('sStV').textContent=Object.keys(prefixos).length; document.getElementById('sStM').textContent=Object.keys(motoristas).length; document.getElementById('sStSin').textContent=sinistros; document.getElementById('sStAbs').textContent=abastec;
+  var prefixos={}, motoristas={}, sinistros=0, abastec=0;
+  reg.forEach(function(r){
+    var p=r.prefixo||''; if(p) prefixos[p.toUpperCase()]=true;
+    var m=r.motorista||''; if(m&&m!=='-'&&m!=='--') motoristas[m.toUpperCase()]=true;
+    if(String(r.sinistro||'').toUpperCase()==='SIM') sinistros++;
+    if(String(r.abastecimento||'').toUpperCase()==='SIM') abastec++;
+  });
+  document.getElementById('sStT').textContent=reg.length;
+  document.getElementById('sStV').textContent=Object.keys(prefixos).length;
+  document.getElementById('sStM').textContent=Object.keys(motoristas).length;
+  document.getElementById('sStSin').textContent=sinistros;
+  document.getElementById('sStAbs').textContent=abastec;
   document.getElementById('infoS').textContent=reg.length?reg.length+' registro(s)':'';
-  if(!reg||!reg.length){document.getElementById('tbSai').innerHTML='<tr><td colspan="10" class="erow">📭 Nenhum registro encontrado.</td></tr>';return;}
-  document.getElementById('tbSai').innerHTML=reg.map(function(r){
-    var temP=String(r.pendencia||'').toUpperCase()==='SIM'||String(r.sinistro||'').toUpperCase()==='SIM';
-    var telL=String(r.telefone||'').replace(/\D/g,''); var wa=telL?'<br><a class="wa-btn" href="https://wa.me/55'+telL+'" target="_blank">📱 WA</a>':'';
-    return '<tr'+(temP?' style="background:rgba(231,76,60,.06)"':'')+'><td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(fmtData(r.data||'--'))+'</td><td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+'</td><td>'+esc(r.motorista||'--')+wa+'</td><td>'+esc(r.comandante||'--')+'</td><td>'+esc(r.setor||'--')+'</td><td style="font-family:var(--mono)">'+esc(r.odometro||'--')+'</td><td>'+badgeSN(r.abastecimento)+'</td><td>'+esc(r.saldoCartao||r.saldo||'--')+'</td><td>'+badgeSN(r.pendencia)+(r.qualPendencia?'<br><small style="color:#b91c1c;font-size:10px">'+esc(r.qualPendencia)+'</small>':'')+'</td><td>'+badgeSN(r.sinistro)+'</td></tr>';
+
+  if(!reg||!reg.length){
+    document.getElementById('tbSai').innerHTML='<tr><td colspan="11" class="erow">📭 Nenhum registro encontrado.</td></tr>';
+    return;
+  }
+
+  document.getElementById('tbSai').innerHTML = reg.map(function(r, idx){
+    var temP = String(r.pendencia||'').toUpperCase()==='SIM'||String(r.sinistro||'').toUpperCase()==='SIM';
+    var telL = String(r.telefone||'').replace(/\D/g,'');
+    var wa   = telL?'<br><a class="wa-btn" href="https://wa.me/55'+telL+'" target="_blank">📱 WA</a>':'';
+
+    var limpa    = String(r.viaturaLimpaSaida||'').trim();
+    var justLim  = String(r.justLimpaSaida||'').trim();
+    var descAv   = String(r.descricao||'').trim();
+    var link     = String(r.linkImagens||'').trim();
+
+    var limpaClass = limpa.toUpperCase()==='SIM'?'ok-campo':limpa.toUpperCase()==='NÃO'||limpa.toUpperCase()==='NAO'?'warn-campo':'';
+
+    var temExtras = limpa||justLim||(descAv&&descAv!=='--')||link;
+
+    var linhaDetalhe = '<tr class="det-row" id="det-s-'+idx+'" style="display:none"><td colspan="11"><div class="det-grid">';
+    if(limpa) linhaDetalhe+='<div class="det-bloco"><div class="det-lbl">🧹 Viatura Entregue Limpa?</div><div class="det-val '+limpaClass+'">'+esc(limpa)+(justLim?'<br><small style="font-weight:400;color:var(--txt2)">'+esc(justLim)+'</small>':'')+'</div></div>';
+    if(descAv&&descAv!=='--') linhaDetalhe+='<div class="det-bloco"><div class="det-lbl">⚠️ Avarias / Alterações no Serviço</div><div class="det-val warn-campo">'+esc(descAv)+'</div></div>';
+    if(link) linhaDetalhe+='<div class="det-bloco"><div class="det-lbl">📸 Imagens</div><div class="det-val"><a href="'+esc(link)+'" target="_blank">🔗 Ver imagens</a></div></div>';
+    linhaDetalhe += '</div></td></tr>';
+
+    var toggleBtn = temExtras
+      ? '<button class="toggle-det" onclick="toggleDet(\'det-s-'+idx+'\',this)" title="Ver detalhes">▼</button>'
+      : '';
+
+    return '<tr'+(temP?' style="background:rgba(231,76,60,.06)"':'')+'>'+
+      '<td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(fmtData(r.data||'--'))+'</td>'+
+      '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+'</td>'+
+      '<td>'+esc(r.motorista||'--')+wa+'</td>'+
+      '<td>'+esc(r.comandante||'--')+'</td>'+
+      '<td>'+esc(r.setor||'--')+'</td>'+
+      '<td style="font-family:var(--mono)">'+esc(r.odometro||'--')+'</td>'+
+      '<td>'+badgeSN(r.abastecimento)+'</td>'+
+      '<td>'+esc(r.saldoCartao||r.saldo||'--')+'</td>'+
+      '<td>'+badgeSN(r.pendencia)+(r.qualPendencia?'<br><small style="color:#b91c1c;font-size:10px">'+esc(r.qualPendencia)+'</small>':'')+'</td>'+
+      '<td>'+badgeSN(r.sinistro)+'</td>'+
+      '<td style="text-align:center">'+toggleBtn+'</td>'+
+    '</tr>'+linhaDetalhe;
   }).join('');
 }
 
@@ -1219,7 +1296,19 @@ function limparS(){
   definirDatasDefault();
   ['sStT','sStV','sStM','sStSin','sStAbs'].forEach(function(id){document.getElementById(id).textContent='0';});
   document.getElementById('infoS').textContent='';
-  document.getElementById('tbSai').innerHTML='<tr><td colspan="10" class="erow">🔍 Use os filtros e clique em Pesquisar</td></tr>';
+  document.getElementById('tbSai').innerHTML='<tr><td colspan="11" class="erow">🔍 Use os filtros e clique em Pesquisar</td></tr>';
+}
+
+// ═══════════════════════════════════════════════════════
+//  TOGGLE DETALHES
+// ═══════════════════════════════════════════════════════
+function toggleDet(id, btn) {
+  var row = document.getElementById(id);
+  if (!row) return;
+  var aberto = row.style.display !== 'none';
+  row.style.display = aberto ? 'none' : 'table-row';
+  btn.textContent   = aberto ? '▼' : '▲';
+  btn.style.color   = aberto ? '' : 'var(--ac)';
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1229,7 +1318,6 @@ async function carregarManut() {
   document.getElementById('manutBody').innerHTML='<div style="color:var(--txt);padding:40px;text-align:center"><i class="fas fa-spinner fa-spin"></i> Carregando...</div>';
   try {
     var dados={oficinas:[],oleo:[],saldo:[]};
-    // Busca paralela
     var [of,ol,sa]=await Promise.allSettled([
       api({tipo:'getInfoViaturasOficina',token:_token}),
       api({tipo:'buscarTodosKmOleo',token:_token}),
@@ -1238,30 +1326,20 @@ async function carregarManut() {
     dados.oficinas=of.status==='fulfilled'?(of.value||[]):[];
     dados.oleo=ol.status==='fulfilled'?(ol.value||[]):[];
 
-    // Normaliza saldo: aceita array direto ou {alertas:[]}
-    // O backend (verificarSaldoCartao v4) já entrega apenas 1 registro por viatura
-    // (o mais recente com saldo válido), então a deduplicação aqui é só segurança extra.
     var saRaw=sa.status==='fulfilled'?sa.value:null;
     var saArr=Array.isArray(saRaw)?saRaw:(saRaw&&Array.isArray(saRaw.alertas)?saRaw.alertas:[]);
 
-    // ── Diagnóstico: exibe o que chegou do backend no console ─────────────────
-    console.log('[Garageiro] getAlertasSaldoCartao → raw:', saRaw);
-    console.log('[Garageiro] saArr ('+saArr.length+' itens):', saArr);
-
-    // ── Função: normaliza prefixo removendo sufixo geográfico e espaços ao redor do hífen
-    // "CPL 20-1290 - RIO PARDO" → "CPL20-1290"  |  "RPL 25 - 430" → "RPL25-430"
     function normPrefManut(p){
       var s=String(p||'').trim().toUpperCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-      s=s.replace(/\s+-\s+[A-Z].*$/,'');   // remove sufixo geográfico
-      s=s.replace(/\s*-\s*(?=\d)/g,'-');   // normaliza hífen numérico
+      s=s.replace(/\s+-\s+[A-Z].*$/,'');
+      s=s.replace(/\s*-\s*(?=\d)/g,'-');
       return s.replace(/\s+/g,'');
     }
 
     var saMap={};
     saArr.forEach(function(item){
       var rawSaldo=item.saldo!==undefined?item.saldo:(item.saldoNum!==undefined?item.saldoNum:0);
-      // ✅ CRÍTICO: não usa ||0 para não perder saldo=0 legítimo
       var numVal;
       if(typeof rawSaldo==='number'){
         numVal=rawSaldo;
@@ -1269,22 +1347,15 @@ async function carregarManut() {
         var parsed=parseFloat(String(rawSaldo).replace(/[^0-9,.-]/g,'').replace(',','.'));
         numVal=isNaN(parsed)?0:parsed;
       }
-      // ✅ CORRIGIDO: não descarta saldo=0 (viaturas com R$0,00 SÃO alerta crítico)
       if(isNaN(numVal)||numVal<0) return;
       var saldoStr=numVal===0?'R$ 0,00':'R$ '+numVal.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
       var dataStr=item.data||(item.dataRegistro?(item.dataRegistro instanceof Date?item.dataRegistro.toLocaleString('pt-BR'):String(item.dataRegistro)):'--');
-      // ✅ CORRIGIDO: normalização que trata sufixo geográfico E espaços ao redor do hífen
       var key=normPrefManut(item.prefixo);
-      // ✅ prefixoNorm usa a mesma lógica de normPrefManut para exibição consistente:
-      //    remove sufixo geográfico E normaliza espaços ao redor do hífen numérico
-      //    "CPL 24-2005 - UNIÃO BANDEIRANTES" → "CPL 24-2005"
-      //    "RPL 25 - 430"                     → "RPL 25-430"
       var prefixoNorm=String(item.prefixo||'').trim().toUpperCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-        .replace(/\s+-\s+[A-Z].*$/,'')      // remove sufixo geográfico
-        .replace(/\s*-\s*(?=\d)/g,'-')      // normaliza hífen numérico
+        .replace(/\s+-\s+[A-Z].*$/,'')
+        .replace(/\s*-\s*(?=\d)/g,'-')
         .trim();
-      // ✅ mantém o que vier PRIMEIRO no array (mais recente), não o de menor saldo
       if(!saMap[key]){
         saMap[key]={prefixo:prefixoNorm,modelo:item.modelo||'--',saldo:saldoStr,saldoNum:numVal,data:dataStr,motorista:item.motorista||'--'};
       }
@@ -1299,10 +1370,8 @@ function renderManut(dados) {
   var of=dados.oficinas||[], ol=dados.oleo||[], sa=dados.saldo||[];
   var urgente=[],atencao=[];
   ol.forEach(function(i){
-    // Usa faltam numérico como critério principal — independe do texto/emoji do status
     var kmA=Number(i.kmAtual)||0, kmP=Number(i.kmProximaTroca)||0;
     var falt=(kmP>0&&kmA>0)?(kmP-kmA):null;
-    // Fallback: lê o campo status sem depender de acentos ou emojis
     var stU=String(i.status||'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
     var isUrgente=(falt!==null&&falt<=500)||(falt===null&&(stU.includes('VENCIDO')||stU.includes('URGENTE')));
     var isAtencao=!isUrgente&&((falt!==null&&falt>500&&falt<=1000)||(falt===null&&stU.includes('ATENCAO')));
@@ -1312,31 +1381,26 @@ function renderManut(dados) {
   document.getElementById('mStOf').textContent=of.length; document.getElementById('mStUr').textContent=urgente.length; document.getElementById('mStAt').textContent=atencao.length; document.getElementById('mStSa').textContent=sa.length;
   var html='';
 
-  // Saldo cartão
   html+='<div class="manut-section"><div class="manut-title" style="color:#a78bfa;border-bottom-color:rgba(167,139,250,.2)"><i class="fas fa-credit-card"></i> Saldo de Cartão — Alerta ('+sa.length+')</div>';
   if(!sa.length) html+='<div class="manut-empty">✅ Nenhuma viatura com saldo em alerta.</div>';
   else { html+='<div class="manut-grid">'+sa.map(function(item){
     var sN=item.saldoNum!==undefined?item.saldoNum:parseFloat(String(item.saldo||'').replace(/[^0-9,.-]/g,'').replace(',','.'));
-    // ✅ CORRIGIDO: saldo=0 também é vermelho crítico
     var cor=(!isNaN(sN)&&sN<=200)?'color:#b91c1c;font-weight:700':(!isNaN(sN)&&sN<=350)?'color:#d97706;font-weight:700':'color:#92400e;font-weight:700';
     var urgBadge=(!isNaN(sN)&&sN<=200)?'<span class="bp b-urgente">🔴 CRÍTICO</span>':(!isNaN(sN)&&sN<=350)?'<span class="bp b-atencao">🟠 BAIXO</span>':'<span class="bp b-atencao">🟡 ATENÇÃO</span>';
     return'<div class="manut-card saldo"><div class="mc-top"><div><div class="mc-prefixo">'+esc(item.prefixo||'--')+'</div><div class="mc-modelo">'+esc(item.modelo||'--')+'</div></div>'+urgBadge+'</div><div class="mc-row">💳 Saldo: <span style="'+cor+'">'+esc(item.saldo||'--')+'</span></div>'+(item.data&&item.data!=='--'?'<div class="mc-row">📅 Último saldo: <span>'+esc(fmtData(item.data))+'</span></div>':'')+'</div>';
   }).join('')+'</div>'; }
   html+='</div>';
 
-  // Oficinas
   html+='<div class="manut-section"><div class="manut-title" style="color:#fb923c;border-bottom-color:rgba(251,146,60,.2)"><i class="fas fa-wrench"></i> Em Oficina ('+of.length+')</div>';
   if(!of.length) html+='<div class="manut-empty">✅ Nenhuma viatura em oficina no momento.</div>';
   else { html+='<div class="manut-grid">'+of.map(function(v){return'<div class="manut-card oficina"><div class="mc-top"><div><div class="mc-prefixo">'+esc(v.viatura||v.prefixo||'--')+'</div><div class="mc-modelo">'+esc(v.modelo||'--')+'</div></div><span class="bp" style="background:rgba(251,146,60,.15);color:#fb923c">OFICINA</span></div><div class="mc-row">🏢 Oficina: <span>'+esc(v.oficina||'--')+'</span></div><div class="mc-row">⚠️ Motivo: <span>'+esc(v.motivo||'--')+'</span></div><div class="mc-row">📅 Entrada: <span>'+esc(fmtData(v.dataEntrada||v.entrada||'--'))+'</span></div></div>';}).join('')+'</div>'; }
   html+='</div>';
 
-  // Óleo urgente
   html+='<div class="manut-section"><div class="manut-title" style="color:#b91c1c;border-bottom-color:rgba(248,113,113,.2)"><i class="fas fa-exclamation-triangle"></i> Óleo Vencido / Urgente ('+urgente.length+')</div>';
   if(!urgente.length) html+='<div class="manut-empty">✅ Sem alertas críticos de óleo.</div>';
   else html+='<div class="manut-grid">'+urgente.map(function(i){return cardOleo(i,'urgente','🔴 URGENTE');}).join('')+'</div>';
   html+='</div>';
 
-  // Óleo atenção
   html+='<div class="manut-section"><div class="manut-title" style="color:#92400e;border-bottom-color:rgba(251,191,36,.2)"><i class="fas fa-exclamation-circle"></i> Óleo Atenção ≤ 1000 km ('+atencao.length+')</div>';
   if(!atencao.length) html+='<div class="manut-empty">✅ Sem alertas de atenção.</div>';
   else html+='<div class="manut-grid">'+atencao.map(function(i){return cardOleo(i,'atencao','🟠 ATENÇÃO');}).join('')+'</div>';
@@ -1432,7 +1496,6 @@ function _renderMovEntradas() {
     var wa   = telL ? '<br><a class="wa-btn" href="https://wa.me/55'+telL+'" target="_blank">📱 WA</a>' : '';
     var placa = _placaPorPrefixo(r.prefixo);
     var viat  = _viaturaByPrefixo(r.prefixo);
-    // Se o prefixo do registro é incompleto (sem traço), usa o cadastrado
     var prefixoExibir = (viat && _normPref(viat.prefixo) !== _normPref(r.prefixo))
       ? viat.prefixo : (r.prefixo||'--');
     return '<tr>'+
@@ -1490,33 +1553,23 @@ function _renderMovSaidas() {
 function movPagE(dir) { _movEPag += dir; _renderMovEntradas(); }
 function movPagS(dir) { _movSPag += dir; _renderMovSaidas(); }
 
-// Normaliza prefixo removendo espaços ao redor do traço e espaços extras
-// "RPL 25 - 430" → "RPL 25-430"  |  "RPL 25-430" → "RPL 25-430"
 function _normPref(s) {
   return String(s||'').replace(/\s*-\s*/g,'-').replace(/\s+/g,' ').trim().toUpperCase();
 }
 
-// Busca a viatura em _todasViaturas comparando prefixos normalizados.
-// Se não encontrar exato, tenta match parcial (prefixo do registro é início do cadastrado).
-// Retorna o objeto viatura ou null.
 function _viaturaByPrefixo(prefixo) {
   if (!prefixo || !_todasViaturas || !_todasViaturas.length) return null;
   var norm = _normPref(prefixo);
-  // 1. Busca exata
   var v = _todasViaturas.find(function(x) { return _normPref(x.prefixo) === norm; });
   if (v) return v;
-  // 2. Busca parcial: prefixo do registro sem traço é início do prefixo cadastrado
-  //    Ex: "RPL 25" bate com "RPL 25-430"
-  var semTraco = norm.replace(/-.*$/,'').trim(); // "RPL 25-430" → "RPL 25"
+  var semTraco = norm.replace(/-.*$/,'').trim();
   var candidatos = _todasViaturas.filter(function(x) {
     var nx = _normPref(x.prefixo);
     return nx === semTraco || nx.startsWith(semTraco + '-') || nx.startsWith(semTraco + ' ');
   });
-  // Se só um candidato, retorna ele; se mais de um, ambíguo — retorna null
   return candidatos.length === 1 ? candidatos[0] : null;
 }
 
-// Busca a placa em _todasViaturas
 function _placaPorPrefixo(prefixo) {
   var v = _viaturaByPrefixo(prefixo);
   return (v && v.placa && v.placa !== '--') ? v.placa : '';
@@ -1528,7 +1581,6 @@ async function carregarUltimasMovimentacoes() {
   if (!tbE || !tbS) return;
   tbE.innerHTML = '<tr><td colspan="8" class="erow"><i class="fas fa-spinner fa-spin"></i></td></tr>';
   tbS.innerHTML = '<tr><td colspan="10" class="erow"><i class="fas fa-spinner fa-spin"></i></td></tr>';
-  // Desabilita botões durante carregamento
   ['movEPrev','movENext','movSPrev','movSNext'].forEach(function(id){ var el=document.getElementById(id); if(el) el.disabled=true; });
 
   var hoje = new Date();
@@ -1543,10 +1595,8 @@ async function carregarUltimasMovimentacoes() {
     _movEntradas = rE.status==='fulfilled' ? (Array.isArray(rE.value) ? rE.value : (rE.value.registros||[])) : [];
     _movSaidas   = rS.status==='fulfilled' ? (Array.isArray(rS.value) ? rS.value : (rS.value.registros||[])) : [];
 
-    // Reset para página 1 a cada recarga
     _movEPag = 1; _movSPag = 1;
 
-    // ── Stats Entradas ──────────────────────────────────
     var ePref={}, eMot={}, eAlter=0;
     _movEntradas.forEach(function(r){
       if(r.prefixo) ePref[r.prefixo.toUpperCase()]=true;
@@ -1559,7 +1609,6 @@ async function carregarUltimasMovimentacoes() {
     setEl('movEStM', Object.keys(eMot).length);
     setEl('movEStA', eAlter);
 
-    // ── Stats Saídas ────────────────────────────────────
     var sPref={}, sMot={}, sSin=0, sAbs=0;
     _movSaidas.forEach(function(r){
       if(r.prefixo) sPref[r.prefixo.toUpperCase()]=true;
@@ -1573,7 +1622,6 @@ async function carregarUltimasMovimentacoes() {
     setEl('movSStSin', sSin);
     setEl('movSStAbs', sAbs);
 
-    // Renderiza primeira página
     _renderMovEntradas();
     _renderMovSaidas();
 
@@ -1583,21 +1631,6 @@ async function carregarUltimasMovimentacoes() {
     if (tbE) tbE.innerHTML = '<tr><td colspan="8" class="erow">⚠️ '+esc(e.message)+'</td></tr>';
     if (tbS) tbS.innerHTML = '<tr><td colspan="10" class="erow">⚠️ '+esc(e.message)+'</td></tr>';
   }
-}
-
-function nivelBadgeMini(n, ico) {
-  if (!n||n==='--'||n==='-') return (ico||'')+' --';
-  var u = n.toUpperCase();
-  var cor = u.includes('MIN')?'#b91c1c':u.includes('MED')||u.includes('MÉD')?'#92400e':'#15803d';
-  var em  = u.includes('MIN')?'🔴':u.includes('MED')||u.includes('MÉD')?'🟡':'🟢';
-  return '<span style="color:'+cor+';font-size:10px">'+(ico||'')+em+'</span>';
-}
-
-function badgeSNMini(v) {
-  var u = String(v||'').toUpperCase().trim();
-  if (u==='SIM') return '<span style="background:rgba(231,76,60,.2);color:#b91c1c;padding:1px 5px;border-radius:7px;font-size:10px;font-weight:700">SIM</span>';
-  if (u==='NÃO'||u==='NAO') return '<span style="background:rgba(39,174,96,.2);color:#15803d;padding:1px 5px;border-radius:7px;font-size:10px;font-weight:700">NÃO</span>';
-  return '<span style="color:var(--txt2);font-size:10px">'+esc(v||'--')+'</span>';
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1629,7 +1662,6 @@ async function admRel(tipo){
     indice:        'criarIndicePesquisa',
     arquivar:      'arquivarRegistrosAntigos'
   };
-  // cobrança tem prompt especial
   if (tipo==='cobranca') {
     unload();
     var limite = prompt('Limite de horas em oficina para cobrança:\n(Padrão: 240 horas = 10 dias)','240');
@@ -1650,7 +1682,6 @@ async function admRel(tipo){
     if (acao==='gerarPDFOficinas') payload.filtro = 'TODOS';
     var r = await api(payload);
     unload();
-    // Ações que não geram URL (atualizarOleo, indice, arquivar)
     if (tipo==='atualizarOleo'||tipo==='indice'||tipo==='arquivar') {
       var ok = r && r.sucesso !== false;
       toast(ok ? (r.mensagem||'Operação concluída!') : (r.mensagem||'Erro.'), ok?'ok':'err');
@@ -1721,16 +1752,14 @@ function abrirFormNovaViatura() {
 }
 
 function editarViatura(prefixo) {
-  // Busca tolerante: ignora espaços ao redor do traço
   var v = _viaturasLista.find(function(x){ return x.prefixo === prefixo; });
   if (!v) v = _viaturasLista.find(function(x){ return _normPref(x.prefixo) === _normPref(prefixo); });
   if (!v) { toast('Viatura não encontrada.','err'); return; }
-  // Guarda o prefixo original para o GAS saber qual registro editar
   document.getElementById('viatPrefixo').dataset.prefixoOriginal = v.prefixo;
   document.getElementById('viatForm').style.display = 'block';
   document.getElementById('viatFormTitulo').textContent = 'Editar Viatura — ' + v.prefixo;
   document.getElementById('viatPrefixo').value = v.prefixo;
-  document.getElementById('viatPrefixo').readOnly = false; // permite corrigir o prefixo
+  document.getElementById('viatPrefixo').readOnly = false;
   document.getElementById('viatTipo').value = v.tipo || v.modelo || '';
   document.getElementById('viatPlaca').value = v.placa || '';
   document.getElementById('viatAno').value = v.ano || '';
@@ -1742,7 +1771,7 @@ async function salvarViatura() {
   var isEditar = !!prefixoOriginal;
   var dados = {
     prefixo:         document.getElementById('viatPrefixo').value.trim().toUpperCase(),
-    prefixoOriginal: prefixoOriginal.trim().toUpperCase(), // para o GAS localizar a linha
+    prefixoOriginal: prefixoOriginal.trim().toUpperCase(),
     tipo:    document.getElementById('viatTipo').value.trim().toUpperCase(),
     placa:   document.getElementById('viatPlaca').value.trim().toUpperCase(),
     ano:     document.getElementById('viatAno').value.trim(),
@@ -1939,7 +1968,6 @@ async function excluirOfReg(prefixo) {
   } catch(e) { unload(); toast('Erro: '+e.message,'err'); }
 }
 
-// ── Config Oficinas/Motivos
 async function abrirCfgOf() {
   document.getElementById('ovCfgOf').classList.add('on');
   await carregarListasCfg();
@@ -2045,22 +2073,17 @@ async function excluirSetorM(indice, nome) {
 }
 
 // ═══════════════════════════════════════════════════════
-//  ADMIN — MODAIS (funções de abertura simples)
-
-// ═══════════════════════════════════════════════════════
 //  UTILS
 // ═══════════════════════════════════════════════════════
 function fechar(id){ document.getElementById(id).classList.remove('on'); }
 function esc(v){ return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function fmtData(s){
   if(!s||s==='--'||s==='-')return s;
-  // Backend retorna "dd/MM/yyyy HH:mm" — parsear manualmente para não inverter dia/mês
   var m=String(s).trim().match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
   if(m){
     var dia=m[1],mes=m[2],ano=m[3],h=m[4]||'00',min=m[5]||'00';
     return dia+'/'+mes+'/'+ano+(m[4]?' às '+h+'h'+min:'');
   }
-  // Fallback: tenta parsear como ISO ou outro formato
   try{
     var d=new Date(s);
     if(isNaN(d.getTime()))return s;
@@ -2076,45 +2099,34 @@ function badgeSN(v){ var u=String(v||'').toUpperCase().trim(); if(u==='SIM') ret
 // ═══════════════════════════════════════════════════════
 //  PARTE DIÁRIA
 // ═══════════════════════════════════════════════════════
-var _pdVtr   = [];  // viaturas empenhadas
-var _pdQuadro = []; // quadro geral
+var _pdVtr   = [];
+var _pdQuadro = [];
 
 function pdInit() {
   var hoje = new Date();
   document.getElementById('pdData').value = hoje.toISOString().split('T')[0];
   document.getElementById('pdTurno').value = hoje.getHours() < 19 ? '1' : '2';
-  // Pré-preenche garageiro com o usuário logado
   if (_ng) document.getElementById('pdGarageiro').value = _ng;
   pdRenderVtr();
   pdRenderQuadro();
 }
 
-// ── Importar entradas do dia ──────────────────────────
 async function pdImportarHoje() {
   loading('Buscando entradas e saídas de hoje...');
   try {
     var hj = new Date().toISOString().split('T')[0];
-
     var [rE, rS] = await Promise.allSettled([
       api({tipo:'pesquisarEntradas', token:_token, filtros:{dataInicio:hj, dataFim:hj}}),
       api({tipo:'pesquisarSaidas',   token:_token, filtros:{dataInicio:hj, dataFim:hj}})
     ]);
-
     var entradas = rE.status==='fulfilled' ? (Array.isArray(rE.value) ? rE.value : (rE.value.registros||[])) : [];
     var saidas   = rS.status==='fulfilled' ? (Array.isArray(rS.value) ? rS.value : (rS.value.registros||[])) : [];
-
     var saidaMap = {};
     saidas.forEach(function(s) {
       var pref = pdNorm(s.prefixo);
-      if (!saidaMap[pref]) {
-        saidaMap[pref] = s;
-      } else {
-        if (String(s.data||'') > String(saidaMap[pref].data||'')) {
-          saidaMap[pref] = s;
-        }
-      }
+      if (!saidaMap[pref]) { saidaMap[pref] = s; }
+      else { if (String(s.data||'') > String(saidaMap[pref].data||'')) saidaMap[pref] = s; }
     });
-
     _pdVtr = entradas.map(function(reg) {
       var vtr   = _todasViaturas.find(function(v){ return pdNorm(v.prefixo)===pdNorm(reg.prefixo); }) || {};
       var saida = saidaMap[pdNorm(reg.prefixo)] || null;
@@ -2131,7 +2143,6 @@ async function pdImportarHoje() {
         comandante: reg.comandante||''
       };
     });
-
     pdRenderVtr();
     unload();
     var comSaida = Object.keys(saidaMap).length;
@@ -2176,7 +2187,6 @@ function pdRenderVtr() {
   }).join('');
 }
 
-// ── Quadro Geral ──────────────────────────────────────
 async function pdCarregarQuadro() {
   loading('Carregando frota...');
   try {
@@ -2184,8 +2194,7 @@ async function pdCarregarQuadro() {
     var vts = r.viaturas||[];
     _pdQuadro = vts.map(function(v){
       var st = String(v.status||'').toUpperCase();
-      var status = st.includes('OFICINA') ? 'BAIXADA OFICINA' :
-                   st.includes('SERVIÇO')||st.includes('SERVICO') ? 'EM CONDIÇÕES' : 'EM CONDIÇÕES';
+      var status = st.includes('OFICINA') ? 'BAIXADA OFICINA' : 'EM CONDIÇÕES';
       return {prefixo:v.prefixo, modelo:v.modelo||'', placa:v.placa||'', local:'SEDE/ 9º BPM', status:status, obs:'S/A'};
     });
     pdRenderQuadro();
@@ -2219,19 +2228,15 @@ function pdRenderQuadro() {
   }).join('');
 }
 
-// ── Coletar dados ─────────────────────────────────────
 function pdColetar() {
   var dataVal = document.getElementById('pdData').value;
   var dataObj = dataVal ? new Date(dataVal+'T12:00:00') : new Date();
   var MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   var dataFmt = dataObj.getDate()+' de '+MESES[dataObj.getMonth()]+' de '+dataObj.getFullYear();
   var turno = document.getElementById('pdTurno').value;
-
-  // 2º turno: começa na noite do dia anterior (19h) → data da tabela é dia anterior
   var dataEmp = new Date(dataObj);
   if (turno === '2') dataEmp.setDate(dataEmp.getDate()-1);
   var fmtDt = function(d){ return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear(); };
-
   return {
     numParte:   document.getElementById('pdNumParte').value||'___/2026',
     dataFmt:    dataFmt,
@@ -2253,38 +2258,30 @@ function pdColetar() {
   };
 }
 
-// ── Gerar HTML preview ────────────────────────────────
 function pdGerarPreview() {
   var d = pdColetar();
-
   var linhasEmp = d.empenhadas.map(function(v){
     var pf = v.prefixo+(v.modelo?' ('+v.modelo+')':'')+(v.placa?' '+v.placa:'');
     return '<tr><td style="text-align:left">'+esc(pf)+'</td><td>'+esc(v.oi)+'</td><td>'+esc(v.of||'*******')+'</td><td>'+esc(v.hi)+'</td><td>'+esc(v.hf)+'</td><td>'+esc(v.setor)+'</td><td>'+esc(v.motorista)+'</td><td>'+esc(v.comandante)+'</td></tr>';
   }).join('');
-
   var tblEmp = d.empenhadas.length
     ? '<table class="sei-tbl"><caption>VIATURAS EMPENHADAS NO '+esc(d.dataTbl)+'</caption><thead><tr><th>VTR. PREFIXO</th><th>O.I</th><th>O.F</th><th>H.I</th><th>H.F</th><th>SETOR</th><th>MOTORISTA</th><th>COMANDANTE</th></tr></thead><tbody>'+linhasEmp+'</tbody></table>'
     : '<p style="font-size:9pt;color:#777;margin:5px 0 10px">(nenhuma viatura empenhada)</p>';
-
   var linhasQ = d.quadro.map(function(v,i){
     var pf = v.prefixo+(v.modelo?' ('+v.modelo+')':'')+(v.placa?' '+v.placa:'');
     var sc = v.status.includes('OFICINA')?'st-ofic':v.status.includes('BAIXADA')?'st-baixa':'st-ok';
     return '<tr><td>'+('0'+(i+1)).slice(-2)+'</td><td style="text-align:left">'+esc(pf)+'</td><td>'+esc(v.local||'SEDE/ 9º BPM')+'</td><td class="'+sc+'">'+esc(v.status)+'</td><td style="text-align:left;font-size:7.5pt">'+esc(v.obs||'S/A')+'</td></tr>';
   }).join('');
-
   var tblQ = d.quadro.length
     ? '<table class="sei-quad"><caption>QUADRO GERAL DE VIATURAS DO 9º BPM</caption><thead><tr><th>QTD</th><th>PREFIXO</th><th>LOCAL</th><th>STATUS</th><th>OBSERVAÇÕES</th></tr></thead><tbody>'+linhasQ+'</tbody></table>'
     : '';
-
   var linhaSep = function(label, val, largInterna){
     return '<div class="sei-item"><strong>'+esc(label)+'</strong>'+
       '<span style="display:inline-block;border-bottom:1px solid #000;width:'+largInterna+';margin:0 4px;vertical-align:bottom"> </span>'+
       '<strong>'+esc(val)+'.</strong></div>';
   };
-
   var obsHtml = (d.vtrRec==='C/A'&&d.obs) ? '<div style="font-size:9pt;margin-top:4px;white-space:pre-line">'+esc(d.obs)+'</div>' : '';
   var limHtml = (d.lim==='C/A'&&d.limTxt) ? '<div style="font-size:9pt;margin-top:4px">'+esc(d.limTxt)+'</div>' : '';
-
   document.getElementById('pdPreview').innerHTML =
     '<div class="sei-doc">'+
       '<div class="sei-title"><p><strong>GOVERNO DO ESTADO DE RONDÔNIA</strong></p><p>Polícia Militar - PM</p><p class="sei-pdnum"><strong>PARTE DIÁRIA '+esc(d.numParte)+'</strong></p></div>'+
@@ -2306,14 +2303,9 @@ function pdGerarPreview() {
     '</div>';
 }
 
-// ── Copiar HTML formatado para SEI ────────────────────
-// O SEI usa um editor rico (TinyMCE). Ao colar text/html,
-// ele preserva tabelas, negrito e layout — sem perda de formatação.
 function pdCopiarSEI() {
   pdGerarPreview();
   var d = pdColetar();
-
-  // Estilos inline para garantir fidelidade no SEI (editor pode ignorar <style>)
   var tblStyle  = 'border-collapse:collapse;width:100%;font-family:Arial,sans-serif;font-size:8pt;margin:6px 0 10px';
   var thStyle   = 'background:#1a3a5c;color:#fff;padding:3px 5px;border:1px solid #aaa;text-align:center;font-size:7.5pt;white-space:nowrap';
   var tdStyle   = 'padding:3px 5px;border:1px solid #ccc;text-align:center;vertical-align:middle;font-size:8pt';
@@ -2322,61 +2314,46 @@ function pdCopiarSEI() {
   var lineStyle = 'border-bottom:1px solid #000;display:inline-block;width:60%;margin:0 4px;vertical-align:bottom';
   var bodyStyle = 'font-family:Arial,sans-serif;font-size:10pt;line-height:1.5;color:#000';
   var itemStyle = 'margin-bottom:8px;font-size:9.5pt';
-
-  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-  // Tabela de empenhadas
+  function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   var tblEmp = '';
   if (d.empenhadas.length) {
     var rows = d.empenhadas.map(function(v){
-      var pf = esc(v.prefixo)+(v.modelo?' ('+esc(v.modelo)+')':'')+(v.placa?' '+esc(v.placa):'');
-      return '<tr><td style="'+tdLStyle+'">'+pf+'</td><td style="'+tdStyle+'">'+esc(v.oi)+'</td><td style="'+tdStyle+'">'+(v.of?esc(v.of):'*******')+'</td><td style="'+tdStyle+'">'+esc(v.hi)+'</td><td style="'+tdStyle+'">'+esc(v.hf)+'</td><td style="'+tdStyle+'">'+esc(v.setor)+'</td><td style="'+tdLStyle+'">'+esc(v.motorista)+'</td><td style="'+tdLStyle+'">'+esc(v.comandante||'')+'</td></tr>';
+      var pf = escH(v.prefixo)+(v.modelo?' ('+escH(v.modelo)+')':'')+(v.placa?' '+escH(v.placa):'');
+      return '<tr><td style="'+tdLStyle+'">'+pf+'</td><td style="'+tdStyle+'">'+escH(v.oi)+'</td><td style="'+tdStyle+'">'+(v.of?escH(v.of):'*******')+'</td><td style="'+tdStyle+'">'+escH(v.hi)+'</td><td style="'+tdStyle+'">'+escH(v.hf)+'</td><td style="'+tdStyle+'">'+escH(v.setor)+'</td><td style="'+tdLStyle+'">'+escH(v.motorista)+'</td><td style="'+tdLStyle+'">'+escH(v.comandante||'')+'</td></tr>';
     }).join('');
-    tblEmp = '<table style="'+tblStyle+'"><caption style="'+capStyle+'">VIATURAS EMPENHADAS NO '+esc(d.dataTbl)+'</caption><thead><tr><th style="'+thStyle+'">VTR. PREFIXO</th><th style="'+thStyle+'">O.I</th><th style="'+thStyle+'">O.F</th><th style="'+thStyle+'">H.I</th><th style="'+thStyle+'">H.F</th><th style="'+thStyle+'">SETOR</th><th style="'+thStyle+'">MOTORISTA</th><th style="'+thStyle+'">COMANDANTE</th></tr></thead><tbody>'+rows+'</tbody></table>';
+    tblEmp = '<table style="'+tblStyle+'"><caption style="'+capStyle+'">VIATURAS EMPENHADAS NO '+escH(d.dataTbl)+'</caption><thead><tr><th style="'+thStyle+'">VTR. PREFIXO</th><th style="'+thStyle+'">O.I</th><th style="'+thStyle+'">O.F</th><th style="'+thStyle+'">H.I</th><th style="'+thStyle+'">H.F</th><th style="'+thStyle+'">SETOR</th><th style="'+thStyle+'">MOTORISTA</th><th style="'+thStyle+'">COMANDANTE</th></tr></thead><tbody>'+rows+'</tbody></table>';
   }
-
-  // Tabela do quadro geral
   var tblQuadro = '';
   if (d.quadro.length) {
     var qrows = d.quadro.map(function(v,i){
-      var pf = esc(v.prefixo)+(v.modelo?' ('+esc(v.modelo)+')':'')+(v.placa?' '+esc(v.placa):'');
-      return '<tr><td style="'+tdStyle+'">'+(i+1)+'</td><td style="'+tdLStyle+'">'+pf+'</td><td style="'+tdStyle+'">'+esc(v.local||'SEDE/ 9º BPM')+'</td><td style="'+tdStyle+'">'+esc(v.status)+'</td><td style="'+tdLStyle+'">'+esc(v.obs||'S/A')+'</td></tr>';
+      var pf = escH(v.prefixo)+(v.modelo?' ('+escH(v.modelo)+')':'')+(v.placa?' '+escH(v.placa):'');
+      return '<tr><td style="'+tdStyle+'">'+(i+1)+'</td><td style="'+tdLStyle+'">'+pf+'</td><td style="'+tdStyle+'">'+escH(v.local||'SEDE/ 9º BPM')+'</td><td style="'+tdStyle+'">'+escH(v.status)+'</td><td style="'+tdLStyle+'">'+escH(v.obs||'S/A')+'</td></tr>';
     }).join('');
     tblQuadro = '<table style="'+tblStyle+'"><caption style="'+capStyle+'">QUADRO GERAL DE VIATURAS DO 9º BPM</caption><thead><tr><th style="'+thStyle+'">QTD</th><th style="'+thStyle+'">PREFIXO</th><th style="'+thStyle+'">LOCAL</th><th style="'+thStyle+'">STATUS</th><th style="'+thStyle+'">OBSERVAÇÕES</th></tr></thead><tbody>'+qrows+'</tbody></table>';
   }
-
-  // Observações item 5
   var obsHtml = '';
   if (d.vtrRec==='C/A' && d.obs) {
-    obsHtml = '<div style="margin-top:6px;font-size:9pt">'+d.obs.split('\n').map(function(l){ return esc(l); }).join('<br>')+'</div>';
+    obsHtml = '<div style="margin-top:6px;font-size:9pt">'+d.obs.split('\n').map(function(l){ return escH(l); }).join('<br>')+'</div>';
   }
   var limHtml = '';
-  if (d.lim==='C/A' && d.limTxt) {
-    limHtml = '<div style="margin-top:6px;font-size:9pt">'+esc(d.limTxt)+'</div>';
-  }
-
-  // Montar HTML completo
+  if (d.lim==='C/A' && d.limTxt) { limHtml = '<div style="margin-top:6px;font-size:9pt">'+escH(d.limTxt)+'</div>'; }
   var html = '<div style="'+bodyStyle+'">'
-    + '<p style="text-align:center;margin-bottom:4px"><strong>GOVERNO DO ESTADO DE RONDÔNIA</strong><br>Polícia Militar - PM<br><strong>PARTE DIÁRIA '+esc(d.numParte)+'</strong></p>'
-    + '<p style="font-size:9.5pt;text-align:justify;margin-bottom:10px">'
-      + 'Parte Diária do <strong>'+esc(d.garageiro)+'</strong>, Garageiro do 9º Batalhão, ao Sr. Chefe da P-4/9º BPM, referente ao serviço do dia <strong>'+esc(d.dataFmt)+', '+esc(d.turnoLabel)+'</strong>.'
-    + '</p>'
-    + '<p style="'+itemStyle+'"><strong>1. RENDIÇÃO</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.ren)+'.</strong></p>'
-    + '<p style="'+itemStyle+'"><strong>2. CONTROLE DE DESLOCAMENTO DE VIATURA</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.des)+'.</strong></p>'
+    + '<p style="text-align:center;margin-bottom:4px"><strong>GOVERNO DO ESTADO DE RONDÔNIA</strong><br>Polícia Militar - PM<br><strong>PARTE DIÁRIA '+escH(d.numParte)+'</strong></p>'
+    + '<p style="font-size:9.5pt;text-align:justify;margin-bottom:10px">Parte Diária do <strong>'+escH(d.garageiro)+'</strong>, Garageiro do 9º Batalhão, ao Sr. Chefe da P-4/9º BPM, referente ao serviço do dia <strong>'+escH(d.dataFmt)+', '+escH(d.turnoLabel)+'</strong>.</p>'
+    + '<p style="'+itemStyle+'"><strong>1. RENDIÇÃO</strong> <span style="'+lineStyle+'"> </span> <strong>'+escH(d.ren)+'.</strong></p>'
+    + '<p style="'+itemStyle+'"><strong>2. CONTROLE DE DESLOCAMENTO DE VIATURA</strong> <span style="'+lineStyle+'"> </span> <strong>'+escH(d.des)+'.</strong></p>'
     + tblEmp
-    + '<p style="'+itemStyle+'"><strong>3. ALTERAÇÕES NO SERVIÇO</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.alt)+'.</strong></p>'
-    + '<p style="'+itemStyle+'"><strong>4. LIMPEZA VIATURAS</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.lim)+'.</strong>'+limHtml+'</p>'
-    + '<p style="'+itemStyle+'"><strong>5. VIATURAS RECEBIDAS / ALTERAÇÕES</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.vtrRec)+'.</strong>'+obsHtml+'</p>'
+    + '<p style="'+itemStyle+'"><strong>3. ALTERAÇÕES NO SERVIÇO</strong> <span style="'+lineStyle+'"> </span> <strong>'+escH(d.alt)+'.</strong></p>'
+    + '<p style="'+itemStyle+'"><strong>4. LIMPEZA VIATURAS</strong> <span style="'+lineStyle+'"> </span> <strong>'+escH(d.lim)+'.</strong>'+limHtml+'</p>'
+    + '<p style="'+itemStyle+'"><strong>5. VIATURAS RECEBIDAS / ALTERAÇÕES</strong> <span style="'+lineStyle+'"> </span> <strong>'+escH(d.vtrRec)+'.</strong>'+obsHtml+'</p>'
     + tblQuadro
-    + '<p style="'+itemStyle+'"><strong>6. PASSAGEM DE SERVIÇO</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.pass)+'.</strong></p>'
-    + '<p style="font-size:9.5pt">Fiz ao meu substituto legal o '+esc(d.substituto)+', a quem transmiti todas as ordens em vigor, bem como todas as viaturas existentes nesta garagem sob minha responsabilidade.</p>'
+    + '<p style="'+itemStyle+'"><strong>6. PASSAGEM DE SERVIÇO</strong> <span style="'+lineStyle+'"> </span> <strong>'+escH(d.pass)+'.</strong></p>'
+    + '<p style="font-size:9.5pt">Fiz ao meu substituto legal o '+escH(d.substituto)+', a quem transmiti todas as ordens em vigor, bem como todas as viaturas existentes nesta garagem sob minha responsabilidade.</p>'
     + '<table style="width:100%;border:none;margin-top:20px;font-size:9pt"><tbody><tr>'
-      + '<td style="border:none;text-align:center;width:50%"><div style="border-top:1px solid #000;width:70%;margin:0 auto 4px"></div><strong>'+esc(d.garageiro)+'</strong><br>GARAGEIRO QUE SAI</td>'
-      + '<td style="border:none;text-align:center;width:50%"><div style="border-top:1px solid #000;width:70%;margin:0 auto 4px"></div><strong>'+esc(d.substituto)+'</strong><br>GARAGEIRO QUE ENTRA</td>'
+      + '<td style="border:none;text-align:center;width:50%"><div style="border-top:1px solid #000;width:70%;margin:0 auto 4px"></div><strong>'+escH(d.garageiro)+'</strong><br>GARAGEIRO QUE SAI</td>'
+      + '<td style="border:none;text-align:center;width:50%"><div style="border-top:1px solid #000;width:70%;margin:0 auto 4px"></div><strong>'+escH(d.substituto)+'</strong><br>GARAGEIRO QUE ENTRA</td>'
     + '</tr></tbody></table>'
     + '</div>';
-
-  // Tentar copiar como text/html (SEI preserva formatação)
   if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
     var blob = new Blob([html], {type:'text/html'});
     navigator.clipboard.write([new ClipboardItem({'text/html': blob})]).then(function(){
@@ -2387,7 +2364,6 @@ function pdCopiarSEI() {
   }
 }
 
-// Fallback: selecionar elemento HTML e usar execCommand('copy') para preservar formatação
 function pdCopiarFallback(html) {
   var div = document.createElement('div');
   div.innerHTML = html;
@@ -2404,13 +2380,10 @@ function pdCopiarFallback(html) {
   document.body.removeChild(div);
 }
 
-// ── Gerar PDF via janela de impressão ─────────────────
 function pdGerarPDF() {
   pdGerarPreview();
   var previewEl = document.getElementById('pdPreview');
-  if (!previewEl || !previewEl.innerHTML.trim()) {
-    toast('Gere a prévia primeiro.','err'); return;
-  }
+  if (!previewEl || !previewEl.innerHTML.trim()) { toast('Gere a prévia primeiro.','err'); return; }
   var conteudo = previewEl.innerHTML;
   var win = window.open('','_blank','width=900,height=700');
   win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Parte Diária</title><style>'
