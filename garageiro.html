@@ -1265,6 +1265,7 @@ function exibirResultadosS(reg) {
 
     var descAvOk = descAv && descAv!=='--' && descAv!=='-';
     var temExtras = limpa || justLim || descAvOk || link;
+    console.log('prefixo:', r.prefixo, '| descAv:', JSON.stringify(descAv), '| limpa:', limpa, '| temExtras:', temExtras);
 
     var linhaDetalhe = '<tr class="det-row" id="det-s-'+idx+'" style="display:none"><td colspan="11"><div class="det-grid">';
     if(limpa) linhaDetalhe+='<div class="det-bloco"><div class="det-lbl">🧹 Viatura Entregue Limpa?</div><div class="det-val '+limpaClass+'">'+esc(limpa)+(justLim?'<br><small style="font-weight:400;color:var(--txt2)">'+esc(justLim)+'</small>':'')+'</div></div>';
