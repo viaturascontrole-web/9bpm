@@ -1263,18 +1263,18 @@ function exibirResultadosS(reg) {
 
     var limpaClass = limpa.toUpperCase()==='SIM'?'ok-campo':limpa.toUpperCase()==='NÃO'||limpa.toUpperCase()==='NAO'?'warn-campo':'';
 
-    var temExtras = limpa||justLim||(descAv&&descAv!=='--')||link;
+    var descAvOk = descAv && descAv!=='--' && descAv!=='-';
+    var temExtras = limpa || justLim || descAvOk || link;
 
     var linhaDetalhe = '<tr class="det-row" id="det-s-'+idx+'" style="display:none"><td colspan="11"><div class="det-grid">';
     if(limpa) linhaDetalhe+='<div class="det-bloco"><div class="det-lbl">🧹 Viatura Entregue Limpa?</div><div class="det-val '+limpaClass+'">'+esc(limpa)+(justLim?'<br><small style="font-weight:400;color:var(--txt2)">'+esc(justLim)+'</small>':'')+'</div></div>';
-    if(descAv&&descAv!=='--') linhaDetalhe+='<div class="det-bloco"><div class="det-lbl">⚠️ Avarias / Alterações no Serviço</div><div class="det-val warn-campo">'+esc(descAv)+'</div></div>';
+    if(descAvOk) linhaDetalhe+='<div class="det-bloco" style="grid-column:1/-1"><div class="det-lbl" style="color:#b91c1c;font-weight:700">⚠️ ALTERAÇÕES OCORRIDAS DURANTE O SERVIÇO</div><div class="det-val warn-campo" style="white-space:pre-line;font-size:12px;line-height:1.5">'+esc(descAv)+'</div></div>';
     if(link) linhaDetalhe+='<div class="det-bloco"><div class="det-lbl">📸 Imagens</div><div class="det-val"><a href="'+esc(link)+'" target="_blank">🔗 Ver imagens</a></div></div>';
     linhaDetalhe += '</div></td></tr>';
 
     var toggleBtn = temExtras
       ? '<button class="toggle-det" onclick="toggleDet(\'det-s-'+idx+'\',this)" title="Ver detalhes">▼</button>'
       : '';
-
     return '<tr'+(temP?' style="background:rgba(231,76,60,.06)"':'')+'>'+
       '<td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(fmtData(r.data||'--'))+'</td>'+
       '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(r.prefixo||'--')+'</td>'+
