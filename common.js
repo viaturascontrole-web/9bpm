@@ -127,9 +127,10 @@
     for (var j = 0; j < msgs.length; j++) msgs[j].classList.remove('on');
   };
 
-  GAR.info = function (txt, botao) {
+  GAR.info = function (txt, botao, tag) {
     var box = $('infoGlobal');
     if (!box) return;
+    box.setAttribute('data-tag', tag || '');
     box.innerHTML = '';
     var s = document.createElement('span');
     s.textContent = txt;
@@ -143,7 +144,13 @@
     }
     box.className = 'info-msg on';
   };
-  GAR.esconderInfo = function () { var b = $('infoGlobal'); if (b) b.className = 'info-msg'; };
+  /** Com tag, só esconde o aviso daquela origem (não apaga, p.ex., "Rascunho restaurado"). */
+  GAR.esconderInfo = function (tag) {
+    var b = $('infoGlobal');
+    if (!b) return;
+    if (tag && b.getAttribute('data-tag') !== tag) return;
+    b.className = 'info-msg';
+  };
 
   /* ---------- Validação ---------- */
   GAR.invalido = function (id, mostrarMsg) {
@@ -428,7 +435,7 @@
         if (!valido(d)) throw new Error('lista de viaturas vazia');
         GAR.store.set(CHAVE_DADOS, { t: Date.now(), d: d });
         if (!cache || JSON.stringify(cache.d) !== JSON.stringify(d)) aplicar(d);
-        GAR.esconderInfo();
+        GAR.esconderInfo('offline');
         return true;
       } catch (e) {
         return false;
@@ -440,7 +447,7 @@
     if (usouCache) {
       depois();
       tentar(false).then(function (ok) {
-        if (!ok) GAR.info('Sem conexão com o servidor — usando a lista de viaturas salva neste aparelho.', { texto: 'Atualizar', fn: function () { GAR.carregarDados(); } });
+        if (!ok) GAR.info('Sem conexão com o servidor — usando a lista de viaturas salva neste aparelho.', { texto: 'Atualizar', fn: function () { GAR.carregarDados(); } }, 'offline');
       });
       return true;
     }
