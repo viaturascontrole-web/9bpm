@@ -7,7 +7,7 @@
 <title>9º BPM — Entrada de Serviço</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<link rel="stylesheet" href="common.css?v=2026.10.22">
+<link rel="stylesheet" href="common.css?v=2026.10.22.2">
 </head>
 <body class="tema-entrada">
 <img src="banner-9bpm.jpg" class="banner-bpm" alt="9º BPM" width="1280" height="320">
@@ -229,7 +229,7 @@
 </div>
 <div class="loading-ov" id="loadingOv"><div class="loading-spin"></div><div class="loading-txt" id="loadingTxt">Carregando...</div></div>
 
-<script src="common.js?v=2026.10.22"></script>
+<script src="common.js?v=2026.10.22.2"></script>
 <script>if(!window.GAR){document.body.innerHTML='<div style="padding:30px;color:#fff;font-family:sans-serif;line-height:1.6"><h2>Arquivos incompletos</h2><p>O arquivo common.js não foi encontrado. Publique common.js, common.css e banner-9bpm.jpg na mesma pasta de entrada.html e saida.html.</p></div>';throw new Error('common.js ausente');}</script>
 <script>
 (function () {
@@ -240,7 +240,7 @@
   var idEnvio = GAR.uuid();
   var enviando = false;
   var alteracoesSel = [];
-  var odoMin = 0, statusEstado = 'vazio', bloqueada = false, consultaCtrl = null;
+  var odoMin = 0, statusEstado = 'vazio', bloqueada = false, consultaCtrl = null, finalizando = false;
   var W;
 
   var fotosAv = GAR.criarFotos({ nome: 'avarias', camera: 'avCam', galeria: 'avGal', preview: 'avPreview', status: 'avStatus', rotulo: 'avaria_entrada' });
@@ -326,26 +326,27 @@
     avaliarOdo();
     if (!p) return;
 
-    var ctrl = consultaCtrl = new AbortController();
+    var ctrl = consultaCtrl = new AbortController(); // só identifica a consulta atual (troca de viatura invalida a anterior)
     statusEstado = 'carregando';
     dicaOdo('⏳ Verificando status da viatura...');
-    var opt = { timeout: 12000, retries: 1, signal: ctrl.signal };
-    // Duas consultas em paralelo (antes eram sequenciais: dobrava a espera)
-    var rStatus = GAR.getJson({ page: 'statusViatura', prefixo: p }, opt).catch(function () { return null; });
-    var rOdo = GAR.getJson({ page: 'odometro', prefixo: p }, opt).catch(function () { return null; });
-    var res = await Promise.all([rStatus, rOdo]);
+    // UMA consulta (status + odômetro) ao índice rápido — antes eram duas em paralelo, cada uma varrendo a planilha
+    var info = null;
+    try { info = await GAR.infoViatura(p, { confirmar: true }); } catch (e) { info = null; }
     if (ctrl !== consultaCtrl) return; // trocou de viatura no meio da consulta
 
-    var st = res[0], od = res[1];
     statusEstado = 'ok';
-    if (st && st.saidaAberta) { mostrarBloqueio(st); dicaOdo(''); return; }
-    var n = od && od.odometro != null ? Number(od.odometro) : 0;
-    if (isNaN(n)) n = parseFloat(od.odometro) || 0;
+    if (info && info.saidaAberta) {
+      mostrarBloqueio(info); dicaOdo('');
+      if (W && W.etapa > 1) W.ir(1); // a resposta chegou depois de o usuário avançar: volta ao aviso
+      return;
+    }
+    var n = info && info.odometro != null ? Number(info.odometro) : 0;
+    if (isNaN(n)) n = 0;
     if (n > 0) {
       odoMin = n;
       if (!$('odometroInicial').value) $('odometroInicial').value = n;
       dicaOdo('✅ Último registrado: <strong>' + GAR.fmtKm(n) + '</strong> km — confirme ou corrija');
-    } else if (od) dicaOdo('ℹ️ Nenhum registro anterior — informe o odômetro atual');
+    } else if (info && info.odometro != null) dicaOdo('ℹ️ Nenhum registro anterior — informe o odômetro atual');
     else dicaOdo('⚠️ Não foi possível consultar o último odômetro. Informe o valor do painel da viatura.');
     avaliarOdo();
     if (!preservar && $('odometroInicial').value) { try { $('odometroInicial').focus({ preventScroll: true }); } catch (e) {} }
@@ -359,7 +360,7 @@
       if (bloqueada) { GAR.mostrarErro('Esta viatura possui saída em aberto. O motorista anterior precisa registrar a baixa antes de uma nova entrada.'); return false; }
       var v = parseInt($('odometroInicial').value, 10);
       if (!v || v <= 0) { GAR.invalido('odometroInicial'); ok = false; }
-      else if (statusEstado === 'carregando') { GAR.mostrarErro('Aguarde um instante: verificando o status da viatura...'); ok = false; }
+      else if (statusEstado === 'carregando' && finalizando) { GAR.mostrarErro('Aguarde um instante: verificando o status da viatura...'); ok = false; }
     }
     if (n === 2) {
       if (!$('setor').value) { GAR.invalido('setor'); ok = false; }
@@ -423,7 +424,8 @@
   async function enviar() {
     if (enviando) return;
     GAR.esconderErro();
-    if (!W.validarTudo()) return;
+    finalizando = true; var okTudo = W.validarTudo(); finalizando = false; // a consulta pendente só bloqueia o ENVIO, não o avanço
+    if (!okTudo) return;
     enviando = true; $('btnSend').disabled = true;
     try {
       GAR.loading(true, 'Preparando envio...');

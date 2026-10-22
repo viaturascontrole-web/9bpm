@@ -10,7 +10,7 @@
   /* ---------- Configuração (único lugar para trocar a URL do Apps Script) ---------- */
   GAR.SCRIPT_URL =
     'https://script.google.com/macros/s/AKfycbyQl3ns6drVY1H2DepxCfN23Zee3xmcVlsP4a47IMPlfhxIPGHveaI3-EGYZ7gyVwbooA/exec';
-  GAR.VERSAO = '2026.10.22';
+  GAR.VERSAO = '2026.10.22.2';
   var RASCUNHO_VALIDADE_MS = 12 * 60 * 60 * 1000; // 12 h
   var MAX_FOTOS_POR_GRUPO = 8;
 
@@ -93,6 +93,45 @@
       return { ok: false, confirmado: true, erro: j.erro || j.mensagem || 'Erro retornado pelo servidor' };
     }
     return { ok: true, confirmado: !!(j && j.sucesso === true), resposta: j };
+  };
+
+  /**
+   * Consulta ÚNICA da viatura (status de saída em aberto + último odômetro + último saldo).
+   * Uma só requisição ao índice rápido do Apps Script (?page=viatura) em vez de duas/três em paralelo.
+   * opt.confirmar: formulário de ENTRADA (o servidor confirma na planilha antes de acusar bloqueio).
+   * Sem retry em timeout (repetir só dobrava a fila no Apps Script). Se o Apps Script ainda não tiver
+   * a rota nova (publicação antiga), cai nas rotas antigas — só nesse caso.
+   * Retorna {saidaAberta, motorista, telefone, dataEntrada, odometro (null = desconhecido), saldo (undefined = indisponível)}.
+   */
+  var semRotaViatura = false;
+  GAR.infoViatura = async function (prefixo, opt) {
+    opt = opt || {};
+    if (!semRotaViatura) {
+      try {
+        var params = { page: 'viatura', prefixo: prefixo };
+        if (opt.confirmar) params.confirmar = '1';
+        var d = await GAR.getJson(params, { timeout: opt.timeout || 25000, retries: 0 });
+        if (d && d.sucesso === true) return d;
+        throw new Error('resposta inválida');
+      } catch (e) {
+        var rotaAusente = e && (e.name === 'SyntaxError' || e.message === 'resposta inválida' || /^HTTP/.test(e.message || ''));
+        if (!rotaAusente) throw e; // timeout / sem rede: não repetir em cadeia
+        semRotaViatura = true;
+      }
+    }
+    var o = { timeout: 15000, retries: 1 };
+    var r = await Promise.all([
+      opt.confirmar ? GAR.getJson({ page: 'statusViatura', prefixo: prefixo }, o).catch(function () { return null; }) : Promise.resolve({ saidaAberta: false }),
+      GAR.getJson({ page: 'odometro', prefixo: prefixo }, o).catch(function () { return null; })
+    ]);
+    if (!r[0] && !r[1]) throw new Error('sem resposta');
+    var st = r[0] || {}, od = r[1];
+    return {
+      sucesso: true, legado: true,
+      saidaAberta: !!st.saidaAberta, motorista: st.motorista || '', telefone: st.telefone || '', dataEntrada: st.dataEntrada || '',
+      odometro: od ? (Number(od.odometro) || 0) : null,
+      saldo: undefined
+    };
   };
 
   /* ---------- Interface: loading / erros ---------- */

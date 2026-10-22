@@ -7,7 +7,7 @@
 <title>9º BPM — Saída de Serviço</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<link rel="stylesheet" href="common.css?v=2026.10.22">
+<link rel="stylesheet" href="common.css?v=2026.10.22.2">
 </head>
 <body class="tema-saida">
 <img src="banner-9bpm.jpg" class="banner-bpm" alt="9º BPM" width="1280" height="320">
@@ -214,7 +214,7 @@
 </div>
 <div class="loading-ov" id="loadingOv"><div class="loading-spin"></div><div class="loading-txt" id="loadingTxt">Carregando...</div></div>
 
-<script src="common.js?v=2026.10.22"></script>
+<script src="common.js?v=2026.10.22.2"></script>
 <script>if(!window.GAR){document.body.innerHTML='<div style="padding:30px;color:#fff;font-family:sans-serif;line-height:1.6"><h2>Arquivos incompletos</h2><p>O arquivo common.js não foi encontrado. Publique common.js, common.css e banner-9bpm.jpg na mesma pasta de entrada.html e saida.html.</p></div>';throw new Error('common.js ausente');}</script>
 <script>
 (function () {
@@ -225,7 +225,8 @@
   var idEnvio = GAR.uuid(); // identifica este registro (reenvio após falha de rede mantém o mesmo id)
   var enviando = false;
   var odoMin = 0, odoEstado = 'vazio', odoCtrl = null;
-  var saldoCache = {};
+  var infoPromessas = {}; // uma única consulta por viatura atende odômetro E saldo
+  var finalizando = false;
   var W;
 
   var fotosSin = GAR.criarFotos({ nome: 'sinistro', camera: 'sinCam', galeria: 'sinGal', preview: 'sinPreview', status: 'sinStatus', rotulo: 'sinistro_saida' });
@@ -261,10 +262,10 @@
     odoEstado = 'carregando'; odoMin = 0;
     dicaOdo('⏳ Consultando último odômetro...');
     try {
-      var d = await GAR.getJson({ page: 'odometro', prefixo: prefixo }, { timeout: 12000, retries: 1, signal: meu.signal });
+      var d = await infoDaViatura(prefixo);
       if (meu !== odoCtrl) return; // viatura trocada enquanto consultava
-      var n = d && d.odometro != null ? Number(d.odometro) : 0;
-      if (isNaN(n)) n = parseFloat(d.odometro) || 0;
+      var n = d && d.odometro != null ? Number(d.odometro) : NaN;
+      if (isNaN(n)) throw new Error('odômetro indisponível');
       if (n > 0) { odoMin = n; dicaOdo('ℹ️ Último registrado: ' + GAR.fmtKm(n) + ' km — informe o odômetro final'); }
       else dicaOdo('ℹ️ Nenhum registro anterior — informe o odômetro atual');
       odoEstado = 'ok';
@@ -277,12 +278,18 @@
   }
 
   /* ---------- Saldo do cartão ---------- */
-  function obterSaldo(prefixo) {
-    if (!saldoCache[prefixo]) {
-      saldoCache[prefixo] = GAR.getJson({ page: 'saldo', prefixo: prefixo }, { timeout: 12000, retries: 1 })
-        .catch(function (e) { delete saldoCache[prefixo]; throw e; });
+  function infoDaViatura(prefixo) {
+    if (!infoPromessas[prefixo]) {
+      infoPromessas[prefixo] = GAR.infoViatura(prefixo, { confirmar: false })
+        .catch(function (e) { delete infoPromessas[prefixo]; throw e; });
     }
-    return saldoCache[prefixo];
+    return infoPromessas[prefixo];
+  }
+  function obterSaldo(prefixo) {
+    return infoDaViatura(prefixo).then(function (d) {
+      if (!d || d.saldo === undefined) throw new Error('saldo indisponível'); // Apps Script antigo: sem rota de saldo
+      return { saldo: d.saldo };
+    });
   }
   function mostrarDicaSaldo() {
     var prefixo = $('prefixo').value, hint = $('saldoHint'), val = $('saldoHintVal');
@@ -322,7 +329,7 @@
       if (!$('prefixo').value) { GAR.invalido('prefixo'); ok = false; }
       var v = odoValor();
       if (v <= 0) { GAR.invalido('odometroFinal'); ok = false; }
-      else if (odoEstado === 'carregando') { GAR.mostrarErro('Aguarde um instante: consultando o último odômetro da viatura...'); ok = false; }
+      else if (odoEstado === 'carregando' && finalizando) { GAR.mostrarErro('Aguarde um instante: consultando o último odômetro da viatura...'); ok = false; }
       else if (avaliarOdo().precisaConfirmar && !$('odoConfirma').checked) {
         $('odoAviso').classList.add('invalido'); ok = false;
         GAR.mostrarErro('Confirme o odômetro informado marcando a caixa abaixo do campo.');
@@ -390,7 +397,8 @@
   async function enviar() {
     if (enviando) return;
     GAR.esconderErro();
-    if (!W.validarTudo()) return;
+    finalizando = true; var okTudo = W.validarTudo(); finalizando = false; // a consulta pendente só bloqueia o ENVIO, não o avanço
+    if (!okTudo) return;
     enviando = true; $('btnSend').disabled = true;
     try {
       GAR.loading(true, 'Preparando envio...');

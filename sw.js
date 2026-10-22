@@ -6,7 +6,7 @@
    - NUNCA intercepta chamadas ao Apps Script (outra origem): dados e envios sempre vão à rede
    Ao publicar uma nova versão: altere VERSAO aqui e o ?v= nos <link>/<script> das páginas.
    ============================================================ */
-const VERSAO = '2026.10.22';
+const VERSAO = '2026.10.22.2';
 const CACHE = 'garageiro-' + VERSAO;
 const ESCOPO = self.registration.scope;
 const SHELL = [
