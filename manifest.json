@@ -2,8 +2,9 @@
   "name": "9º BPM — Controle de Viaturas",
   "short_name": "9º BPM",
   "description": "Sistema de controle de viaturas do 9º Batalhão de Polícia Militar de Rondônia",
-  "start_url": "/9bpm/",
-  "scope": "/9bpm/",
+  "id": "./",
+  "start_url": "./entrada.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0a0e1a",
@@ -11,42 +12,22 @@
   "lang": "pt-BR",
   "categories": ["utilities", "productivity"],
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
     {
       "name": "Entrada de Serviço",
       "short_name": "Entrada",
-      "url": "/9bpm/entrada.html",
+      "url": "./entrada.html",
       "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Saída de Serviço",
       "short_name": "Saída",
-      "url": "/9bpm/saida.html",
+      "url": "./saida.html",
       "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
     }
   ]
