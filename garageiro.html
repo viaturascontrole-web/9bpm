@@ -850,11 +850,25 @@ var API_URL = 'https://script.google.com/macros/s/AKfycbyQl3ns6drVY1H2DepxCfN23Z
 // ═══════════════════════════════════════════════════════
 var _token='', _ng='', _mat='', _perfil='';
 var _todasViaturas=[];
+var _pre=null, _dadosStats=null, _viatCache=null;          // abertura em 1 chamada / dados reaproveitados
+var _manutOk=false, _manutTs=0, _manutSemRota=false;       // aba Manutenção: cache de 60 s no navegador
+
+function dataLocalISO(d) {            // YYYY-MM-DD no fuso do aparelho (toISOString usa UTC)
+  d = d || new Date();
+  return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+}
 
 // ═══════════════════════════════════════════════════════
 //  CHAMADA À API
 // ═══════════════════════════════════════════════════════
+// Lista de viaturas dos dropdowns: 1 busca por sessão (antes eram 3, uma por tela)
+function obterViatCached() {
+  if (_viatCache) return Promise.resolve(_viatCache);
+  return api({tipo:'obterViaturasParaDropdown', token:_token}).then(function(v){ _viatCache = v; return v; });
+}
+
 async function api(payload) {
+  if (payload && /^(adicionar|editar|remover|excluir|registrar|salvar|sincronizar|atualizar)/.test(payload.tipo||'')) { _manutOk=false; _viatCache=null; }
   var ctrl = new AbortController();
   var timer = setTimeout(function(){ctrl.abort();}, 20000);
   try {
@@ -876,6 +890,31 @@ async function api(payload) {
 window.addEventListener('DOMContentLoaded', async function() {
   var urlParams = new URLSearchParams(window.location.search);
   var hk = urlParams.get('hk');
+
+  // v2: UMA chamada resolve sessão + dashboard + lista de viaturas (garageiro_cache.gs).
+  // Se o Apps Script ainda não tiver a rota, segue o fluxo antigo logo abaixo.
+  var tkSalvo = sessionStorage.getItem('gar_token');
+  var expSalvo = parseInt(sessionStorage.getItem('gar_expira')||'0');
+  if (hk || (tkSalvo && Date.now() <= expSalvo)) {
+    loading(hk ? 'Iniciando sessão...' : 'Verificando sessão...');
+    try {
+      var ini = await api({ tipo:'garageiroIniciar', hk: hk||'', tk: hk ? '' : (tkSalvo||'') });
+      unload();
+      if (ini && ini.ok && ini.sessao) {
+        _token=ini.sessao.token; _ng=ini.sessao.nomeGuerra; _mat=ini.sessao.matricula; _perfil=ini.sessao.perfil;
+        if (hk) { salvarSessaoLocal(); history.replaceState(null,'',window.location.pathname); }
+        _pre = { dash: ini.dash };
+        if (ini.viaturas) _viatCache = ini.viaturas;
+        _iniciar();
+        return;
+      }
+      if (ini && ini.ok === false && !ini.erro) {      // chave/sessão realmente inválida
+        if (hk) { toast('Chave de acesso expirada. Faça login novamente.', 'err'); setTimeout(function(){ window.location.href='garageiro-login.html'; }, 2000); }
+        else { sessionStorage.clear(); window.location.href='garageiro-login.html'; }
+        return;
+      }
+    } catch(e) { unload(); /* rota ausente ou falha: fluxo antigo */ }
+  }
 
   if (hk) {
     loading('Iniciando sessão...');
@@ -938,12 +977,15 @@ function _iniciar() {
     document.querySelectorAll('.admin-only, .tab-admin-only').forEach(function(el){ el.style.display='flex'; });
   }
   definirDatasDefault();
-  carregarDropdowns();
-  init().then(function(){ carregarUltimasMovimentacoes(); });
-  carregarManut();
+  // Ordem: dashboard (já veio pronto na abertura) → movimentações → o resto, sem competir por conexão.
+  // Manutenção só carrega quando a aba é aberta (navTo) — antes eram 3 consultas no início, sem ser vista.
+  init({cache:true}).then(function(){ return carregarUltimasMovimentacoes(); }).then(function(){
+    carregarDropdowns();
+    liveIniciar();
+  });
   monitorarSessao();
-  atualizarOnline();
-  setInterval(atualizarOnline, 60000);
+  setTimeout(atualizarOnline, 8000);
+  setInterval(atualizarOnline, 300000);   // antes: a cada 60 s (usuariosListar é uma leitura pesada)
 }
 
 // ═══════════════════════════════════════════════════════
@@ -973,7 +1015,7 @@ function navTo(pgId, navId, cls) {
   document.getElementById('hdrTitle').textContent=m.title;
   document.getElementById('hdrBadge').innerHTML='<i class="fas '+m.icon+'" style="color:'+m.cor+'"></i> '+m.lbl;
   if (pgId==='pgAdmin') carregarUsuarios();
-  if (pgId==='pgManut') carregarManut();
+  if (pgId==='pgManut') carregarManut(true);
   if (pgId==='pgParte') pdInit();
 }
 
@@ -1007,6 +1049,7 @@ async function fazerLogout() {
 //  USUÁRIOS ONLINE
 // ═══════════════════════════════════════════════════════
 async function atualizarOnline() {
+  if (document.hidden) return;
   try {
     var r = await api({ tipo: 'usuariosListar', token: _token });
     if (!r || !r.sucesso || !r.dados) return;
@@ -1039,12 +1082,18 @@ function monitorarSessao() {
 // ═══════════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════════
-async function init() {
-  loading('Carregando dados...');
+async function init(opts) {
+  var usarCache = !!(opts && opts.cache);     // botão "atualizar" chama init() sem opções = recalcula
   try {
-    var dados = await api({tipo:'getDadosParaDashboard', token:_token});
-    unload();
+    var dados;
+    if (_pre && _pre.dash && _pre.dash.viaturas) { dados = _pre.dash; _pre.dash = null; }
+    else {
+      loading('Carregando dados...');
+      dados = await api({tipo:'getDadosParaDashboard', token:_token, forcar: !usarCache});
+      unload();
+    }
     if (!dados) { toast('Erro ao carregar dados.','err'); return; }
+    _dadosStats = dados;
     _todasViaturas = dados.viaturas||[];
     renderStats(dados);
     filtrarViaturas();
@@ -1056,7 +1105,7 @@ async function atualizarTudo() {
   loading('Atualizando dados...');
   try {
     await api({tipo:'atualizarSistemaCompleto', token:_token});
-    unload(); toast('Dados atualizados!','ok'); init().then(function(){ carregarUltimasMovimentacoes(); }); carregarManut();
+    unload(); toast('Dados atualizados!','ok'); init().then(function(){ return carregarUltimasMovimentacoes(); }); if (document.getElementById('pgManut').classList.contains('on')) carregarManut();
   } catch(e) { unload(); toast('Erro: '+e.message,'err'); }
 }
 
@@ -1110,7 +1159,7 @@ function renderViaturas(lista) {
 // ═══════════════════════════════════════════════════════
 async function carregarDropdowns() {
   try {
-    var v = await api({tipo:'obterViaturasParaDropdown'});
+    var v = await obterViatCached();
     ['eViat','sViat'].forEach(function(id){
       var sel=document.getElementById(id);
       while(sel.options.length>1) sel.remove(1);
@@ -1125,7 +1174,7 @@ async function carregarDropdowns() {
 }
 function definirDatasDefault() {
   var hoje=new Date(), mes30=new Date(); mes30.setDate(hoje.getDate()-30);
-  var hj=hoje.toISOString().split('T')[0], m30=mes30.toISOString().split('T')[0];
+  var hj=dataLocalISO(hoje), m30=dataLocalISO(mes30);
   document.getElementById('eDi').value=m30; document.getElementById('eDf').value=hj;
   document.getElementById('sDi').value=m30; document.getElementById('sDf').value=hj;
   var anoAtual=hoje.getFullYear();
@@ -1315,15 +1364,29 @@ function toggleDet(id, btn) {
 // ═══════════════════════════════════════════════════════
 //  MANUTENÇÃO
 // ═══════════════════════════════════════════════════════
-async function carregarManut() {
+async function carregarManut(usarCache) {
+  if (usarCache === true && _manutOk && Date.now() - _manutTs < 60000) return;
   document.getElementById('manutBody').innerHTML='<div style="color:var(--txt);padding:40px;text-align:center"><i class="fas fa-spinner fa-spin"></i> Carregando...</div>';
   try {
     var dados={oficinas:[],oleo:[],saldo:[]};
-    var [of,ol,sa]=await Promise.allSettled([
-      api({tipo:'getInfoViaturasOficina',token:_token}),
-      api({tipo:'buscarTodosKmOleo',token:_token}),
-      api({tipo:'getAlertasSaldoCartao',token:_token})
-    ]);
+    var of, ol, sa, comb = null;
+    if (!_manutSemRota) {
+      try { comb = await api({tipo:'garageiroManutencao', token:_token, forcar: usarCache !== true}); } catch(eM) { comb = null; }
+      if (!(comb && Array.isArray(comb.oficinas))) {
+        if (comb && /Tipo inv/i.test(String(comb.mensagem||''))) _manutSemRota = true;   // Apps Script antigo
+        comb = null;
+      }
+    }
+    if (comb) {
+      of = {status:'fulfilled', value:comb.oficinas}; ol = {status:'fulfilled', value:comb.oleo}; sa = {status:'fulfilled', value:comb.saldo};
+    } else {
+      var r3 = await Promise.allSettled([
+        api({tipo:'getInfoViaturasOficina',token:_token}),
+        api({tipo:'buscarTodosKmOleo',token:_token}),
+        api({tipo:'getAlertasSaldoCartao',token:_token})
+      ]);
+      of = r3[0]; ol = r3[1]; sa = r3[2];
+    }
     dados.oficinas=of.status==='fulfilled'?(of.value||[]):[];
     dados.oleo=ol.status==='fulfilled'?(ol.value||[]):[];
 
@@ -1408,6 +1471,7 @@ function renderManut(dados) {
   html+='</div>';
 
   document.getElementById('manutBody').innerHTML=html;
+  _manutOk = true; _manutTs = Date.now();
 }
 
 function cardOleo(item,cls,badge){
@@ -1551,6 +1615,140 @@ function _renderMovSaidas() {
   }).join('');
 }
 
+// ═══════════════════════════════════════════════════════
+//  ATUALIZAÇÃO AO VIVO — o checklist do motorista aparece sozinho
+//  A cada 30 s pergunta ao Apps Script "o que há de novo?" (feed leve em cache, sem varrer a planilha),
+//  encaixa as movimentações nas tabelas, atualiza cartões/contadores e avisa com um toast.
+//  Pausa com a aba oculta e volta na hora ao reabrir. Sem a rota no Apps Script, nada muda (botão ↻ continua).
+// ═══════════════════════════════════════════════════════
+var LIVE_INTERVALO = 30000;
+var _live = { t0:0, agora:0, timer:null, ocupado:false, falhas:0, semRota:false, ativo:false };
+var _movVistos = {};
+
+function _movChave(tipo, r) {
+  var m = String(r.data||'').match(/(\d{2}\/\d{2}\/\d{4})\s+(\d{2}:\d{2})/);
+  return tipo+'|'+_normPref(r.prefixo)+'|'+String(r.odometro||r.odometroInicial||r.odometroFinal||'').replace(/\D/g,'')+'|'+
+         String(r.motorista||'').trim().toUpperCase()+'|'+(m ? m[1]+' '+m[2] : String(r.data||''));
+}
+function _movSemear() {
+  _movVistos = {};
+  _movEntradas.forEach(function(r){ _movVistos[_movChave('e', r)] = 1; });
+  _movSaidas.forEach(function(r){ _movVistos[_movChave('s', r)] = 1; });
+}
+
+function _calcStatsMov() {
+    var ePref={}, eMot={}, eAlter=0;
+    _movEntradas.forEach(function(r){
+      if(r.prefixo) ePref[r.prefixo.toUpperCase()]=true;
+      var m=r.motorista||''; if(m&&m!=='-'&&m!=='--') eMot[m.toUpperCase()]=true;
+      var a=r.alteracoes||''; if(a&&a!=='-'&&a!=='--'&&a.toUpperCase()!=='NÃO'&&a.toUpperCase()!=='NAO'&&a!=='Sem alteração') eAlter++;
+    });
+    var setEl = function(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; };
+    setEl('movEStT', _movEntradas.length);
+    setEl('movEStV', Object.keys(ePref).length);
+    setEl('movEStM', Object.keys(eMot).length);
+    setEl('movEStA', eAlter);
+
+    var sPref={}, sMot={}, sSin=0, sAbs=0;
+    _movSaidas.forEach(function(r){
+      if(r.prefixo) sPref[r.prefixo.toUpperCase()]=true;
+      var m=r.motorista||''; if(m&&m!=='-'&&m!=='--') sMot[m.toUpperCase()]=true;
+      if(String(r.sinistro||'').toUpperCase()==='SIM') sSin++;
+      if(String(r.abastecimento||'').toUpperCase()==='SIM') sAbs++;
+    });
+    setEl('movSStT', _movSaidas.length);
+    setEl('movSStV', Object.keys(sPref).length);
+    setEl('movSStM', Object.keys(sMot).length);
+    setEl('movSStSin', sSin);
+    setEl('movSStAbs', sAbs);
+}
+
+function _setLiveTxt(t) { var el = document.getElementById('movTimestamp'); if (el) el.textContent = t; }
+function _hhmm() { var d = new Date(); return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); }
+
+// Reflete a movimentação nos cartões da frota e nos contadores (sem chamar o servidor)
+function _aplicarMovNoPainel(tipo, r) {
+  var d = _dadosStats; if (!d) return;
+  if (tipo === 'entrada') d.totalEntradas = (d.totalEntradas||0) + 1; else d.totalSaidas = (d.totalSaidas||0) + 1;
+  var v = _viaturaByPrefixo(r.prefixo);
+  if (v) {
+    var cls = resolverCls(String(v.status||'').toUpperCase());
+    if (tipo === 'entrada') {
+      if (cls === 'disponivel' || cls === 'servico' || cls === 'semretorno') {
+        if (cls === 'disponivel') { d.emServico = (d.emServico||0) + 1; d.disponiveis = Math.max(0, (d.disponiveis||0) - 1); }
+        v.status = 'EM SERVIÇO'; v.tempo = '0min';
+        v.motorista = r.motorista || v.motorista; v.comandante = r.comandante || v.comandante;
+        v.setor = r.setor || v.setor; if (r.odometro) { v.odometro = r.odometro; v.odometroInicial = r.odometro; }
+      }
+    } else if (cls === 'servico' || cls === 'semretorno') {
+      v.status = 'DISPONÍVEL'; d.emServico = Math.max(0, (d.emServico||0) - 1); d.disponiveis = (d.disponiveis||0) + 1;
+    }
+  }
+}
+
+function _liveAplicar(r) {
+  var novos = [];
+  (r.entradas||[]).forEach(function(x){ var k = _movChave('e', x); if (!_movVistos[k]) { _movVistos[k] = 1; novos.push({tipo:'entrada', r:x}); } });
+  (r.saidas||[]).forEach(function(x){   var k = _movChave('s', x); if (!_movVistos[k]) { _movVistos[k] = 1; novos.push({tipo:'saida',   r:x}); } });
+  if (!novos.length) { _setLiveTxt('— ao vivo · verificado às '+_hhmm()); return; }
+  novos.sort(function(a,b){ return (a.r.ts||0) - (b.r.ts||0); });          // do mais antigo ao mais novo
+  novos.forEach(function(n){
+    (n.tipo === 'entrada' ? _movEntradas : _movSaidas).unshift(n.r);        // fica o mais novo no topo
+    _aplicarMovNoPainel(n.tipo, n.r);
+  });
+  _calcStatsMov(); _renderMovEntradas(); _renderMovSaidas();
+  if (_dadosStats) { renderStats(_dadosStats); filtrarViaturas(); }
+  _setLiveTxt('— ao vivo · atualizado às '+_hhmm());
+  if (novos.length > 3) toast('🔔 '+novos.length+' novas movimentações', 'ok');
+  else novos.forEach(function(n){ toast((n.tipo === 'entrada' ? '🚓 Entrada: ' : '🏁 Saída: ')+(n.r.prefixo||'--')+(n.r.motorista ? ' · '+n.r.motorista : ''), 'ok'); });
+}
+
+async function liveTick() {
+  if (!_live.ativo) return;
+  if (document.hidden || _live.ocupado || _live.semRota || !_token) { liveAgendar(); return; }
+  _live.ocupado = true;
+  try {
+    var payload = { tipo:'movimentosRecentes', token:_token };
+    if (_live.agora) payload.desde = _live.agora - 180000;                          // sobreposição de 3 min (duplicatas são descartadas)
+    else payload.minutos = Math.ceil((Date.now() - _live.t0) / 60000) + 1;          // 1ª vez: desde o início da carga
+    var r = await api(payload);
+    if (!r || r.sucesso !== true) {
+      var msg = String((r && (r.mensagem || r.erro)) || '');
+      if (/Tipo inv/i.test(msg)) { _live.semRota = true; _setLiveTxt('— use ↻ para ver registros novos'); }
+      else _live.falhas++;
+    } else {
+      _live.falhas = 0; _live.agora = r.agora;
+      if (r.truncado) { await carregarUltimasMovimentacoes(); init({cache:true}); }  // ficou tempo demais parado: recarrega tudo
+      else _liveAplicar(r);
+    }
+  } catch(e) { _live.falhas++; }
+  finally { _live.ocupado = false; liveAgendar(); }
+}
+
+function liveAgendar(ms) {
+  clearTimeout(_live.timer);
+  _live.timer = setTimeout(liveTick, ms || LIVE_INTERVALO * (1 + Math.min(_live.falhas, 4)));   // recua se o servidor falhar
+}
+
+function liveIniciar() {
+  if (_live.ativo) return;
+  _live.ativo = true;
+  document.addEventListener('visibilitychange', function(){
+    if (!document.hidden && _live.ativo) { clearTimeout(_live.timer); liveTick(); }
+  });
+  liveAgendar(3000);
+}
+
+// "Hoje" a partir da lista já carregada (evita 2 consultas); só quando o feed ao vivo está funcionando
+function _movLocalHoje() {
+  if (!_live.ativo || _live.semRota || _live.falhas > 1 || !_live.agora) return null;
+  var d = new Date();
+  var pref = ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear();
+  var e = _movEntradas.filter(function(r){ return String(r.data||'').indexOf(pref) === 0; });
+  var sa = _movSaidas.filter(function(r){ return String(r.data||'').indexOf(pref) === 0; });
+  return (e.length || sa.length) ? { e:e, s:sa } : null;
+}
+
 function movPagE(dir) { _movEPag += dir; _renderMovEntradas(); }
 function movPagS(dir) { _movSPag += dir; _renderMovSaidas(); }
 
@@ -1584,10 +1782,11 @@ async function carregarUltimasMovimentacoes() {
   tbS.innerHTML = '<tr><td colspan="10" class="erow"><i class="fas fa-spinner fa-spin"></i></td></tr>';
   ['movEPrev','movENext','movSPrev','movSNext'].forEach(function(id){ var el=document.getElementById(id); if(el) el.disabled=true; });
 
+  _live.t0 = Date.now();
   var hoje = new Date();
   var mes90 = new Date(); mes90.setDate(hoje.getDate() - 90);
-  var hj  = hoje.toISOString().split('T')[0];
-  var m90 = mes90.toISOString().split('T')[0];
+  var hj  = dataLocalISO(hoje);
+  var m90 = dataLocalISO(mes90);
   try {
     var [rE, rS] = await Promise.allSettled([
       api({tipo:'pesquisarEntradas', token:_token, filtros:{dataInicio:m90, dataFim:hj}}),
@@ -1598,30 +1797,9 @@ async function carregarUltimasMovimentacoes() {
 
     _movEPag = 1; _movSPag = 1;
 
-    var ePref={}, eMot={}, eAlter=0;
-    _movEntradas.forEach(function(r){
-      if(r.prefixo) ePref[r.prefixo.toUpperCase()]=true;
-      var m=r.motorista||''; if(m&&m!=='-'&&m!=='--') eMot[m.toUpperCase()]=true;
-      var a=r.alteracoes||''; if(a&&a!=='-'&&a!=='--'&&a.toUpperCase()!=='NÃO'&&a.toUpperCase()!=='NAO'&&a!=='Sem alteração') eAlter++;
-    });
-    var setEl = function(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; };
-    setEl('movEStT', _movEntradas.length);
-    setEl('movEStV', Object.keys(ePref).length);
-    setEl('movEStM', Object.keys(eMot).length);
-    setEl('movEStA', eAlter);
-
-    var sPref={}, sMot={}, sSin=0, sAbs=0;
-    _movSaidas.forEach(function(r){
-      if(r.prefixo) sPref[r.prefixo.toUpperCase()]=true;
-      var m=r.motorista||''; if(m&&m!=='-'&&m!=='--') sMot[m.toUpperCase()]=true;
-      if(String(r.sinistro||'').toUpperCase()==='SIM') sSin++;
-      if(String(r.abastecimento||'').toUpperCase()==='SIM') sAbs++;
-    });
-    setEl('movSStT', _movSaidas.length);
-    setEl('movSStV', Object.keys(sPref).length);
-    setEl('movSStM', Object.keys(sMot).length);
-    setEl('movSStSin', sSin);
-    setEl('movSStAbs', sAbs);
+    _calcStatsMov();
+    _movSemear();
+    _live.agora = 0; // o feed volta a pedir desde o início desta carga
 
     _renderMovEntradas();
     _renderMovSaidas();
@@ -1813,7 +1991,7 @@ async function abrirModalOleo() {
 
 async function carregarDropdownOleo() {
   try {
-    var v = await api({tipo:'obterViaturasParaDropdown', token:_token});
+    var v = await obterViatCached();
     var sel = document.getElementById('oleoViat');
     while (sel.options.length > 1) sel.remove(1);
     (v||[]).forEach(function(x){
@@ -1886,7 +2064,7 @@ async function abrirModalOficinas() {
 async function carregarDropdownsOficina() {
   try {
     var [v, of, mot] = await Promise.allSettled([
-      api({tipo:'obterViaturasParaDropdown', token:_token}),
+      obterViatCached(),
       api({tipo:'obterListaOficinasMenu', token:_token}),
       api({tipo:'obterListaMotivosMenu', token:_token})
     ]);
@@ -2105,7 +2283,7 @@ var _pdQuadro = [];
 
 function pdInit() {
   var hoje = new Date();
-  document.getElementById('pdData').value = hoje.toISOString().split('T')[0];
+  document.getElementById('pdData').value = dataLocalISO(hoje);
   document.getElementById('pdTurno').value = hoje.getHours() < 19 ? '1' : '2';
   if (_ng) document.getElementById('pdGarageiro').value = _ng;
   pdRenderVtr();
@@ -2115,13 +2293,17 @@ function pdInit() {
 async function pdImportarHoje() {
   loading('Buscando entradas e saídas de hoje...');
   try {
-    var hj = new Date().toISOString().split('T')[0];
-    var [rE, rS] = await Promise.allSettled([
-      api({tipo:'pesquisarEntradas', token:_token, filtros:{dataInicio:hj, dataFim:hj}}),
-      api({tipo:'pesquisarSaidas',   token:_token, filtros:{dataInicio:hj, dataFim:hj}})
-    ]);
-    var entradas = rE.status==='fulfilled' ? (Array.isArray(rE.value) ? rE.value : (rE.value.registros||[])) : [];
-    var saidas   = rS.status==='fulfilled' ? (Array.isArray(rS.value) ? rS.value : (rS.value.registros||[])) : [];
+    var entradas, saidas, loc = _movLocalHoje();
+    if (loc) { entradas = loc.e; saidas = loc.s; }
+    else {
+      var hj = dataLocalISO();
+      var [rE, rS] = await Promise.allSettled([
+        api({tipo:'pesquisarEntradas', token:_token, filtros:{dataInicio:hj, dataFim:hj}}),
+        api({tipo:'pesquisarSaidas',   token:_token, filtros:{dataInicio:hj, dataFim:hj}})
+      ]);
+      entradas = rE.status==='fulfilled' ? (Array.isArray(rE.value) ? rE.value : (rE.value.registros||[])) : [];
+      saidas   = rS.status==='fulfilled' ? (Array.isArray(rS.value) ? rS.value : (rS.value.registros||[])) : [];
+    }
     var saidaMap = {};
     saidas.forEach(function(s) {
       var pref = pdNorm(s.prefixo);
