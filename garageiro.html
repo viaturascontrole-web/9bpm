@@ -661,6 +661,8 @@ tr:hover td{background:rgba(245,166,35,.025)}
       <div class="pd-grp"><label class="pd-lbl">Observações item 5 (01. INFORMO QUE...)</label><textarea class="pd-inp" id="pdObs" style="min-height:90px" placeholder="01. INFORMO QUE...&#10;02. INFORMO QUE..."></textarea></div>
 
       <div style="display:flex;flex-direction:column;gap:6px;margin-top:14px;padding-bottom:20px">
+        <button class="btn btn-s" style="width:100%;justify-content:center;border-color:#27ae60;color:#27ae60" onclick="pdSalvar()">💾 Salvar Parte no Servidor</button>
+        <button class="btn btn-s" style="width:100%;justify-content:center;border-color:#3498db;color:#3498db" onclick="pdCarregarSalvo()">📂 Carregar Última Salva</button>
         <button class="btn" style="background:#00c896;color:#000;width:100%;justify-content:center" onclick="pdGerarPreview()">⚙️ Gerar Prévia</button>
         <button class="btn btn-s" style="width:100%;justify-content:center" onclick="pdCopiarSEI()">📋 Copiar com Formatação para SEI</button>
         <button class="btn btn-s" style="width:100%;justify-content:center;border-color:#e74c3c;color:#e74c3c" onclick="pdGerarPDF()">📄 Gerar PDF</button>
@@ -1350,7 +1352,6 @@ function exibirResultadosS(reg) {
 
     var descAvOk = descAv && descAv!=='--' && descAv!=='-';
     var temExtras = limpa || justLim || descAvOk || link;
-    console.log('prefixo:', r.prefixo, '| descAv:', JSON.stringify(descAv), '| limpa:', limpa, '| temExtras:', temExtras);
 
     var linhaDetalhe = '<tr class="det-row" id="det-s-'+idx+'" style="display:none"><td colspan="11"><div class="det-grid">';
     if(limpa) linhaDetalhe+='<div class="det-bloco"><div class="det-lbl">🧹 Viatura Entregue Limpa?</div><div class="det-val '+limpaClass+'">'+esc(limpa)+(justLim?'<br><small style="font-weight:400;color:var(--txt2)">'+esc(justLim)+'</small>':'')+'</div></div>';
@@ -1424,13 +1425,7 @@ async function carregarManut(forcar) {
     var saRaw=sa.status==='fulfilled'?sa.value:null;
     var saArr=Array.isArray(saRaw)?saRaw:(saRaw&&Array.isArray(saRaw.alertas)?saRaw.alertas:[]);
 
-    function normPrefManut(p){
-      var s=String(p||'').trim().toUpperCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-      s=s.replace(/\s+-\s+[A-Z].*$/,'');
-      s=s.replace(/\s*-\s*(?=\d)/g,'-');
-      return s.replace(/\s+/g,'');
-    }
+    var normPrefManut = _normPref;
 
     var saMap={};
     saArr.forEach(function(item){
@@ -1446,11 +1441,7 @@ async function carregarManut(forcar) {
       var saldoStr=numVal===0?'R$ 0,00':'R$ '+numVal.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
       var dataStr=item.data||(item.dataRegistro?(item.dataRegistro instanceof Date?item.dataRegistro.toLocaleString('pt-BR'):String(item.dataRegistro)):'--');
       var key=normPrefManut(item.prefixo);
-      var prefixoNorm=String(item.prefixo||'').trim().toUpperCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-        .replace(/\s+-\s+[A-Z].*$/,'')
-        .replace(/\s*-\s*(?=\d)/g,'-')
-        .trim();
+      var prefixoNorm = String(item.prefixo||'').trim().toUpperCase();
       if(!saMap[key]){
         saMap[key]={prefixo:prefixoNorm,modelo:item.modelo||'--',saldo:saldoStr,saldoNum:numVal,data:dataStr,motorista:item.motorista||'--'};
       }
@@ -2183,7 +2174,7 @@ async function excluirSetorM(indice, nome) {
 // ═══════════════════════════════════════════════════════
 //  UTILS
 // ═══════════════════════════════════════════════════════
-function fechar(id){ document.getElementById(id).classList.remove('on'); }
+function fechar(id){ var el=document.getElementById(id); if(el) el.classList.remove('on'); }
 function esc(v){ return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function fmtData(s){
   if(!s||s==='--'||s==='-')return s;
@@ -2200,7 +2191,12 @@ function fmtData(s){
 }
 function loading(txt){ document.getElementById('lovTxt').textContent=txt||'Processando...'; document.getElementById('lov').classList.add('on'); }
 function unload(){ document.getElementById('lov').classList.remove('on'); }
-function toast(msg,tipo){ var el=document.createElement('div'); el.className='toast-el '+(tipo||'info'); el.innerHTML='<span>'+(tipo==='ok'?'✅':tipo==='err'?'❌':'ℹ️')+'</span><span>'+esc(msg)+'</span>'; document.body.appendChild(el); setTimeout(function(){el.remove();},4000); }
+function toast(msg,tipo){
+  var MAX=5; var existentes=document.querySelectorAll('.toast-el'); if(existentes.length>=MAX) existentes[0].remove();
+  var el=document.createElement('div'); el.className='toast-el '+(tipo||'info');
+  el.innerHTML='<span>'+(tipo==='ok'?'✅':tipo==='err'?'❌':'ℹ️')+'</span><span>'+esc(msg)+'</span>';
+  document.body.appendChild(el); setTimeout(function(){el.remove();},4000);
+}
 function nivelBadge(n,ico){ if(!n||n==='--'||n==='-') return (ico||'')+' --'; var u=n.toUpperCase(); if(u.includes('MIN')) return '<span class="nivel-badge nivel-min">'+(ico||'')+'🔴 '+esc(n)+'</span>'; if(u.includes('MED')||u.includes('MÉD')) return '<span class="nivel-badge nivel-med">'+(ico||'')+'🟡 '+esc(n)+'</span>'; if(u.includes('MAX')||u.includes('MÁX')) return '<span class="nivel-badge nivel-max">'+(ico||'')+'🟢 '+esc(n)+'</span>'; return (ico||'')+' '+esc(n); }
 function badgeSN(v){ var u=String(v||'').toUpperCase().trim(); if(u==='SIM') return '<span class="bp" style="background:rgba(231,76,60,.18);color:#b91c1c">⚠️ SIM</span>'; if(u==='NÃO'||u==='NAO') return '<span class="bp" style="background:rgba(39,174,96,.18);color:#86efac">✓ NÃO</span>'; return esc(v)||'--'; }
 
@@ -2223,6 +2219,21 @@ async function pdImportarHoje() {
   loading('Buscando entradas e saídas de hoje...');
   try {
     var hj = new Date().toISOString().split('T')[0];
+    var turno = document.getElementById('pdTurno').value || '1';
+
+    // Tenta rota nativa do parte_diaria.gs (retorna lista ja mesclada)
+    var rNativo = null;
+    try { rNativo = await api({tipo:'pdImportar', token:_token, data:hj, turno:turno}); } catch(e2) { rNativo = null; }
+
+    if (rNativo && rNativo.sucesso !== false && Array.isArray(rNativo.empenhadas)) {
+      _pdVtr = rNativo.empenhadas;
+      pdRenderVtr();
+      unload();
+      toast(_pdVtr.length+' viatura(s) importada(s) via Parte Diária','ok');
+      return;
+    }
+
+    // Fallback: buscar entradas e saidas separadamente
     var [rE, rS] = await Promise.allSettled([
       api({tipo:'pesquisarEntradas', token:_token, filtros:{dataInicio:hj, dataFim:hj}}),
       api({tipo:'pesquisarSaidas',   token:_token, filtros:{dataInicio:hj, dataFim:hj}})
@@ -2240,7 +2251,7 @@ async function pdImportarHoje() {
       var saida = saidaMap[pdNorm(reg.prefixo)] || null;
       return {
         prefixo:    reg.prefixo||'',
-        modelo:     vtr.modelo||'',
+        modelo:     vtr.modelo||vtr.tipo||'',
         placa:      vtr.placa||'',
         oi:         reg.odometro||reg.odometroInicial||'',
         of:         saida ? (saida.odometro||saida.odometroFinal||'*******') : '*******',
@@ -2254,7 +2265,7 @@ async function pdImportarHoje() {
     pdRenderVtr();
     unload();
     var comSaida = Object.keys(saidaMap).length;
-    toast(_pdVtr.length+' viatura(s) importada(s)'+(comSaida?' · '+comSaida+' com saída completa':''),'ok');
+    toast(_pdVtr.length+' viatura(s) importada(s)'+(comSaida?' · '+comSaida+' com saída':''),'ok');
   } catch(e) { unload(); toast('Erro: '+e.message,'err'); }
 }
 
@@ -2298,12 +2309,22 @@ function pdRenderVtr() {
 async function pdCarregarQuadro() {
   loading('Carregando frota...');
   try {
-    var r = await api({tipo:'getDadosParaDashboard', token:_token});
-    var vts = r.viaturas||[];
+    // Tenta rota nativa do parte_diaria.gs primeiro; fallback para getDadosParaDashboard
+    var r;
+    try { r = await api({tipo:'pdFrota', token:_token}); } catch(e2) { r = null; }
+    var vts;
+    if (r && Array.isArray(r.viaturas)) {
+      vts = r.viaturas;
+    } else {
+      var r2 = await api({tipo:'getDadosParaDashboard', token:_token});
+      vts = r2.viaturas || [];
+    }
     _pdQuadro = vts.map(function(v){
       var st = String(v.status||'').toUpperCase();
-      var status = st.includes('OFICINA') ? 'BAIXADA OFICINA' : 'EM CONDIÇÕES';
-      return {prefixo:v.prefixo, modelo:v.modelo||'', placa:v.placa||'', local:'SEDE/ 9º BPM', status:status, obs:'S/A'};
+      var status = st.includes('OFICINA') ? 'BAIXADA OFICINA'
+                 : st.includes('BAIXADA') ? 'BAIXADA'
+                 : 'EM CONDIÇÕES';
+      return {prefixo:v.prefixo||'', modelo:v.modelo||v.tipo||'', placa:v.placa||'', local:'SEDE/ 9º BPM', status:status, obs:'S/A'};
     });
     pdRenderQuadro();
     unload(); toast(_pdQuadro.length+' viaturas carregadas','ok');
@@ -2422,44 +2443,43 @@ function pdCopiarSEI() {
   var lineStyle = 'border-bottom:1px solid #000;display:inline-block;width:60%;margin:0 4px;vertical-align:bottom';
   var bodyStyle = 'font-family:Arial,sans-serif;font-size:10pt;line-height:1.5;color:#000';
   var itemStyle = 'margin-bottom:8px;font-size:9.5pt';
-  function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   var tblEmp = '';
   if (d.empenhadas.length) {
     var rows = d.empenhadas.map(function(v){
-      var pf = escH(v.prefixo)+(v.modelo?' ('+escH(v.modelo)+')':'')+(v.placa?' '+escH(v.placa):'');
-      return '<tr><td style="'+tdLStyle+'">'+pf+'</td><td style="'+tdStyle+'">'+escH(v.oi)+'</td><td style="'+tdStyle+'">'+(v.of?escH(v.of):'*******')+'</td><td style="'+tdStyle+'">'+escH(v.hi)+'</td><td style="'+tdStyle+'">'+escH(v.hf)+'</td><td style="'+tdStyle+'">'+escH(v.setor)+'</td><td style="'+tdLStyle+'">'+escH(v.motorista)+'</td><td style="'+tdLStyle+'">'+escH(v.comandante||'')+'</td></tr>';
+      var pf = esc(v.prefixo)+(v.modelo?' ('+esc(v.modelo)+')':'')+(v.placa?' '+esc(v.placa):'');
+      return '<tr><td style="'+tdLStyle+'">'+pf+'</td><td style="'+tdStyle+'">'+esc(v.oi)+'</td><td style="'+tdStyle+'">'+(v.of?esc(v.of):'*******')+'</td><td style="'+tdStyle+'">'+esc(v.hi)+'</td><td style="'+tdStyle+'">'+esc(v.hf)+'</td><td style="'+tdStyle+'">'+esc(v.setor)+'</td><td style="'+tdLStyle+'">'+esc(v.motorista)+'</td><td style="'+tdLStyle+'">'+esc(v.comandante||'')+'</td></tr>';
     }).join('');
-    tblEmp = '<table style="'+tblStyle+'"><caption style="'+capStyle+'">VIATURAS EMPENHADAS NO '+escH(d.dataTbl)+'</caption><thead><tr><th style="'+thStyle+'">VTR. PREFIXO</th><th style="'+thStyle+'">O.I</th><th style="'+thStyle+'">O.F</th><th style="'+thStyle+'">H.I</th><th style="'+thStyle+'">H.F</th><th style="'+thStyle+'">SETOR</th><th style="'+thStyle+'">MOTORISTA</th><th style="'+thStyle+'">COMANDANTE</th></tr></thead><tbody>'+rows+'</tbody></table>';
+    tblEmp = '<table style="'+tblStyle+'"><caption style="'+capStyle+'">VIATURAS EMPENHADAS NO '+esc(d.dataTbl)+'</caption><thead><tr><th style="'+thStyle+'">VTR. PREFIXO</th><th style="'+thStyle+'">O.I</th><th style="'+thStyle+'">O.F</th><th style="'+thStyle+'">H.I</th><th style="'+thStyle+'">H.F</th><th style="'+thStyle+'">SETOR</th><th style="'+thStyle+'">MOTORISTA</th><th style="'+thStyle+'">COMANDANTE</th></tr></thead><tbody>'+rows+'</tbody></table>';
   }
   var tblQuadro = '';
   if (d.quadro.length) {
     var qrows = d.quadro.map(function(v,i){
-      var pf = escH(v.prefixo)+(v.modelo?' ('+escH(v.modelo)+')':'')+(v.placa?' '+escH(v.placa):'');
-      return '<tr><td style="'+tdStyle+'">'+(i+1)+'</td><td style="'+tdLStyle+'">'+pf+'</td><td style="'+tdStyle+'">'+escH(v.local||'SEDE/ 9º BPM')+'</td><td style="'+tdStyle+'">'+escH(v.status)+'</td><td style="'+tdLStyle+'">'+escH(v.obs||'S/A')+'</td></tr>';
+      var pf = esc(v.prefixo)+(v.modelo?' ('+esc(v.modelo)+')':'')+(v.placa?' '+esc(v.placa):'');
+      return '<tr><td style="'+tdStyle+'">'+(i+1)+'</td><td style="'+tdLStyle+'">'+pf+'</td><td style="'+tdStyle+'">'+esc(v.local||'SEDE/ 9º BPM')+'</td><td style="'+tdStyle+'">'+esc(v.status)+'</td><td style="'+tdLStyle+'">'+esc(v.obs||'S/A')+'</td></tr>';
     }).join('');
     tblQuadro = '<table style="'+tblStyle+'"><caption style="'+capStyle+'">QUADRO GERAL DE VIATURAS DO 9º BPM</caption><thead><tr><th style="'+thStyle+'">QTD</th><th style="'+thStyle+'">PREFIXO</th><th style="'+thStyle+'">LOCAL</th><th style="'+thStyle+'">STATUS</th><th style="'+thStyle+'">OBSERVAÇÕES</th></tr></thead><tbody>'+qrows+'</tbody></table>';
   }
   var obsHtml = '';
   if (d.vtrRec==='C/A' && d.obs) {
-    obsHtml = '<div style="margin-top:6px;font-size:9pt">'+d.obs.split('\n').map(function(l){ return escH(l); }).join('<br>')+'</div>';
+    obsHtml = '<div style="margin-top:6px;font-size:9pt">'+d.obs.split('\n').map(function(l){ return esc(l); }).join('<br>')+'</div>';
   }
   var limHtml = '';
-  if (d.lim==='C/A' && d.limTxt) { limHtml = '<div style="margin-top:6px;font-size:9pt">'+escH(d.limTxt)+'</div>'; }
+  if (d.lim==='C/A' && d.limTxt) { limHtml = '<div style="margin-top:6px;font-size:9pt">'+esc(d.limTxt)+'</div>'; }
   var html = '<div style="'+bodyStyle+'">'
-    + '<p style="text-align:center;margin-bottom:4px"><strong>GOVERNO DO ESTADO DE RONDÔNIA</strong><br>Polícia Militar - PM<br><strong>PARTE DIÁRIA '+escH(d.numParte)+'</strong></p>'
-    + '<p style="font-size:9.5pt;text-align:justify;margin-bottom:10px">Parte Diária do <strong>'+escH(d.garageiro)+'</strong>, Garageiro do 9º Batalhão, ao Sr. Chefe da P-4/9º BPM, referente ao serviço do dia <strong>'+escH(d.dataFmt)+', '+escH(d.turnoLabel)+'</strong>.</p>'
-    + '<p style="'+itemStyle+'"><strong>1. RENDIÇÃO</strong> <span style="'+lineStyle+'"> </span> <strong>'+escH(d.ren)+'.</strong></p>'
-    + '<p style="'+itemStyle+'"><strong>2. CONTROLE DE DESLOCAMENTO DE VIATURA</strong> <span style="'+lineStyle+'"> </span> <strong>'+escH(d.des)+'.</strong></p>'
+    + '<p style="text-align:center;margin-bottom:4px"><strong>GOVERNO DO ESTADO DE RONDÔNIA</strong><br>Polícia Militar - PM<br><strong>PARTE DIÁRIA '+esc(d.numParte)+'</strong></p>'
+    + '<p style="font-size:9.5pt;text-align:justify;margin-bottom:10px">Parte Diária do <strong>'+esc(d.garageiro)+'</strong>, Garageiro do 9º Batalhão, ao Sr. Chefe da P-4/9º BPM, referente ao serviço do dia <strong>'+esc(d.dataFmt)+', '+esc(d.turnoLabel)+'</strong>.</p>'
+    + '<p style="'+itemStyle+'"><strong>1. RENDIÇÃO</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.ren)+'.</strong></p>'
+    + '<p style="'+itemStyle+'"><strong>2. CONTROLE DE DESLOCAMENTO DE VIATURA</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.des)+'.</strong></p>'
     + tblEmp
-    + '<p style="'+itemStyle+'"><strong>3. ALTERAÇÕES NO SERVIÇO</strong> <span style="'+lineStyle+'"> </span> <strong>'+escH(d.alt)+'.</strong></p>'
-    + '<p style="'+itemStyle+'"><strong>4. LIMPEZA VIATURAS</strong> <span style="'+lineStyle+'"> </span> <strong>'+escH(d.lim)+'.</strong>'+limHtml+'</p>'
-    + '<p style="'+itemStyle+'"><strong>5. VIATURAS RECEBIDAS / ALTERAÇÕES</strong> <span style="'+lineStyle+'"> </span> <strong>'+escH(d.vtrRec)+'.</strong>'+obsHtml+'</p>'
+    + '<p style="'+itemStyle+'"><strong>3. ALTERAÇÕES NO SERVIÇO</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.alt)+'.</strong></p>'
+    + '<p style="'+itemStyle+'"><strong>4. LIMPEZA VIATURAS</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.lim)+'.</strong>'+limHtml+'</p>'
+    + '<p style="'+itemStyle+'"><strong>5. VIATURAS RECEBIDAS / ALTERAÇÕES</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.vtrRec)+'.</strong>'+obsHtml+'</p>'
     + tblQuadro
-    + '<p style="'+itemStyle+'"><strong>6. PASSAGEM DE SERVIÇO</strong> <span style="'+lineStyle+'"> </span> <strong>'+escH(d.pass)+'.</strong></p>'
-    + '<p style="font-size:9.5pt">Fiz ao meu substituto legal o '+escH(d.substituto)+', a quem transmiti todas as ordens em vigor, bem como todas as viaturas existentes nesta garagem sob minha responsabilidade.</p>'
+    + '<p style="'+itemStyle+'"><strong>6. PASSAGEM DE SERVIÇO</strong> <span style="'+lineStyle+'"> </span> <strong>'+esc(d.pass)+'.</strong></p>'
+    + '<p style="font-size:9.5pt">Fiz ao meu substituto legal o '+esc(d.substituto)+', a quem transmiti todas as ordens em vigor, bem como todas as viaturas existentes nesta garagem sob minha responsabilidade.</p>'
     + '<table style="width:100%;border:none;margin-top:20px;font-size:9pt"><tbody><tr>'
-      + '<td style="border:none;text-align:center;width:50%"><div style="border-top:1px solid #000;width:70%;margin:0 auto 4px"></div><strong>'+escH(d.garageiro)+'</strong><br>GARAGEIRO QUE SAI</td>'
-      + '<td style="border:none;text-align:center;width:50%"><div style="border-top:1px solid #000;width:70%;margin:0 auto 4px"></div><strong>'+escH(d.substituto)+'</strong><br>GARAGEIRO QUE ENTRA</td>'
+      + '<td style="border:none;text-align:center;width:50%"><div style="border-top:1px solid #000;width:70%;margin:0 auto 4px"></div><strong>'+esc(d.garageiro)+'</strong><br>GARAGEIRO QUE SAI</td>'
+      + '<td style="border:none;text-align:center;width:50%"><div style="border-top:1px solid #000;width:70%;margin:0 auto 4px"></div><strong>'+esc(d.substituto)+'</strong><br>GARAGEIRO QUE ENTRA</td>'
     + '</tr></tbody></table>'
     + '</div>';
   if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
@@ -2470,6 +2490,51 @@ function pdCopiarSEI() {
   } else {
     pdCopiarFallback(html);
   }
+}
+
+async function pdSalvar() {
+  var d = pdColetar();
+  if (!d.numParte || d.numParte === '___/2026') { toast('Informe o número da Parte antes de salvar.', 'err'); return; }
+  loading('Salvando Parte Diária...');
+  try {
+    var r = await api({tipo:'pdSalvar', token:_token, dados:d});
+    unload();
+    if (r && r.sucesso !== false) {
+      toast('Parte Diária salva! ' + (r.mensagem||''), 'ok');
+    } else {
+      toast((r && r.mensagem) || 'Erro ao salvar Parte Diária.', 'err');
+    }
+  } catch(e) { unload(); toast('Erro: ' + e.message, 'err'); }
+}
+
+async function pdCarregarSalvo() {
+  loading('Buscando Parte Diária salva...');
+  try {
+    var hj = new Date().toISOString().split('T')[0];
+    var turno = document.getElementById('pdTurno').value || '1';
+    var r = await api({tipo:'pdCarregar', token:_token, data:hj, turno:turno});
+    unload();
+    if (!r || r.sucesso === false || !r.dados) {
+      toast((r && r.mensagem) || 'Nenhuma parte salva encontrada para hoje.', 'info');
+      return;
+    }
+    var d = r.dados;
+    if (d.numParte) document.getElementById('pdNumParte').value = d.numParte;
+    if (d.garageiro) document.getElementById('pdGarageiro').value = d.garageiro;
+    if (d.substituto) document.getElementById('pdSubstituto').value = d.substituto;
+    if (d.turno) document.getElementById('pdTurno').value = d.turno;
+    if (d.ren !== undefined) document.getElementById('pdRen').value = d.ren;
+    if (d.des !== undefined) document.getElementById('pdDes').value = d.des;
+    if (d.alt !== undefined) document.getElementById('pdAlt').value = d.alt;
+    if (d.lim !== undefined) document.getElementById('pdLim').value = d.lim;
+    if (d.limTxt !== undefined) document.getElementById('pdLimTxt').value = d.limTxt;
+    if (d.vtrRec !== undefined) document.getElementById('pdVtrRec').value = d.vtrRec;
+    if (d.obs !== undefined) document.getElementById('pdObs').value = d.obs;
+    if (d.pass !== undefined) document.getElementById('pdPass').value = d.pass;
+    if (Array.isArray(d.empenhadas)) { _pdVtr = d.empenhadas; pdRenderVtr(); }
+    if (Array.isArray(d.quadro)) { _pdQuadro = d.quadro; pdRenderQuadro(); }
+    toast('Parte Diária carregada: ' + (d.numParte||'') + ' (' + (d.turno==='1'?'1º Turno':'2º Turno') + ')', 'ok');
+  } catch(e) { unload(); toast('Erro: ' + e.message, 'err'); }
 }
 
 function pdCopiarFallback(html) {
