@@ -460,26 +460,33 @@ tr:hover td{background:rgba(245,166,35,.025)}
 
   <!-- Últimas Movimentações -->
   <div style="margin-top:18px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--txt);display:flex;align-items:center;gap:8px">
-        <i class="fas fa-history" style="color:var(--ac)"></i> Últimas Movimentações
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <i class="fas fa-history" style="color:var(--ac);font-size:16px"></i>
+        <div>
+          <div style="font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--txt)">Últimas Movimentações</div>
+          <div style="font-size:10px;color:var(--txt3);font-family:var(--mono)" id="movTimestamp">— atualizado em --:--</div>
+        </div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <span style="font-size:10px;color:var(--txt3);font-family:var(--mono)" id="movTimestamp"></span>
-        <button class="btn btn-s sm" onclick="carregarUltimasMovimentacoes(true)"><i class="fas fa-sync-alt"></i></button>
-      </div>
+      <button class="btn btn-s sm" onclick="carregarUltimasMovimentacoes(true)" title="Atualizar"><i class="fas fa-sync-alt"></i> Atualizar</button>
     </div>
 
     <!-- ÚLTIMAS ENTRADAS -->
-    <div style="margin-bottom:14px">
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#60a5fa;margin-bottom:7px;display:flex;align-items:center;gap:6px">
-        <i class="fas fa-sign-in-alt"></i> Últimas Entradas de Serviço
+    <div style="margin-bottom:18px;background:var(--bg2);border:1px solid var(--bd);border-left:4px solid #60a5fa;border-radius:10px;padding:14px 16px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--bd)">
+        <div style="width:32px;height:32px;border-radius:8px;background:rgba(96,165,250,.15);border:1px solid rgba(96,165,250,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <i class="fas fa-sign-in-alt" style="color:#60a5fa;font-size:14px"></i>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#60a5fa;line-height:1.1">Últimas Entradas de Serviço</div>
+          <div style="font-size:10px;color:var(--txt3);margin-top:1px">Registros de entrada de viaturas em serviço</div>
+        </div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:8px">
-        <div class="scp"><div class="scp-val" style="color:var(--ac);font-size:20px" id="movEStT">—</div><div class="scp-lbl">Total</div></div>
-        <div class="scp"><div class="scp-val" style="color:#60a5fa;font-size:20px" id="movEStV">—</div><div class="scp-lbl">Viaturas</div></div>
-        <div class="scp"><div class="scp-val" style="color:#c084fc;font-size:20px" id="movEStM">—</div><div class="scp-lbl">Motoristas</div></div>
-        <div class="scp"><div class="scp-val" style="color:var(--ylw);font-size:20px" id="movEStA">—</div><div class="scp-lbl">Com Alteração</div></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+        <div class="scp" style="border-top:2px solid var(--ac)"><div class="scp-val" style="color:var(--ac)" id="movEStT">—</div><div class="scp-lbl">Total</div></div>
+        <div class="scp" style="border-top:2px solid #60a5fa"><div class="scp-val" style="color:#60a5fa" id="movEStV">—</div><div class="scp-lbl">Viaturas</div></div>
+        <div class="scp" style="border-top:2px solid #c084fc"><div class="scp-val" style="color:#c084fc" id="movEStM">—</div><div class="scp-lbl">Motoristas</div></div>
+        <div class="scp" style="border-top:2px solid var(--ylw)"><div class="scp-val" style="color:var(--ylw)" id="movEStA">—</div><div class="scp-lbl">Com Alteração</div></div>
       </div>
       <div class="mov-tw">
         <table><thead><tr>
@@ -495,16 +502,22 @@ tr:hover td{background:rgba(245,166,35,.025)}
     </div>
 
     <!-- ÚLTIMAS SAÍDAS -->
-    <div>
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#4ade80;margin-bottom:7px;display:flex;align-items:center;gap:6px">
-        <i class="fas fa-sign-out-alt"></i> Últimas Saídas de Serviço
+    <div style="background:var(--bg2);border:1px solid var(--bd);border-left:4px solid #4ade80;border-radius:10px;padding:14px 16px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--bd)">
+        <div style="width:32px;height:32px;border-radius:8px;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <i class="fas fa-sign-out-alt" style="color:#4ade80;font-size:14px"></i>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#4ade80;line-height:1.1">Últimas Saídas de Serviço</div>
+          <div style="font-size:10px;color:var(--txt3);margin-top:1px">Registros de saída de viaturas do serviço</div>
+        </div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:8px">
-        <div class="scp"><div class="scp-val" style="color:var(--ac);font-size:20px" id="movSStT">—</div><div class="scp-lbl">Total</div></div>
-        <div class="scp"><div class="scp-val" style="color:#60a5fa;font-size:20px" id="movSStV">—</div><div class="scp-lbl">Viaturas</div></div>
-        <div class="scp"><div class="scp-val" style="color:#c084fc;font-size:20px" id="movSStM">—</div><div class="scp-lbl">Motoristas</div></div>
-        <div class="scp"><div class="scp-val" style="color:#b91c1c;font-size:20px" id="movSStSin">—</div><div class="scp-lbl">Sinistros</div></div>
-        <div class="scp"><div class="scp-val" style="color:#4facfe;font-size:20px" id="movSStAbs">—</div><div class="scp-lbl">Abastecimentos</div></div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px">
+        <div class="scp" style="border-top:2px solid var(--ac)"><div class="scp-val" style="color:var(--ac)" id="movSStT">—</div><div class="scp-lbl">Total</div></div>
+        <div class="scp" style="border-top:2px solid #60a5fa"><div class="scp-val" style="color:#60a5fa" id="movSStV">—</div><div class="scp-lbl">Viaturas</div></div>
+        <div class="scp" style="border-top:2px solid #c084fc"><div class="scp-val" style="color:#c084fc" id="movSStM">—</div><div class="scp-lbl">Motoristas</div></div>
+        <div class="scp" style="border-top:2px solid #fca5a5"><div class="scp-val" style="color:#fca5a5" id="movSStSin">—</div><div class="scp-lbl">Sinistros</div></div>
+        <div class="scp" style="border-top:2px solid #4facfe"><div class="scp-val" style="color:#4facfe" id="movSStAbs">—</div><div class="scp-lbl">Abastecimentos</div></div>
       </div>
       <div class="mov-tw">
         <table><thead><tr>
