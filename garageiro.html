@@ -186,8 +186,32 @@ tr:hover td{background:rgba(245,166,35,.025)}
 .v-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rad);padding:13px 15px;transition:border-color var(--tr)}
 .v-card:hover{border-color:var(--ac)}
 .v-card.servico{border-left:4px solid #60a5fa}.v-card.oficina{border-left:4px solid #fb923c}
-.v-card.disponivel{border-left:4px solid #4ade80}.v-card.semretorno{border-left:4px solid #f87171;animation:pulse-card 1.5s infinite}
-@keyframes pulse-card{0%{box-shadow:0 0 0 0 rgba(248,113,113,.35)}70%{box-shadow:0 0 0 8px rgba(248,113,113,0)}100%{box-shadow:0 0 0 0 rgba(248,113,113,0)}}
+.v-card.disponivel{border-left:4px solid #4ade80}
+.v-card.semretorno{
+  border-left:5px solid #f87171;
+  border-top:1px solid rgba(248,113,113,.45);
+  border-right:1px solid rgba(248,113,113,.25);
+  border-bottom:1px solid rgba(248,113,113,.25);
+  background:linear-gradient(135deg,rgba(248,113,113,.10) 0%,rgba(30,18,20,.0) 60%),var(--bg2);
+  box-shadow:0 0 0 0 rgba(248,113,113,.4),inset 0 0 18px rgba(248,113,113,.06);
+  animation:pulse-card 2s ease-in-out infinite;
+  position:relative;
+}
+.v-card.semretorno::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,#f87171,#ef4444,transparent);
+  border-radius:var(--rad) var(--rad) 0 0;
+}
+@keyframes pulse-card{
+  0%  {box-shadow:0 0 0 0 rgba(248,113,113,.45),inset 0 0 18px rgba(248,113,113,.06)}
+  50% {box-shadow:0 0 14px 4px rgba(248,113,113,.22),inset 0 0 22px rgba(248,113,113,.10)}
+  100%{box-shadow:0 0 0 0 rgba(248,113,113,.0),inset 0 0 18px rgba(248,113,113,.06)}
+}
+@keyframes badge-blink{
+  0%,100%{opacity:1}
+  50%{opacity:.6}
+}
 .v-prefixo{font-size:14px;font-weight:800;color:var(--ac);margin-bottom:2px;font-family:var(--mono)}
 .v-modelo{font-size:11px;color:var(--txt2);margin-bottom:7px}
 .v-row{font-size:11px;color:var(--txt2);display:flex;gap:5px;margin-top:3px}
@@ -1176,19 +1200,28 @@ function filtrarViaturas() {
   renderViaturas(lista);
 }
 function resolverCls(s){if(s.includes('SEM RETORNO'))return 'semretorno';if(s.includes('SERVIÇO')||s.includes('SERVICO'))return 'servico';if(s.includes('OFICINA'))return 'oficina';return 'disponivel';}
-function resolverLbl(s){if(s.includes('SEM RETORNO'))return '🚨 SEM RETORNO';if(s.includes('SERVIÇO')||s.includes('SERVICO'))return 'EM SERVIÇO';if(s.includes('OFICINA'))return 'EM OFICINA';return 'DISPONÍVEL';}
+function resolverLbl(s){if(s.includes('SEM RETORNO'))return '⚠ SEM RETORNO';if(s.includes('SERVIÇO')||s.includes('SERVICO'))return 'EM SERVIÇO';if(s.includes('OFICINA'))return 'EM OFICINA';return 'DISPONÍVEL';}
 function resolverBp(c){return{servico:'b-serv',semretorno:'b-urgente',oficina:'b-ofic',disponivel:'b-disp'}[c]||'b-semdados';}
 
 function renderViaturas(lista) {
   var grid=document.getElementById('vGrid');
   if(!lista||!lista.length){grid.innerHTML='<div style="color:var(--txt);padding:40px;text-align:center;grid-column:1/-1">📭 Nenhuma viatura encontrada</div>';return;}
+  // SEM RETORNO sempre primeiro
+  lista=lista.slice().sort(function(a,b){
+    var ca=resolverCls(String(a.status||'').toUpperCase());
+    var cb=resolverCls(String(b.status||'').toUpperCase());
+    if(ca==='semretorno'&&cb!=='semretorno')return -1;
+    if(cb==='semretorno'&&ca!=='semretorno')return 1;
+    return 0;
+  });
   grid.innerHTML=lista.map(function(v){
     var s=String(v.status||'').trim().toUpperCase(), cls=resolverCls(s), lbl=resolverLbl(s), bp=resolverBp(cls);
     var det='';
     var odo=v.odometro||v.odometroInicial||'';
     if(cls==='servico'||cls==='semretorno'){det=(v.motorista&&v.motorista!=='--'?'<div class="v-row">👤 <span>'+esc(v.motorista)+'</span></div>':'')+(v.comandante&&v.comandante!=='--'?'<div class="v-row">👨‍✈️ <span>'+esc(v.comandante)+'</span></div>':'')+(v.setor&&v.setor!=='--'?'<div class="v-row">📍 <span>'+esc(v.setor)+'</span></div>':'')+(odo!==''&&odo!=='--'&&odo!==null&&odo!==undefined?'<div class="v-row" style="flex-direction:column;gap:1px"><span style="font-size:9px;text-transform:uppercase;letter-spacing:.6px;font-weight:700;color:#f87171">⬥ Odômetro Inicial</span><span style="font-family:var(--mono)">🔢 '+esc(String(odo))+' km</span></div>':'')+(v.tempo&&v.tempo!=='--'?'<div class="v-row" style="flex-direction:column;gap:1px"><span style="font-size:9px;text-transform:uppercase;letter-spacing:.6px;font-weight:700;color:#f87171">⬥ Tempo de serviço</span><span>⏱️ '+esc(v.tempo)+'</span></div>':'');}
     else if(cls==='oficina'){det=(v.setor&&v.setor!=='--'?'<div class="v-row">🏢 <span>'+esc(v.setor)+'</span></div>':'')+(v.tempo&&v.tempo!=='--'?'<div class="v-row">⏱️ <span>'+esc(v.tempo)+'</span></div>':'');}
-    return '<div class="v-card '+cls+'"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px"><div><div class="v-prefixo">'+esc(v.prefixo)+'</div><div class="v-modelo">'+esc(v.modelo)+(v.placa&&v.placa!=='--'?' · '+esc(v.placa):'')+'</div></div><span class="bp '+bp+'">'+lbl+'</span></div>'+det+'</div>';
+    var cardHdr='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px"><div><div class="v-prefixo"'+(cls==='semretorno'?' style="color:#f87171"':'')+'>'+esc(v.prefixo)+'</div><div class="v-modelo">'+esc(v.modelo)+(v.placa&&v.placa!=='--'?' · '+esc(v.placa):'')+'</div></div><span class="bp '+bp+'" style="'+(cls==='semretorno'?'font-size:11px;padding:3px 8px;font-weight:800;letter-spacing:.5px;background:rgba(239,68,68,.22);color:#fca5a5;border:1px solid rgba(239,68,68,.5);animation:badge-blink 1.4s ease-in-out infinite':'')+'">'+lbl+'</span></div>';
+    return '<div class="v-card '+cls+'">'+cardHdr+det+'</div>';
   }).join('');
 }
 
