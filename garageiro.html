@@ -1322,7 +1322,7 @@ function exibirResultadosE(reg) {
       '<td>'+esc(r.setor||'--')+'</td>'+
       '<td style="font-family:var(--mono)">'+esc(r.odometro||'--')+'</td>'+
       '<td style="font-size:11px">'+nivelBadge(r.nivelOleo||r.oleo,'🛢️')+' '+nivelBadge(r.nivelAgua||r.agua,'💧')+'</td>'+
-      '<td style="font-size:11px;max-width:150px;white-space:normal">'+(temA?'<span class="alerta-campo">⚠️ '+esc(r.alteracoes)+'</span>':'<span style="color:var(--txt3)">Sem alteração</span>')+'</td>'+
+      '<td style="font-size:11px;max-width:150px;white-space:normal">'+(temA?'<span style="display:inline-block;background:rgba(239,68,68,.18);color:#fca5a5;border:1px solid rgba(239,68,68,.4);border-radius:5px;padding:2px 7px;font-weight:700;font-size:10px">⚠ '+esc(r.alteracoes)+'</span>':'<span style="display:inline-block;background:rgba(39,174,96,.12);color:#86efac;border:1px solid rgba(39,174,96,.3);border-radius:5px;padding:2px 7px;font-size:10px">✓ Sem alteração</span>')+'</td>'+
       '<td style="text-align:center">'+toggleBtn+'</td>'+
     '</tr>'+linhaDetalhe;
   }).join('');
@@ -1625,7 +1625,7 @@ function _renderMovEntradas() {
       '<td>'+esc(r.setor||'--')+'</td>'+
       '<td style="font-family:var(--mono)">'+esc(r.odometro||r.odometroInicial||'--')+'</td>'+
       '<td style="font-size:11px">'+nivelBadge(r.nivelOleo||r.oleo,'🛢️')+' '+nivelBadge(r.nivelAgua||r.agua,'💧')+'</td>'+
-      '<td style="font-size:11px;max-width:160px;white-space:normal">'+(temA?'<span style="color:#92400e;font-weight:700">⚠️ '+esc(r.alteracoes)+'</span>':'<span style="color:var(--txt3)">Sem alteração</span>')+'</td>'+
+      '<td style="font-size:11px;max-width:160px;white-space:normal">'+(temA?'<span style="display:inline-block;background:rgba(239,68,68,.18);color:#fca5a5;border:1px solid rgba(239,68,68,.4);border-radius:5px;padding:2px 7px;font-weight:700;font-size:10px">⚠ '+esc(r.alteracoes)+'</span>':'<span style="display:inline-block;background:rgba(39,174,96,.12);color:#86efac;border:1px solid rgba(39,174,96,.3);border-radius:5px;padding:2px 7px;font-size:10px">✓ Sem alteração</span>')+'</td>'+
     '</tr>';
   }).join('');
 }
@@ -2231,7 +2231,7 @@ function toast(msg,tipo){
   document.body.appendChild(el); setTimeout(function(){el.remove();},4000);
 }
 function nivelBadge(n,ico){ if(!n||n==='--'||n==='-') return (ico||'')+' --'; var u=n.toUpperCase(); if(u.includes('MIN')) return '<span class="nivel-badge nivel-min">'+(ico||'')+'🔴 '+esc(n)+'</span>'; if(u.includes('MED')||u.includes('MÉD')) return '<span class="nivel-badge nivel-med">'+(ico||'')+'🟡 '+esc(n)+'</span>'; if(u.includes('MAX')||u.includes('MÁX')) return '<span class="nivel-badge nivel-max">'+(ico||'')+'🟢 '+esc(n)+'</span>'; return (ico||'')+' '+esc(n); }
-function badgeSN(v){ var u=String(v||'').toUpperCase().trim(); if(u==='SIM') return '<span class="bp" style="background:rgba(231,76,60,.18);color:#b91c1c">⚠️ SIM</span>'; if(u==='NÃO'||u==='NAO') return '<span class="bp" style="background:rgba(39,174,96,.18);color:#86efac">✓ NÃO</span>'; return esc(v)||'--'; }
+function badgeSN(v){ var u=String(v||'').toUpperCase().trim(); if(u==='SIM') return '<span class="bp" style="background:rgba(239,68,68,.22);color:#fca5a5;border:1px solid rgba(239,68,68,.45);font-weight:700">⚠ SIM</span>'; if(u==='NÃO'||u==='NAO') return '<span class="bp" style="background:rgba(39,174,96,.14);color:#86efac;border:1px solid rgba(39,174,96,.3)">✓ NÃO</span>'; return esc(v)||'--'; }
 
 // ═══════════════════════════════════════════════════════
 //  PARTE DIÁRIA
