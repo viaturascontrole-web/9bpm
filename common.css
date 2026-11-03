@@ -153,3 +153,37 @@ input.invalido,select.invalido,textarea.invalido{border-color:#e74c3c !important
 .foto-upload-prog{background:var(--bg3);border-radius:4px;height:4px;margin-top:6px;display:none}
 .foto-upload-prog.on{display:block}
 .foto-upload-prog-fill{height:100%;background:var(--ac);border-radius:4px;transition:width .3s}
+
+/* ============================================================
+   Ícones SVG (substituem os emojis) e fila de reenvio
+   ============================================================ */
+.ic{width:1.1em;height:1.1em;vertical-align:-.18em;flex-shrink:0;display:inline-block}
+.hdr-icon{color:#04121f}
+.hdr-icon .ic{width:22px;height:22px;vertical-align:0}
+.card-title .ic{width:16px;height:16px;vertical-align:0}
+.opcao-btn .obi{color:var(--txt2);display:flex;justify-content:center}
+.opcao-btn .obi .ic{width:26px;height:26px;vertical-align:0}
+.opcao-btn.sel[data-tone="ok"] .obi{color:var(--green)}
+.opcao-btn.sel[data-tone="no"] .obi{color:var(--nao)}
+.foto-btn-icon{display:flex;justify-content:center}
+.foto-btn-icon .ic{width:24px;height:24px;vertical-align:0}
+.success-icon{display:flex;justify-content:center;color:var(--green)}
+.success-icon .ic{width:72px;height:72px;vertical-align:0}
+.success-icon.offline{color:var(--warn)}
+.dot{display:inline-block;width:.7em;height:.7em;border-radius:50%;margin-right:5px;vertical-align:0;border:1.5px solid currentColor}
+.dot-min{background:#e74c3c;border-color:#e74c3c}.dot-med{background:#f39c12;border-color:#f39c12}.dot-max{background:#27ae60;border-color:#27ae60}
+.btn-ligar .ic,.bloqueio-saida-titulo .ic{width:1.15em;height:1.15em}
+
+/* odômetro: botão "usar este valor" e aviso sem opção de confirmar (valor absurdo) */
+.dica-btn{margin-left:6px;padding:4px 10px;border:1px solid var(--ac-line);border-radius:6px;background:transparent;color:var(--ac);font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.dica-btn:active{transform:scale(.97)}
+.odo-aviso.bloqueio label{display:none}
+
+/* fila de reenvio (registros guardados no aparelho) */
+.fila-banner{display:none;background:rgba(251,191,36,.10);border-bottom:1px solid rgba(251,191,36,.4);color:#fde68a;font-size:13px;padding:10px 16px}
+.fila-banner.on{display:block}
+.fila-banner.ok{background:rgba(39,174,96,.12);border-bottom-color:rgba(39,174,96,.4);color:#86efac}
+.fila-item{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:3px 0}
+.fila-item.err{color:#fca5a5}
+.fila-acoes{display:flex;gap:8px;flex-wrap:wrap}
+.fila-banner button{padding:7px 12px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;font:inherit;font-size:12px;font-weight:700;cursor:pointer;min-height:34px}

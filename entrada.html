@@ -7,12 +7,12 @@
 <title>9º BPM — Entrada de Serviço</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<link rel="stylesheet" href="common.css?v=2026.10.22.2">
+<link rel="stylesheet" href="common.css?v=2026.11.02.1">
 </head>
 <body class="tema-entrada">
 <img src="banner-9bpm.jpg" class="banner-bpm" alt="9º BPM" width="1280" height="320">
 <div class="hdr">
-  <div class="hdr-icon">📥</div>
+  <div class="hdr-icon"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-log-in"></use></svg></div>
   <div><div class="hdr-title">Entrada de Serviço</div><div class="hdr-sub">9º Batalhão de Polícia Militar — P4</div></div>
 </div>
 <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:17%"></div></div>
@@ -26,18 +26,18 @@
   <!-- 1. Viatura -->
   <div class="section active" id="s1">
     <div class="card">
-      <div class="card-title">🚗 Viatura</div>
+      <div class="card-title"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-car"></use></svg> Viatura</div>
       <div class="fg">
         <label for="prefixo">Prefixo da Viatura <span class="req">*</span></label>
         <select id="prefixo" required><option value="">Carregando viaturas...</option></select>
         <div class="msg-invalido">Selecione a viatura</div>
         <div class="bloqueio-saida" id="bloqueioSaida" role="alert">
-          <div class="bloqueio-saida-titulo">🚫 Entrada não permitida</div>
+          <div class="bloqueio-saida-titulo"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-ban"></use></svg> Entrada não permitida</div>
           <div class="bloqueio-saida-corpo">
             Esta viatura ainda está com <strong>saída em aberto</strong>. O policial que saiu com ela não registrou a baixa do serviço.<br>
             Entre em contato e solicite que ele registre a saída antes de prosseguir.
             <div class="bloqueio-saida-motorista" id="bloqueioMotoristaInfo"></div>
-            <a class="btn-ligar" id="bloqueioLigar" href="#">📞 Ligar agora</a>
+            <a class="btn-ligar" id="bloqueioLigar" href="#"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-phone"></use></svg> Ligar agora</a>
           </div>
         </div>
       </div>
@@ -45,7 +45,10 @@
         <label for="odometroInicial">Odômetro Inicial (km) <span class="req">*</span></label>
         <input type="text" inputmode="numeric" autocomplete="off" id="odometroInicial" placeholder="Ex: 45230" maxlength="7">
         <div class="odometro-hint" id="odometroHint"></div>
-        <div class="odo-aviso" id="odoAviso" role="status"></div>
+        <div class="odo-aviso" id="odoAviso" role="alert">
+          <span id="odoAvisoTxt"></span>
+          <label><input type="checkbox" id="odoConfirma"> Confirmo que o odômetro informado está correto</label>
+        </div>
         <div class="msg-invalido">Informe o odômetro</div>
       </div>
     </div>
@@ -54,7 +57,7 @@
   <!-- 2. Setor -->
   <div class="section" id="s2">
     <div class="card">
-      <div class="card-title">📍 Setor de Atuação</div>
+      <div class="card-title"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-map-pin"></use></svg> Setor de Atuação</div>
       <div class="fg">
         <label for="setor">Setor <span class="req">*</span></label>
         <select id="setor" required><option value="">Carregando setores...</option></select>
@@ -71,7 +74,7 @@
   <!-- 3. Guarnição -->
   <div class="section" id="s3">
     <div class="card">
-      <div class="card-title">👮 Guarnição</div>
+      <div class="card-title"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-users"></use></svg> Guarnição</div>
       <div class="fg">
         <label for="comandante">Comandante da Guarnição <span class="req">*</span></label>
         <input type="text" id="comandante" class="upper" placeholder="GRADUAÇÃO E NOME DE GUERRA" maxlength="80" autocomplete="off">
@@ -100,22 +103,22 @@
   <!-- 4. Condições -->
   <div class="section" id="s4">
     <div class="card">
-      <div class="card-title">🔧 Condições da Viatura</div>
+      <div class="card-title"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-wrench"></use></svg> Condições da Viatura</div>
       <div class="fg">
         <label>Nível de Óleo do Motor <span class="req">*</span></label>
         <div class="nivel-group">
-          <button type="button" class="opcao-btn" data-group="oleo" data-val="MÍNIMO" data-tone="min">🔴 Mínimo</button>
-          <button type="button" class="opcao-btn" data-group="oleo" data-val="MÉDIO" data-tone="med">🟡 Médio</button>
-          <button type="button" class="opcao-btn" data-group="oleo" data-val="MÁXIMO" data-tone="max">🟢 Máximo</button>
+          <button type="button" class="opcao-btn" data-group="oleo" data-val="MÍNIMO" data-tone="min"><span class="dot dot-min"></span>Mínimo</button>
+          <button type="button" class="opcao-btn" data-group="oleo" data-val="MÉDIO" data-tone="med"><span class="dot dot-med"></span>Médio</button>
+          <button type="button" class="opcao-btn" data-group="oleo" data-val="MÁXIMO" data-tone="max"><span class="dot dot-max"></span>Máximo</button>
         </div>
         <div class="msg-invalido" id="msg-oleo">Selecione o nível de óleo</div>
       </div>
       <div class="fg mt">
         <label>Nível de Água do Radiador <span class="req">*</span></label>
         <div class="nivel-group">
-          <button type="button" class="opcao-btn" data-group="agua" data-val="MÍNIMO" data-tone="min">🔴 Mínimo</button>
-          <button type="button" class="opcao-btn" data-group="agua" data-val="MÉDIO" data-tone="med">🟡 Médio</button>
-          <button type="button" class="opcao-btn" data-group="agua" data-val="MÁXIMO" data-tone="max">🟢 Máximo</button>
+          <button type="button" class="opcao-btn" data-group="agua" data-val="MÍNIMO" data-tone="min"><span class="dot dot-min"></span>Mínimo</button>
+          <button type="button" class="opcao-btn" data-group="agua" data-val="MÉDIO" data-tone="med"><span class="dot dot-med"></span>Médio</button>
+          <button type="button" class="opcao-btn" data-group="agua" data-val="MÁXIMO" data-tone="max"><span class="dot dot-max"></span>Máximo</button>
         </div>
         <div class="msg-invalido" id="msg-agua">Selecione o nível de água</div>
       </div>
@@ -131,7 +134,7 @@
       </div>
     </div>
     <div class="card">
-      <div class="card-title">📷 Fotos das Avarias</div>
+      <div class="card-title"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-camera"></use></svg> Fotos das Avarias</div>
       <div class="fg">
         <label for="descricaoAvarias">Descreva alterações elétricas e avarias <span class="req">*</span></label>
         <textarea id="descricaoAvarias" placeholder="Descreva ou escreva 'NENHUMA AVARIA OBSERVADA'" rows="3"></textarea>
@@ -141,8 +144,8 @@
         <label>Fotos da viatura <span class="opt">(opcional — enviadas para o Drive)</span></label>
         <div class="foto-area">
           <div class="foto-btns">
-            <button type="button" class="foto-btn camera" id="avCam"><span class="foto-btn-icon">📷</span><span>Tirar Foto</span></button>
-            <button type="button" class="foto-btn galeria" id="avGal"><span class="foto-btn-icon">🖼️</span><span>Galeria / Arquivo</span></button>
+            <button type="button" class="foto-btn camera" id="avCam"><span class="foto-btn-icon"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-camera"></use></svg></span><span>Tirar Foto</span></button>
+            <button type="button" class="foto-btn galeria" id="avGal"><span class="foto-btn-icon"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-image"></use></svg></span><span>Galeria / Arquivo</span></button>
           </div>
           <input type="file" id="avCam_input" accept="image/*" capture="environment" hidden>
           <input type="file" id="avGal_input" accept="image/*" multiple hidden>
@@ -157,12 +160,12 @@
   <!-- 5. Limpeza -->
   <div class="section" id="s5">
     <div class="card">
-      <div class="card-title">🧹 Controle de Limpeza</div>
+      <div class="card-title"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-sparkles"></use></svg> Controle de Limpeza</div>
       <div class="fg">
         <label>A viatura está limpa na assunção do serviço? <span class="req">*</span></label>
         <div class="opcao-group">
-          <button type="button" class="opcao-btn" data-group="limpa" data-val="SIM" data-tone="ok"><div class="obi">✅</div><div class="obt">Sim, está limpa</div></button>
-          <button type="button" class="opcao-btn" data-group="limpa" data-val="NÃO" data-tone="no"><div class="obi">🚫</div><div class="obt">Não está limpa</div></button>
+          <button type="button" class="opcao-btn" data-group="limpa" data-val="SIM" data-tone="ok"><div class="obi"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check-circle"></use></svg></div><div class="obt">Sim, está limpa</div></button>
+          <button type="button" class="opcao-btn" data-group="limpa" data-val="NÃO" data-tone="no"><div class="obi"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-ban"></use></svg></div><div class="obt">Não está limpa</div></button>
         </div>
         <div class="msg-invalido" id="msg-limpa">Selecione uma opção</div>
       </div>
@@ -176,8 +179,8 @@
           <label>Fotos da sujeira <span class="opt">(opcional)</span></label>
           <div class="foto-area" data-fotos="limpeza">
             <div class="foto-btns">
-              <button type="button" class="foto-btn camera" id="limpCam"><span class="foto-btn-icon">📷</span><span>Tirar Foto</span></button>
-              <button type="button" class="foto-btn galeria" id="limpGal"><span class="foto-btn-icon">🖼️</span><span>Galeria</span></button>
+              <button type="button" class="foto-btn camera" id="limpCam"><span class="foto-btn-icon"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-camera"></use></svg></span><span>Tirar Foto</span></button>
+              <button type="button" class="foto-btn galeria" id="limpGal"><span class="foto-btn-icon"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-image"></use></svg></span><span>Galeria</span></button>
             </div>
             <input type="file" id="limpCam_input" accept="image/*" capture="environment" hidden>
             <input type="file" id="limpGal_input" accept="image/*" multiple hidden>
@@ -192,12 +195,12 @@
   <!-- 6. Cartão -->
   <div class="section" id="s6">
     <div class="card">
-      <div class="card-title">💳 Cartão de Abastecimento</div>
+      <div class="card-title"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-credit-card"></use></svg> Cartão de Abastecimento</div>
       <div class="fg">
         <label>O cartão confere com a placa? <span class="req">*</span></label>
         <div class="opcao-group">
-          <button type="button" class="opcao-btn" data-group="cartao" data-val="SIM" data-tone="ok"><div class="obi">✅</div><div class="obt">Sim, confere</div></button>
-          <button type="button" class="opcao-btn" data-group="cartao" data-val="NÃO" data-tone="no"><div class="obi">❌</div><div class="obt">Não confere</div></button>
+          <button type="button" class="opcao-btn" data-group="cartao" data-val="SIM" data-tone="ok"><div class="obi"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check-circle"></use></svg></div><div class="obt">Sim, confere</div></button>
+          <button type="button" class="opcao-btn" data-group="cartao" data-val="NÃO" data-tone="no"><div class="obi"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-x-circle"></use></svg></div><div class="obt">Não confere</div></button>
         </div>
         <div class="msg-invalido" id="msg-cartao">Selecione uma opção</div>
       </div>
@@ -208,14 +211,14 @@
       </div>
     </div>
     <div class="card card-decl">
-      <div class="card-title">⚖️ Declaração</div>
+      <div class="card-title"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-scale"></use></svg> Declaração</div>
       <p style="font-size:13px;line-height:1.6">Ao enviar, declaro que todas as informações são verdadeiras, nos termos do <strong>Art. 17 — I RDPM</strong>.</p>
     </div>
   </div>
 
   <div id="tela-sucesso">
-    <div class="success-icon">✅</div>
-    <div class="success-title">Entrada Registrada!</div>
+    <div class="success-icon" id="successIcon"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check-circle"></use></svg></div>
+    <div class="success-title" id="successTitle">Entrada Registrada!</div>
     <div class="success-sub" id="successDetalhes">Entrada registrada com sucesso.</div>
     <div class="success-aviso" id="successAviso"></div>
     <button class="btn-novo" id="btnNovo" type="button">+ Nova Entrada</button>
@@ -229,7 +232,7 @@
 </div>
 <div class="loading-ov" id="loadingOv"><div class="loading-spin"></div><div class="loading-txt" id="loadingTxt">Carregando...</div></div>
 
-<script src="common.js?v=2026.10.22.2"></script>
+<script src="common.js?v=2026.11.02.1"></script>
 <script>if(!window.GAR){document.body.innerHTML='<div style="padding:30px;color:#fff;font-family:sans-serif;line-height:1.6"><h2>Arquivos incompletos</h2><p>O arquivo common.js não foi encontrado. Publique common.js, common.css e banner-9bpm.jpg na mesma pasta de entrada.html e saida.html.</p></div>';throw new Error('common.js ausente');}</script>
 <script>
 (function () {
@@ -238,11 +241,12 @@
   var LABELS = ['Viatura', 'Setor', 'Guarnição', 'Condições', 'Limpeza', 'Cartão'];
   var ALTERACOES = ['Giroflex', 'Sirene', 'Motor', 'Câmbio', 'Pneus', 'TWI pneus', 'Retrovisores', 'Luzes', 'Painel', 'Rádio / HT', 'Lataria', 'Documentação', 'Extintor', 'Porta-malas', 'Freios', 'Direção', 'Outros', 'Sem Alteração'];
   var idEnvio = GAR.uuid();
-  var enviando = false;
+  var enviando = false, finalizando = false;
   var alteracoesSel = [];
-  var odoMin = 0, statusEstado = 'vazio', bloqueada = false, consultaCtrl = null, finalizando = false;
+  var bloqueada = false, seqConsulta = 0;
   var W;
 
+  var odo = GAR.odometro.criar({ input: 'odometroInicial', hint: 'odometroHint', aviso: 'odoAviso', avisoTxt: 'odoAvisoTxt', confirma: 'odoConfirma', orientacao: 'informe o odômetro inicial' });
   var fotosAv = GAR.criarFotos({ nome: 'avarias', camera: 'avCam', galeria: 'avGal', preview: 'avPreview', status: 'avStatus', rotulo: 'avaria_entrada' });
   var fotosLimpa = GAR.criarFotos({ nome: 'limpeza', camera: 'limpCam', galeria: 'limpGal', preview: 'limpPreview', status: 'limpStatus', rotulo: 'limpeza_entrada' });
 
@@ -283,17 +287,7 @@
     GAR.draft.salvar();
   }
 
-  /* ---------- Viatura: status (saída em aberto) + odômetro em paralelo ---------- */
-  function dicaOdo(texto) { var h = $('odometroHint'); h.innerHTML = texto || ''; h.classList.toggle('on', !!texto); }
-
-  function avaliarOdo() {
-    var v = parseInt($('odometroInicial').value, 10), box = $('odoAviso');
-    var abaixo = !isNaN(v) && odoMin > 0 && v < odoMin;
-    box.classList.toggle('on', abaixo);
-    // aviso informativo: NÃO bloqueia (regra original da entrada)
-    if (abaixo) box.innerHTML = '⚠️ Valor inferior ao último registrado (<strong>' + GAR.fmtKm(odoMin) + ' km</strong>). Confirme se está correto.';
-  }
-
+  /* ---------- Viatura: status (saída em aberto) + odômetro numa só consulta ---------- */
   function esconderBloqueio() {
     bloqueada = false;
     $('bloqueioSaida').classList.remove('on');
@@ -318,38 +312,26 @@
   }
 
   async function aoSelecionarViatura(preservar) {
-    var p = $('prefixo').value;
-    if (consultaCtrl) consultaCtrl.abort();
+    var p = $('prefixo').value, meu = ++seqConsulta;
     esconderBloqueio();
-    odoMin = 0; statusEstado = 'vazio'; dicaOdo('');
-    if (!preservar) $('odometroInicial').value = '';
-    avaliarOdo();
+    if (!preservar) { $('odometroInicial').value = ''; $('odoConfirma').checked = false; }
+    odo.limpar();
     if (!p) return;
-
-    var ctrl = consultaCtrl = new AbortController(); // só identifica a consulta atual (troca de viatura invalida a anterior)
-    statusEstado = 'carregando';
-    dicaOdo('⏳ Verificando status da viatura...');
-    // UMA consulta (status + odômetro) ao índice rápido — antes eram duas em paralelo, cada uma varrendo a planilha
+    odo.consultando('Verificando status da viatura...');
+    // UMA consulta (status + odômetro) ao índice rápido
     var info = null;
     try { info = await GAR.infoViatura(p, { confirmar: true }); } catch (e) { info = null; }
-    if (ctrl !== consultaCtrl) return; // trocou de viatura no meio da consulta
+    if (meu !== seqConsulta) return; // trocou de viatura no meio da consulta
 
-    statusEstado = 'ok';
     if (info && info.saidaAberta) {
-      mostrarBloqueio(info); dicaOdo('');
+      odo.limpar(); mostrarBloqueio(info);
       if (W && W.etapa > 1) W.ir(1); // a resposta chegou depois de o usuário avançar: volta ao aviso
       return;
     }
-    var n = info && info.odometro != null ? Number(info.odometro) : 0;
-    if (isNaN(n)) n = 0;
-    if (n > 0) {
-      odoMin = n;
-      if (!$('odometroInicial').value) $('odometroInicial').value = n;
-      dicaOdo('✅ Último registrado: <strong>' + GAR.fmtKm(n) + '</strong> km — confirme ou corrija');
-    } else if (info && info.odometro != null) dicaOdo('ℹ️ Nenhum registro anterior — informe o odômetro atual');
-    else dicaOdo('⚠️ Não foi possível consultar o último odômetro. Informe o valor do painel da viatura.');
-    avaliarOdo();
-    if (!preservar && $('odometroInicial').value) { try { $('odometroInicial').focus({ preventScroll: true }); } catch (e) {} }
+    var n = info && info.odometro != null ? Number(info.odometro) : NaN;
+    if (!isNaN(n)) odo.definirRef(n); else odo.falhou();
+    // o último valor NÃO é copiado sozinho (evita repetir um valor velho sem olhar o painel): "Usar este valor" faz isso num toque
+    if (!preservar) { try { $('odometroInicial').focus({ preventScroll: true }); } catch (e2) {} }
   }
 
   /* ---------- Validação ---------- */
@@ -358,9 +340,11 @@
     if (n === 1) {
       if (!$('prefixo').value) { GAR.invalido('prefixo'); ok = false; }
       if (bloqueada) { GAR.mostrarErro('Esta viatura possui saída em aberto. O motorista anterior precisa registrar a baixa antes de uma nova entrada.'); return false; }
-      var v = parseInt($('odometroInicial').value, 10);
-      if (!v || v <= 0) { GAR.invalido('odometroInicial'); ok = false; }
-      else if (statusEstado === 'carregando' && finalizando) { GAR.mostrarErro('Aguarde um instante: verificando o status da viatura...'); ok = false; }
+      var pr = odo.problema(finalizando);
+      if (pr === 'vazio') { GAR.invalido('odometroInicial'); ok = false; }
+      else if (pr === 'consultando') { GAR.mostrarErro('Aguarde um instante: verificando o status da viatura...'); ok = false; }
+      else if (pr === 'bloqueado') { GAR.invalido('odometroInicial', false); GAR.mostrarErro(odo.mensagem()); ok = false; }
+      else if (pr === 'confirmar') { odo.marcarPendente(); GAR.mostrarErro('Confirme o odômetro informado marcando a caixa abaixo do campo.'); ok = false; }
     }
     if (n === 2) {
       if (!$('setor').value) { GAR.invalido('setor'); ok = false; }
@@ -394,15 +378,13 @@
   }
 
   /* ---------- Envio ---------- */
-  function montarPayload(rf) {
+  /** Dados do registro (o idEnvio e o texto das fotos são acrescentados por GAR.enviarItem). */
+  function montarPayload() {
     var setor = $('setor').value, limpa = GAR.opc.limpa, cartao = GAR.opc.cartao;
-    var linkImagens = '';
-    if (rf.ok > 0) linkImagens = 'Fotos enviadas para pasta da viatura no Drive (' + rf.ok + (rf.falhas ? ' de ' + rf.total : '') + ')';
-    return {
+    return Object.assign({
       tipo: 'entrada',
-      idEnvio: idEnvio,
       prefixo: $('prefixo').value,
-      odometroInicial: String(parseInt($('odometroInicial').value, 10)),
+      odometroInicial: String(odo.valor()),
       setor: setor,
       setorTextoLivre: setor === 'OUTRO' ? $('setorLivre').value.trim() : '',
       comandante: $('comandante').value.trim().toUpperCase(),
@@ -413,12 +395,11 @@
       nivelAgua: GAR.opc.agua,
       alteracoes: alteracoesSel.map(function (i) { return i === 'Outros' ? 'Outros: ' + ($('outrosTexto').value.trim() || '').toUpperCase() : i; }).join(', '),
       descricaoAvarias: $('descricaoAvarias').value.trim(),
-      linkImagens: linkImagens,
       viaturaLimpaEntrada: limpa,
       descLimpaEntrada: limpa === 'NÃO' ? $('descLimpaEntrada').value.trim() : '',
       cartaoConferePlaca: cartao,
       divergenciaCartao: cartao === 'NÃO' ? $('divergenciaCartao').value.trim() : ''
-    };
+    }, odo.payload());
   }
 
   async function enviar() {
@@ -430,19 +411,47 @@
     try {
       GAR.loading(true, 'Preparando envio...');
       await Promise.all([fotosAv.pronto(), fotosLimpa.pronto()]);
-      var rf = await GAR.enviarFotos($('prefixo').value, [fotosAv, fotosLimpa]);
-      var payload = montarPayload(rf);
-      GAR.loading(true, 'Registrando entrada...');
-      var r = await GAR.postJson(payload);
-      if (!r.ok) { var err = new Error(r.erro); err.servidor = true; throw err; }
-      sucesso(payload, rf);
+      var payload = montarPayload();
+      var item = { id: idEnvio, tipo: 'entrada', prefixo: payload.prefixo, payload: payload, fotos: GAR.coletarFotos([fotosAv, fotosLimpa]) };
+      var res;
+      try { res = await GAR.enviarItem(item); }
+      catch (eRede) {
+        GAR.loading(false);
+        if (await GAR.fila.adicionar(item)) salvoNaFila(payload);
+        else GAR.mostrarErro('Falha de conexão ao enviar. Seus dados foram mantidos — verifique o sinal e toque em Enviar novamente.');
+        return;
+      }
+      GAR.loading(false);
+      if (!res.r.ok) { recusado(res.r); return; }
+      sucesso(res.payload, res.rf);
     } catch (e) {
       GAR.loading(false);
-      if (e && e.servidor) GAR.mostrarErro('O servidor não aceitou o registro: ' + e.message + '. Seus dados foram mantidos.');
-      else GAR.mostrarErro('Falha de conexão ao enviar. Seus dados foram mantidos — verifique o sinal e toque em Enviar novamente.');
+      GAR.mostrarErro('Falha inesperada ao enviar. Seus dados foram mantidos — toque em Enviar novamente.');
     } finally {
       enviando = false; $('btnSend').disabled = false;
     }
+  }
+
+  function recusado(r) {
+    if (r.confirmarOdometro && !odo.confirmado()) {
+      odo.forcarConfirmacao(r.erro); W.ir(1); odo.marcarPendente();
+      GAR.mostrarErro('O servidor pede a confirmação do odômetro. Marque a caixa abaixo do campo e envie novamente.');
+    } else if (r.bloqueado) {
+      W.ir(1);
+      GAR.mostrarErro(r.erro);
+    } else {
+      GAR.mostrarErro('O servidor não aceitou o registro: ' + r.erro + '. Seus dados foram mantidos.');
+    }
+  }
+
+  function salvoNaFila(p) {
+    GAR.guarnicao.salvar(p.setor, p.setorTextoLivre);
+    GAR.draft.limpar();
+    $('successIcon').innerHTML = GAR.ico('cloud-off'); $('successIcon').classList.add('offline');
+    $('successTitle').textContent = 'Salvo neste aparelho';
+    $('successDetalhes').innerHTML = 'Sem conexão no momento. A entrada da viatura <strong>' + GAR.esc(p.prefixo) +
+      '</strong> está guardada e será enviada automaticamente quando o sinal voltar.<br>Mantenha o aplicativo aberto ou abra-o novamente com sinal.';
+    W.concluir();
   }
 
   function sucesso(p, rf) {
@@ -452,8 +461,8 @@
     var setorFinal = p.setor === 'OUTRO' ? p.setorTextoLivre : p.setor;
     $('successDetalhes').innerHTML = 'Viatura <strong>' + GAR.esc(p.prefixo) + '</strong> registrada em serviço.<br>Setor: <strong>' + GAR.esc(setorFinal) +
       '</strong><br>Motorista: <strong>' + GAR.esc(p.motorista) + '</strong>' +
-      (rf.ok > 0 ? '<br>📷 ' + rf.ok + ' foto(s) enviada(s) para o Drive' : '');
-    if (rf.falhas > 0) $('successAviso').textContent = '⚠️ ' + rf.falhas + ' foto(s) não puderam ser enviadas. O registro da entrada foi concluído normalmente.';
+      (rf.ok > 0 ? '<br>' + GAR.ico('camera') + ' ' + rf.ok + ' foto(s) enviada(s) para o Drive' : '');
+    if (rf.falhas > 0) $('successAviso').textContent = rf.falhas + ' foto(s) não puderam ser enviadas. O registro da entrada foi concluído normalmente.';
     W.concluir();
   }
 
@@ -469,7 +478,7 @@
     $('bloqueioLigar').addEventListener('click', function (e) { if (this.getAttribute('href') === '#') e.preventDefault(); });
 
     $('prefixo').addEventListener('change', function () { aoSelecionarViatura(false); });
-    $('odometroInicial').addEventListener('input', function () { GAR.somenteDigitos(this); avaliarOdo(); });
+    odo.ligar();
     $('setor').addEventListener('change', function () {
       var outro = this.value === 'OUTRO';
       $('setorLivreGroup').style.display = outro ? 'block' : 'none';
@@ -510,6 +519,7 @@
     });
   });
 })();
+
 </script>
 </body>
 </html>

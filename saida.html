@@ -7,12 +7,12 @@
 <title>9º BPM — Saída de Serviço</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<link rel="stylesheet" href="common.css?v=2026.10.22.2">
+<link rel="stylesheet" href="common.css?v=2026.11.02.1">
 </head>
 <body class="tema-saida">
 <img src="banner-9bpm.jpg" class="banner-bpm" alt="9º BPM" width="1280" height="320">
 <div class="hdr">
-  <div class="hdr-icon">📤</div>
+  <div class="hdr-icon"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-log-out"></use></svg></div>
   <div><div class="hdr-title">Saída de Serviço</div><div class="hdr-sub">9º Batalhão de Polícia Militar — P4</div></div>
 </div>
 <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:17%"></div></div>
@@ -26,7 +26,7 @@
   <!-- 1. Viatura -->
   <div class="section active" id="s1">
     <div class="card">
-      <div class="card-title">🚗 Viatura</div>
+      <div class="card-title"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-car"></use></svg> Viatura</div>
       <div class="fg">
         <label for="prefixo">Viatura utilizada <span class="req">*</span></label>
         <select id="prefixo" required><option value="">Carregando viaturas...</option></select>
@@ -48,7 +48,7 @@
   <!-- 2. Setor -->
   <div class="section" id="s2">
     <div class="card">
-      <div class="card-title">📍 Setor de Atuação</div>
+      <div class="card-title"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-map-pin"></use></svg> Setor de Atuação</div>
       <div class="fg">
         <label for="setor">Setor <span class="req">*</span></label>
         <select id="setor" required><option value="">Carregando setores...</option></select>
@@ -65,7 +65,7 @@
   <!-- 3. Guarnição -->
   <div class="section" id="s3">
     <div class="card">
-      <div class="card-title">👮 Guarnição</div>
+      <div class="card-title"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-users"></use></svg> Guarnição</div>
       <div class="fg">
         <label for="comandante">Comandante <span class="req">*</span></label>
         <input type="text" id="comandante" class="upper" placeholder="GRADUAÇÃO E NOME DE GUERRA" maxlength="80" autocomplete="off">
@@ -87,12 +87,12 @@
   <!-- 4. Abastecimento -->
   <div class="section" id="s4">
     <div class="card">
-      <div class="card-title">⛽ Abastecimento</div>
+      <div class="card-title"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-fuel"></use></svg> Abastecimento</div>
       <div class="fg">
         <label>Houve abastecimento? <span class="req">*</span></label>
         <div class="opcao-group">
-          <button type="button" class="opcao-btn" data-group="abast" data-val="SIM" data-tone="ok"><div class="obi">⛽</div><div class="obt">Sim, abasteceu</div></button>
-          <button type="button" class="opcao-btn" data-group="abast" data-val="NÃO" data-tone="no"><div class="obi">🚫</div><div class="obt">Não abasteceu</div></button>
+          <button type="button" class="opcao-btn" data-group="abast" data-val="SIM" data-tone="ok"><div class="obi"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-fuel"></use></svg></div><div class="obt">Sim, abasteceu</div></button>
+          <button type="button" class="opcao-btn" data-group="abast" data-val="NÃO" data-tone="no"><div class="obi"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-ban"></use></svg></div><div class="obt">Não abasteceu</div></button>
         </div>
         <div class="msg-invalido" id="msg-abast">Selecione uma opção</div>
       </div>
@@ -101,18 +101,18 @@
         <div class="fg mt">
           <label for="saldoCartao">Saldo do cartão após abastecimento <span class="req">*</span></label>
           <input type="text" inputmode="numeric" id="saldoCartao" placeholder="Ex: 150,50" autocomplete="off" maxlength="15">
-          <div class="saldo-hint" id="saldoHint">💰 <span id="saldoHintVal"></span></div>
+          <div class="saldo-hint" id="saldoHint"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-wallet"></use></svg> <span id="saldoHintVal"></span></div>
           <div class="msg-invalido" id="msgSaldo">Informe o saldo do cartão (ex: 150,50)</div>
         </div>
         <div class="saldo-alerta">
-          <div class="saldo-alerta-titulo">⚠️ Atenção — Informação crítica</div>
-          <div class="saldo-alerta-texto">O saldo é usado pelo setor de <strong>logística</strong> para controle financeiro das viaturas. Um saldo <strong>incorreto</strong> pode impedir a solicitação de <strong>suplementação de crédito</strong> junto ao comando, comprometendo abastecimentos futuros.<br><br>✅ Informe o saldo <strong>exato</strong> exibido no comprovante ou terminal do posto.</div>
+          <div class="saldo-alerta-titulo"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-alert"></use></svg> Atenção — Informação crítica</div>
+          <div class="saldo-alerta-texto">O saldo é usado pelo setor de <strong>logística</strong> para controle financeiro das viaturas. Um saldo <strong>incorreto</strong> pode impedir a solicitação de <strong>suplementação de crédito</strong> junto ao comando, comprometendo abastecimentos futuros.<br><br><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check-circle"></use></svg> Informe o saldo <strong>exato</strong> exibido no comprovante ou terminal do posto.</div>
         </div>
         <div class="fg mt">
           <label>Ficou pendência no posto? <span class="req">*</span></label>
           <div class="opcao-group">
-            <button type="button" class="opcao-btn" data-group="pend" data-val="SIM" data-tone="ok"><div class="obi">⚠️</div><div class="obt">Sim, ficou pendência</div></button>
-            <button type="button" class="opcao-btn" data-group="pend" data-val="NÃO" data-tone="no"><div class="obi">✅</div><div class="obt">Sem pendência</div></button>
+            <button type="button" class="opcao-btn" data-group="pend" data-val="SIM" data-tone="ok"><div class="obi"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-alert"></use></svg></div><div class="obt">Sim, ficou pendência</div></button>
+            <button type="button" class="opcao-btn" data-group="pend" data-val="NÃO" data-tone="no"><div class="obi"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check-circle"></use></svg></div><div class="obt">Sem pendência</div></button>
           </div>
           <div class="msg-invalido" id="msg-pend">Selecione uma opção</div>
         </div>
@@ -128,12 +128,12 @@
   <!-- 5. Limpeza -->
   <div class="section" id="s5">
     <div class="card">
-      <div class="card-title">🧹 Controle de Limpeza</div>
+      <div class="card-title"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-sparkles"></use></svg> Controle de Limpeza</div>
       <div class="fg">
         <label>A viatura está sendo entregue limpa? <span class="req">*</span></label>
         <div class="opcao-group">
-          <button type="button" class="opcao-btn" data-group="limpa" data-val="SIM" data-tone="ok"><div class="obi">✅</div><div class="obt">Sim, está limpa</div></button>
-          <button type="button" class="opcao-btn" data-group="limpa" data-val="NÃO" data-tone="no"><div class="obi">🚫</div><div class="obt">Não está limpa</div></button>
+          <button type="button" class="opcao-btn" data-group="limpa" data-val="SIM" data-tone="ok"><div class="obi"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check-circle"></use></svg></div><div class="obt">Sim, está limpa</div></button>
+          <button type="button" class="opcao-btn" data-group="limpa" data-val="NÃO" data-tone="no"><div class="obi"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-ban"></use></svg></div><div class="obt">Não está limpa</div></button>
         </div>
         <div class="msg-invalido" id="msg-limpa">Selecione uma opção</div>
       </div>
@@ -147,8 +147,8 @@
           <label>Fotos da situação na entrega <span class="opt">(opcional)</span></label>
           <div class="foto-area" data-fotos="limpeza">
             <div class="foto-btns">
-              <button type="button" class="foto-btn camera" id="limpCam"><span class="foto-btn-icon">📷</span><span>Tirar Foto</span></button>
-              <button type="button" class="foto-btn galeria" id="limpGal"><span class="foto-btn-icon">🖼️</span><span>Galeria</span></button>
+              <button type="button" class="foto-btn camera" id="limpCam"><span class="foto-btn-icon"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-camera"></use></svg></span><span>Tirar Foto</span></button>
+              <button type="button" class="foto-btn galeria" id="limpGal"><span class="foto-btn-icon"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-image"></use></svg></span><span>Galeria</span></button>
             </div>
             <input type="file" id="limpCam_input" accept="image/*" capture="environment" hidden>
             <input type="file" id="limpGal_input" accept="image/*" multiple hidden>
@@ -163,12 +163,12 @@
   <!-- 6. Sinistros e finalização -->
   <div class="section" id="s6">
     <div class="card">
-      <div class="card-title">🚨 Sinistros e Avarias</div>
+      <div class="card-title"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-alert"></use></svg> Sinistros e Avarias</div>
       <div class="fg">
         <label>Houve sinistro ou novas avarias? <span class="req">*</span></label>
         <div class="opcao-group">
-          <button type="button" class="opcao-btn" data-group="sin" data-val="SIM" data-tone="ok"><div class="obi">⚠️</div><div class="obt">Sim, houve</div></button>
-          <button type="button" class="opcao-btn" data-group="sin" data-val="NÃO" data-tone="no"><div class="obi">✅</div><div class="obt">Não houve</div></button>
+          <button type="button" class="opcao-btn" data-group="sin" data-val="SIM" data-tone="ok"><div class="obi"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-alert"></use></svg></div><div class="obt">Sim, houve</div></button>
+          <button type="button" class="opcao-btn" data-group="sin" data-val="NÃO" data-tone="no"><div class="obi"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check-circle"></use></svg></div><div class="obt">Não houve</div></button>
         </div>
         <div class="msg-invalido" id="msg-sin">Selecione uma opção</div>
       </div>
@@ -181,8 +181,8 @@
         <label>Fotos do sinistro/avaria <span class="opt">(opcional — enviadas para o Drive)</span></label>
         <div class="foto-area" data-fotos="sinistro">
           <div class="foto-btns">
-            <button type="button" class="foto-btn camera" id="sinCam"><span class="foto-btn-icon">📷</span><span>Tirar Foto</span></button>
-            <button type="button" class="foto-btn galeria" id="sinGal"><span class="foto-btn-icon">🖼️</span><span>Galeria / Arquivo</span></button>
+            <button type="button" class="foto-btn camera" id="sinCam"><span class="foto-btn-icon"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-camera"></use></svg></span><span>Tirar Foto</span></button>
+            <button type="button" class="foto-btn galeria" id="sinGal"><span class="foto-btn-icon"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-image"></use></svg></span><span>Galeria / Arquivo</span></button>
           </div>
           <input type="file" id="sinCam_input" accept="image/*" capture="environment" hidden>
           <input type="file" id="sinGal_input" accept="image/*" multiple hidden>
@@ -193,14 +193,14 @@
       </div>
     </div>
     <div class="card card-decl">
-      <div class="card-title">⚖️ Declaração</div>
+      <div class="card-title"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-scale"></use></svg> Declaração</div>
       <p style="font-size:13px;line-height:1.6">Ao enviar, declaro que todas as informações são verdadeiras, nos termos do <strong>Art. 17 — I RDPM</strong>.</p>
     </div>
   </div>
 
   <div id="tela-sucesso">
-    <div class="success-icon">✅</div>
-    <div class="success-title">Saída Registrada!</div>
+    <div class="success-icon" id="successIcon"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-check-circle"></use></svg></div>
+    <div class="success-title" id="successTitle">Saída Registrada!</div>
     <div class="success-sub" id="successDetalhes">Saída registrada com sucesso.</div>
     <div class="success-aviso" id="successAviso"></div>
     <button class="btn-novo" id="btnNovo" type="button">+ Nova Saída</button>
@@ -214,70 +214,24 @@
 </div>
 <div class="loading-ov" id="loadingOv"><div class="loading-spin"></div><div class="loading-txt" id="loadingTxt">Carregando...</div></div>
 
-<script src="common.js?v=2026.10.22.2"></script>
+<script src="common.js?v=2026.11.02.1"></script>
 <script>if(!window.GAR){document.body.innerHTML='<div style="padding:30px;color:#fff;font-family:sans-serif;line-height:1.6"><h2>Arquivos incompletos</h2><p>O arquivo common.js não foi encontrado. Publique common.js, common.css e banner-9bpm.jpg na mesma pasta de entrada.html e saida.html.</p></div>';throw new Error('common.js ausente');}</script>
 <script>
 (function () {
   'use strict';
   var $ = GAR.$;
   var LABELS = ['Viatura', 'Setor', 'Guarnição', 'Abastecimento', 'Limpeza', 'Finalização'];
-  var SALTO_MAX_KM = 1500; // diferença acima da qual pedimos confirmação do odômetro
-  var idEnvio = GAR.uuid(); // identifica este registro (reenvio após falha de rede mantém o mesmo id)
-  var enviando = false;
-  var odoMin = 0, odoEstado = 'vazio', odoCtrl = null;
+  var idEnvio = GAR.uuid(); // identifica este registro (reenvio após falha de rede mantém o mesmo id; o servidor ignora repetidos)
+  var enviando = false, finalizando = false;
   var infoPromessas = {}; // uma única consulta por viatura atende odômetro E saldo
-  var finalizando = false;
+  var seqConsulta = 0;    // só vale a resposta da consulta mais recente (troca de viatura invalida as anteriores)
   var W;
 
+  var odo = GAR.odometro.criar({ input: 'odometroFinal', hint: 'odometroHint', aviso: 'odoAviso', avisoTxt: 'odoAvisoTxt', confirma: 'odoConfirma', orientacao: 'informe o odômetro final' });
   var fotosSin = GAR.criarFotos({ nome: 'sinistro', camera: 'sinCam', galeria: 'sinGal', preview: 'sinPreview', status: 'sinStatus', rotulo: 'sinistro_saida' });
   var fotosLimpa = GAR.criarFotos({ nome: 'limpeza', camera: 'limpCam', galeria: 'limpGal', preview: 'limpPreview', status: 'limpStatus', rotulo: 'limpeza_saida' });
 
-  /* ---------- Odômetro ---------- */
-  function odoValor() { var v = parseInt($('odometroFinal').value, 10); return isNaN(v) ? 0 : v; }
-
-  /** Retorna {precisaConfirmar} e mostra/oculta o aviso. Nunca bloqueia definitivamente. */
-  function avaliarOdo() {
-    var v = odoValor(), box = $('odoAviso'), txt = $('odoAvisoTxt');
-    var precisa = false, msg = '';
-    if (v > 0 && odoMin > 0) {
-      if (v < odoMin) { precisa = true; msg = '⚠️ O odômetro informado (' + GAR.fmtKm(v) + ' km) é MENOR que o último registrado (' + GAR.fmtKm(odoMin) + ' km). Confira o painel da viatura.'; }
-      else if (v - odoMin > SALTO_MAX_KM) { precisa = true; msg = '⚠️ Diferença de ' + GAR.fmtKm(v - odoMin) + ' km desde o último registro (' + GAR.fmtKm(odoMin) + ' km). Confira o painel da viatura.'; }
-    }
-    txt.textContent = msg;
-    box.classList.toggle('on', precisa);
-    if (!precisa) $('odoConfirma').checked = false;
-    return { precisaConfirmar: precisa };
-  }
-
-  function dicaOdo(texto) {
-    var h = $('odometroHint');
-    h.textContent = texto || '';
-    h.classList.toggle('on', !!texto);
-  }
-
-  async function buscarOdometro(prefixo) {
-    if (odoCtrl) odoCtrl.abort();
-    odoCtrl = new AbortController();
-    var meu = odoCtrl;
-    odoEstado = 'carregando'; odoMin = 0;
-    dicaOdo('⏳ Consultando último odômetro...');
-    try {
-      var d = await infoDaViatura(prefixo);
-      if (meu !== odoCtrl) return; // viatura trocada enquanto consultava
-      var n = d && d.odometro != null ? Number(d.odometro) : NaN;
-      if (isNaN(n)) throw new Error('odômetro indisponível');
-      if (n > 0) { odoMin = n; dicaOdo('ℹ️ Último registrado: ' + GAR.fmtKm(n) + ' km — informe o odômetro final'); }
-      else dicaOdo('ℹ️ Nenhum registro anterior — informe o odômetro atual');
-      odoEstado = 'ok';
-    } catch (e) {
-      if (meu !== odoCtrl) return;
-      odoEstado = 'falhou';
-      dicaOdo('⚠️ Não foi possível consultar o último odômetro. Informe o valor do painel da viatura.');
-    }
-    avaliarOdo();
-  }
-
-  /* ---------- Saldo do cartão ---------- */
+  /* ---------- Consulta da viatura (odômetro + saldo numa só chamada) ---------- */
   function infoDaViatura(prefixo) {
     if (!infoPromessas[prefixo]) {
       infoPromessas[prefixo] = GAR.infoViatura(prefixo, { confirmar: false })
@@ -295,7 +249,7 @@
     var prefixo = $('prefixo').value, hint = $('saldoHint'), val = $('saldoHintVal');
     if (!prefixo) { hint.style.display = 'none'; return; }
     hint.style.display = 'block';
-    val.textContent = '⏳ Buscando último saldo registrado...';
+    val.textContent = 'Buscando último saldo registrado...';
     obterSaldo(prefixo).then(function (d) {
       if ($('prefixo').value !== prefixo) return;
       var s = NaN;
@@ -311,13 +265,17 @@
 
   /* ---------- Troca de viatura ---------- */
   function aoSelecionarViatura(preservar) {
-    var p = $('prefixo').value;
+    var p = $('prefixo').value, meu = ++seqConsulta;
     if (!preservar) { $('odometroFinal').value = ''; $('odoConfirma').checked = false; }
-    if (odoCtrl) odoCtrl.abort();
-    odoMin = 0; odoEstado = 'vazio'; dicaOdo('');
-    avaliarOdo();
+    odo.limpar();
     if (!p) return;
-    buscarOdometro(p);
+    odo.consultando();
+    infoDaViatura(p).then(function (d) {
+      if (meu !== seqConsulta) return; // viatura trocada enquanto consultava
+      var n = d && d.odometro != null ? Number(d.odometro) : NaN;
+      if (isNaN(n)) throw new Error('odômetro indisponível');
+      odo.definirRef(n);
+    }).catch(function () { if (meu === seqConsulta) odo.falhou(); });
     obterSaldo(p).catch(function () {}); // pré-carrega o saldo em paralelo
     if (GAR.opc.abast === 'SIM') mostrarDicaSaldo();
   }
@@ -327,13 +285,11 @@
     var ok = true;
     if (n === 1) {
       if (!$('prefixo').value) { GAR.invalido('prefixo'); ok = false; }
-      var v = odoValor();
-      if (v <= 0) { GAR.invalido('odometroFinal'); ok = false; }
-      else if (odoEstado === 'carregando' && finalizando) { GAR.mostrarErro('Aguarde um instante: consultando o último odômetro da viatura...'); ok = false; }
-      else if (avaliarOdo().precisaConfirmar && !$('odoConfirma').checked) {
-        $('odoAviso').classList.add('invalido'); ok = false;
-        GAR.mostrarErro('Confirme o odômetro informado marcando a caixa abaixo do campo.');
-      }
+      var pr = odo.problema(finalizando);
+      if (pr === 'vazio') { GAR.invalido('odometroFinal'); ok = false; }
+      else if (pr === 'consultando') { GAR.mostrarErro('Aguarde um instante: consultando o último odômetro da viatura...'); ok = false; }
+      else if (pr === 'bloqueado') { GAR.invalido('odometroFinal', false); GAR.mostrarErro(odo.mensagem()); ok = false; }
+      else if (pr === 'confirmar') { odo.marcarPendente(); GAR.mostrarErro('Confirme o odômetro informado marcando a caixa abaixo do campo.'); ok = false; }
     }
     if (n === 2) {
       if (!$('setor').value) { GAR.invalido('setor'); ok = false; }
@@ -366,17 +322,14 @@
   }
 
   /* ---------- Envio ---------- */
-  function montarPayload(rf) {
+  /** Dados do registro (o idEnvio e o texto das fotos são acrescentados por GAR.enviarItem). */
+  function montarPayload() {
     var setor = $('setor').value;
     var abast = GAR.opc.abast, pend = GAR.opc.pend, limpa = GAR.opc.limpa, sin = GAR.opc.sin;
-    var linkImagens = '';
-    if (rf.ok > 0) linkImagens = 'Fotos enviadas para pasta da viatura no Drive (' + rf.ok + (rf.falhas ? ' de ' + rf.total : '') + ')';
-    return {
+    return Object.assign({
       tipo: 'saida',
-      idEnvio: idEnvio,
       prefixo: $('prefixo').value,
-      odometroFinal: String(odoValor()),
-      odometroDivergente: $('odoConfirma').checked ? 'SIM' : '',
+      odometroFinal: String(odo.valor()),
       setor: setor,
       setorTextoLivre: setor === 'OUTRO' ? $('setorLivre').value.trim() : '',
       comandante: $('comandante').value.trim().toUpperCase(),
@@ -389,9 +342,8 @@
       viaturaLimpaSaida: limpa,
       justLimpaSaida: limpa === 'NÃO' ? $('justLimpaSaida').value.trim() : '',
       houveSinistro: sin,
-      descricaoAlteracoes: sin === 'SIM' ? $('descricaoAlteracoes').value.trim() : 'SEM NOVAS AVARIAS',
-      linkImagens: linkImagens
-    };
+      descricaoAlteracoes: sin === 'SIM' ? $('descricaoAlteracoes').value.trim() : 'SEM NOVAS AVARIAS'
+    }, odo.payload());
   }
 
   async function enviar() {
@@ -403,20 +355,44 @@
     try {
       GAR.loading(true, 'Preparando envio...');
       await Promise.all([fotosSin.pronto(), fotosLimpa.pronto()]);
-      var prefixo = $('prefixo').value;
-      var rf = await GAR.enviarFotos(prefixo, [fotosSin, fotosLimpa]);
-      var payload = montarPayload(rf);
-      GAR.loading(true, 'Registrando saída...');
-      var r = await GAR.postJson(payload);
-      if (!r.ok) { var err = new Error(r.erro); err.servidor = true; throw err; }
-      sucesso(payload, rf);
+      var payload = montarPayload();
+      var item = { id: idEnvio, tipo: 'saida', prefixo: payload.prefixo, payload: payload, fotos: GAR.coletarFotos([fotosSin, fotosLimpa]) };
+      var res;
+      try { res = await GAR.enviarItem(item); }
+      catch (eRede) {
+        GAR.loading(false);
+        if (await GAR.fila.adicionar(item)) salvoNaFila(payload);
+        else GAR.mostrarErro('Falha de conexão ao enviar. Seus dados foram mantidos — verifique o sinal e toque em Enviar novamente.');
+        return;
+      }
+      GAR.loading(false);
+      if (!res.r.ok) { recusado(res.r); return; }
+      sucesso(res.payload, res.rf);
     } catch (e) {
       GAR.loading(false);
-      if (e && e.servidor) GAR.mostrarErro('O servidor não aceitou o registro: ' + e.message + '. Seus dados foram mantidos.');
-      else GAR.mostrarErro('Falha de conexão ao enviar. Seus dados foram mantidos — verifique o sinal e toque em Enviar novamente.');
+      GAR.mostrarErro('Falha inesperada ao enviar. Seus dados foram mantidos — toque em Enviar novamente.');
     } finally {
       enviando = false; $('btnSend').disabled = false;
     }
+  }
+
+  function recusado(r) {
+    if (r.confirmarOdometro && !odo.confirmado()) {
+      odo.forcarConfirmacao(r.erro); W.ir(1); odo.marcarPendente();
+      GAR.mostrarErro('O servidor pede a confirmação do odômetro. Marque a caixa abaixo do campo e envie novamente.');
+    } else {
+      GAR.mostrarErro('O servidor não aceitou o registro: ' + r.erro + '. Seus dados foram mantidos.');
+    }
+  }
+
+  function salvoNaFila(p) {
+    GAR.guarnicao.salvar(p.setor, p.setorTextoLivre);
+    GAR.draft.limpar();
+    $('successIcon').innerHTML = GAR.ico('cloud-off'); $('successIcon').classList.add('offline');
+    $('successTitle').textContent = 'Salvo neste aparelho';
+    $('successDetalhes').innerHTML = 'Sem conexão no momento. O registro da viatura <strong>' + GAR.esc(p.prefixo) +
+      '</strong> está guardado e será enviado automaticamente quando o sinal voltar.<br>Mantenha o aplicativo aberto ou abra-o novamente com sinal.';
+    W.concluir();
   }
 
   function sucesso(p, rf) {
@@ -427,10 +403,10 @@
     var h = 'Viatura <strong>' + GAR.esc(p.prefixo) + '</strong> baixada do serviço.<br>Setor: <strong>' + GAR.esc(setorFinal) +
       '</strong><br>Motorista: <strong>' + GAR.esc(p.motorista) + '</strong>' +
       (p.houvAbastecimento === 'SIM' ? '<br>Abastecimento: <strong>SIM</strong>' : '') +
-      (p.houveSinistro === 'SIM' ? '<br><span style="color:#f87171">⚠️ Sinistro registrado</span>' : '') +
-      (rf.ok > 0 ? '<br>📷 ' + rf.ok + ' foto(s) enviada(s) para o Drive' : '');
+      (p.houveSinistro === 'SIM' ? '<br><span style="color:#f87171">' + GAR.ico('alert') + ' Sinistro registrado</span>' : '') +
+      (rf.ok > 0 ? '<br>' + GAR.ico('camera') + ' ' + rf.ok + ' foto(s) enviada(s) para o Drive' : '');
     $('successDetalhes').innerHTML = h;
-    if (rf.falhas > 0) $('successAviso').textContent = '⚠️ ' + rf.falhas + ' foto(s) não puderam ser enviadas. O registro da saída foi concluído normalmente.';
+    if (rf.falhas > 0) $('successAviso').textContent = rf.falhas + ' foto(s) não puderam ser enviadas. O registro da saída foi concluído normalmente.';
     W.concluir();
   }
 
@@ -444,8 +420,7 @@
     $('btnNovo').addEventListener('click', function () { location.reload(); });
 
     $('prefixo').addEventListener('change', function () { aoSelecionarViatura(false); });
-    $('odometroFinal').addEventListener('input', function () { GAR.somenteDigitos(this); $('odoAviso').classList.remove('invalido'); avaliarOdo(); });
-    $('odoConfirma').addEventListener('change', function () { $('odoAviso').classList.remove('invalido'); });
+    odo.ligar();
     $('setor').addEventListener('change', function () {
       var outro = this.value === 'OUTRO';
       $('setorLivreGroup').style.display = outro ? 'block' : 'none';
@@ -485,6 +460,7 @@
     });
   });
 })();
+
 </script>
 </body>
 </html>

@@ -10,7 +10,7 @@
   /* ---------- Configuração (único lugar para trocar a URL do Apps Script) ---------- */
   GAR.SCRIPT_URL =
     'https://script.google.com/macros/s/AKfycbyQl3ns6drVY1H2DepxCfN23Zee3xmcVlsP4a47IMPlfhxIPGHveaI3-EGYZ7gyVwbooA/exec';
-  GAR.VERSAO = '2026.10.22.2';
+  GAR.VERSAO = '2026.11.02.1';
   var RASCUNHO_VALIDADE_MS = 12 * 60 * 60 * 1000; // 12 h
   var MAX_FOTOS_POR_GRUPO = 8;
 
@@ -27,6 +27,15 @@
     return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
   };
   GAR.fmtKm = function (n) { return Number(n).toLocaleString('pt-BR'); };
+
+
+  /* ---------- Ícones (SVG inline: sem fonte externa, sem emoji que muda de aparelho para aparelho) ---------- */
+  var SPRITE = '<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="i-log-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></symbol><symbol id="i-log-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol><symbol id="i-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></symbol><symbol id="i-map-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol><symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol><symbol id="i-wrench" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol><symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></symbol><symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/></symbol><symbol id="i-sparkles" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></symbol><symbol id="i-credit-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></symbol><symbol id="i-scale" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></symbol><symbol id="i-fuel" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="15" y2="22"/><line x1="4" y1="9" x2="14" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2 2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"/></symbol><symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol><symbol id="i-check-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></symbol><symbol id="i-x-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></symbol><symbol id="i-ban" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></symbol><symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol><symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol><symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></symbol><symbol id="i-wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></symbol><symbol id="i-cloud-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 2 20 20"/><path d="M5.782 5.782A7 7 0 0 0 9 19h8.5a4.5 4.5 0 0 0 1.307-.193"/><path d="M21.532 16.5A4.5 4.5 0 0 0 17.5 10h-1.79A7.008 7.008 0 0 0 10 5.07"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol></svg>';
+  GAR.ico = function (nome, cls) {
+    return '<svg class="ic' + (cls ? ' ' + cls : '') + '" aria-hidden="true" focusable="false"><use href="#i-' + nome + '"></use></svg>';
+  };
+  if (document.body) document.body.insertAdjacentHTML('afterbegin', SPRITE);
+  else document.addEventListener('DOMContentLoaded', function () { document.body.insertAdjacentHTML('afterbegin', SPRITE); });
 
   /* localStorage pode lançar exceção (modo privado, armazenamento cheio, bloqueado) */
   GAR.store = {
@@ -74,7 +83,7 @@
 
   /**
    * POST JSON (text/plain evita preflight CORS). Lê a resposta do servidor.
-   * Retorna {ok, confirmado, erro}. Só é "falha" quando o servidor diz explicitamente que falhou
+   * Retorna {ok, confirmado, erro, confirmarOdometro, bloqueado}. Só é "falha" quando o servidor diz explicitamente que falhou
    * ou a rede falha (exceção). Resposta não-JSON é aceita como "não confirmada".
    */
   GAR.postJson = async function (payload, opt) {
@@ -90,7 +99,13 @@
     var j = null;
     try { j = JSON.parse(txt); } catch (e) {}
     if (j && (j.sucesso === false || (j.erro && j.sucesso !== true))) {
-      return { ok: false, confirmado: true, erro: j.erro || j.mensagem || 'Erro retornado pelo servidor' };
+      return {
+        ok: false, confirmado: true,
+        erro: j.erro || j.mensagem || 'Erro retornado pelo servidor',
+        confirmarOdometro: j.confirmarOdometro === true, // servidor pede confirmação do odômetro (reenviar com confirmarOdometro:true)
+        bloqueado: j.bloqueado === true,                 // ex.: entrada com viatura já em serviço
+        resposta: j
+      };
     }
     return { ok: true, confirmado: !!(j && j.sucesso === true), resposta: j };
   };
@@ -134,6 +149,101 @@
     };
   };
 
+
+  /* ---------- Odômetro: regra ÚNICA (entrada e saída) ----------
+     Os limites espelham ODOMETRO_SALTO_MAX_KM e ODOMETRO_MAX_ABSOLUTO do Apps Script (utils.gs).
+     Se o servidor ainda pedir confirmação (referência dele diferente da do índice), forcarConfirmacao()
+     reaproveita a mesma caixa "Confirmo que o odômetro está correto". */
+  GAR.odometro = (function () {
+    var SALTO_MAX_KM = 1500, MAX_ABSOLUTO = 500000;
+
+    function avaliar(v, ref) {
+      if (!v || v <= 0) return { nivel: 'ok', msg: '' };
+      if (v > MAX_ABSOLUTO) return { nivel: 'bloquear', msg: 'O valor informado (' + GAR.fmtKm(v) + ' km) parece erro de digitação. Confira o painel da viatura.' };
+      if (ref > 0) {
+        if (v < ref) return { nivel: 'confirmar', msg: 'O odômetro informado (' + GAR.fmtKm(v) + ' km) é MENOR que o último registrado (' + GAR.fmtKm(ref) + ' km). Confira o painel da viatura.' };
+        if (v - ref > SALTO_MAX_KM) return { nivel: 'confirmar', msg: 'Diferença de ' + GAR.fmtKm(v - ref) + ' km desde o último registro (' + GAR.fmtKm(ref) + ' km). Confira o painel da viatura.' };
+      }
+      return { nivel: 'ok', msg: '' };
+    }
+
+    /** cfg: {input, hint, aviso, avisoTxt, confirma, orientacao}  (ids)  orientacao: "informe o odômetro final" */
+    function criar(cfg) {
+      var ref = 0, estado = 'vazio', forcado = '', ultima = { nivel: 'ok', msg: '' };
+      var c = {};
+      function el(k) { return $(cfg[k]); }
+
+      c.valor = function () { var v = parseInt(el('input').value, 10); return isNaN(v) ? 0 : v; };
+      c.estado = function () { return estado; };
+
+      function dica(html) { var h = el('hint'); h.innerHTML = html || ''; h.classList.toggle('on', !!html); }
+
+      c.avaliar = function () {
+        ultima = avaliar(c.valor(), ref);
+        var precisa = ultima.nivel === 'confirmar' || (ultima.nivel === 'ok' && !!forcado);
+        var bloqueia = ultima.nivel === 'bloquear';
+        var box = el('aviso');
+        el('avisoTxt').innerHTML = (precisa || bloqueia) ? GAR.ico('alert') + ' ' + GAR.esc(bloqueia ? ultima.msg : (forcado || ultima.msg)) : '';
+        box.classList.toggle('on', precisa || bloqueia);
+        box.classList.toggle('bloqueio', bloqueia);
+        if (!precisa) el('confirma').checked = false;
+        return { precisaConfirmar: precisa, bloqueado: bloqueia };
+      };
+
+      /** '' = ok | 'vazio' | 'consultando' | 'bloqueado' | 'confirmar' */
+      c.problema = function (aguardarConsulta) {
+        if (c.valor() <= 0) return 'vazio';
+        if (estado === 'carregando' && aguardarConsulta) return 'consultando';
+        var a = c.avaliar();
+        if (a.bloqueado) return 'bloqueado';
+        if (a.precisaConfirmar && !el('confirma').checked) return 'confirmar';
+        return '';
+      };
+      c.mensagem = function () { return ultima.msg; };
+      c.marcarPendente = function () { el('aviso').classList.add('invalido'); };
+      c.confirmado = function () { return !!el('confirma').checked && c.avaliar().precisaConfirmar; };
+      /** Campos para o payload: confirmarOdometro:true só quando o policial confirmou. */
+      c.payload = function () {
+        return c.confirmado() ? { confirmarOdometro: true, odometroDivergente: 'SIM' } : {};
+      };
+
+      c.limpar = function () { ref = 0; estado = 'vazio'; forcado = ''; dica(''); c.avaliar(); };
+      c.consultando = function (txt) { ref = 0; estado = 'carregando'; forcado = ''; dica(GAR.ico('clock') + ' ' + GAR.esc(txt || 'Consultando último odômetro...')); c.avaliar(); };
+      c.definirRef = function (n) {
+        ref = n > 0 ? n : 0; estado = 'ok';
+        if (n > 0) {
+          dica(GAR.ico('info') + ' Último registrado: <strong>' + GAR.esc(GAR.fmtKm(n)) + ' km</strong> — ' + GAR.esc(cfg.orientacao || 'confira o painel') +
+            ' <button type="button" class="dica-btn" data-usar-odo="1">Usar este valor</button>');
+        } else dica(GAR.ico('info') + ' Nenhum registro anterior — informe o odômetro atual');
+        c.avaliar();
+      };
+      c.falhou = function () {
+        ref = 0; estado = 'falhou';
+        dica(GAR.ico('alert') + ' Não foi possível consultar o último odômetro. Informe o valor do painel da viatura.');
+        c.avaliar();
+      };
+      /** O servidor recusou pedindo confirmação: mostra a mensagem dele e exige a caixa marcada. */
+      c.forcarConfirmacao = function (msg) { forcado = msg || 'Confirme o odômetro informado.'; el('confirma').checked = false; c.avaliar(); };
+
+      c.ligar = function () {
+        el('input').addEventListener('input', function () {
+          GAR.somenteDigitos(this); forcado = '';
+          el('aviso').classList.remove('invalido'); c.avaliar();
+        });
+        el('confirma').addEventListener('change', function () { el('aviso').classList.remove('invalido'); });
+        el('hint').addEventListener('click', function (e) {
+          var b = e.target.closest ? e.target.closest('[data-usar-odo]') : null;
+          if (!b || !ref) return;
+          el('input').value = String(ref); forcado = '';
+          el('input').dispatchEvent(new Event('input', { bubbles: true }));
+        });
+      };
+      return c;
+    }
+
+    return { SALTO_MAX_KM: SALTO_MAX_KM, MAX_ABSOLUTO: MAX_ABSOLUTO, avaliar: avaliar, criar: criar };
+  })();
+
   /* ---------- Interface: loading / erros ---------- */
   GAR.loading = function (on, txt) {
     if (txt) $('loadingTxt').textContent = txt;
@@ -144,7 +254,8 @@
     var box = $('erroGlobal');
     box.innerHTML = '';
     var span = document.createElement('span');
-    span.textContent = '⚠️ ' + msg;
+    span.innerHTML = GAR.ico('alert') + ' ';
+    span.appendChild(document.createTextNode(msg));
     box.appendChild(span);
     if (acao) {
       box.appendChild(document.createElement('br'));
@@ -407,35 +518,72 @@
     return g;
   };
 
-  /** Envia as fotos que ainda não subiram. Falha de foto NÃO impede o registro. */
-  GAR.enviarFotos = async function (prefixo, grupos) {
-    var lista = [];
-    grupos.forEach(function (g) { g.itens().forEach(function (i) { if (!i.enviada) lista.push({ g: g, i: i }); }); });
-    var todas = 0, ok = 0, falhas = 0;
-    grupos.forEach(function (g) { todas += g.itens().length; ok += g.itens().filter(function (i) { return i.enviada; }).length; });
-    if (!lista.length) return { total: todas, ok: ok, falhas: 0 };
+  /**
+   * Envia fotos de uma lista plana [{base64, nome, mimeType, rotulo, enviada}] (marca enviada=true nos próprios objetos).
+   * Falha de foto NÃO impede o registro. Se a REDE cair (exceção), para na hora e devolve redeCaiu:true
+   * (quem chama guarda tudo na fila em vez de esperar um timeout por foto).
+   * opt.silencioso: sem overlay/barra (envio em segundo plano pela fila).
+   */
+  GAR.enviarFotosLista = async function (prefixo, fotos, opt) {
+    opt = opt || {};
+    var lista = fotos.filter(function (f) { return !f.enviada; });
+    var todas = fotos.length, ok = fotos.filter(function (f) { return f.enviada; }).length, falhas = 0, redeCaiu = false;
+    if (!lista.length) return { total: todas, ok: ok, falhas: 0, redeCaiu: false };
 
-    var barra = $('fotoProgBar'), fill = $('fotoProgFill');
+    var barra = opt.silencioso ? null : $('fotoProgBar'), fill = opt.silencioso ? null : $('fotoProgFill');
     if (barra) barra.className = 'foto-upload-prog on';
     for (var n = 0; n < lista.length; n++) {
-      GAR.loading(true, 'Enviando foto ' + (n + 1) + ' de ' + lista.length + '...');
+      if (!opt.silencioso) GAR.loading(true, 'Enviando foto ' + (n + 1) + ' de ' + lista.length + '...');
       if (fill) fill.style.width = Math.round((n / lista.length) * 100) + '%';
-      var enviou = false;
+      var enviou = false, erroRede = false;
       for (var tent = 0; tent < 2 && !enviou; tent++) {
         try {
           var r = await GAR.postJson({
             tipo: 'foto', prefixo: prefixo,
-            nomeArquivo: (lista[n].g.rotulo ? lista[n].g.rotulo + '_' : '') + lista[n].i.nome,
-            base64: lista[n].i.base64, mimeType: lista[n].i.mimeType
+            nomeArquivo: (lista[n].rotulo ? lista[n].rotulo + '_' : '') + lista[n].nome,
+            base64: lista[n].base64, mimeType: lista[n].mimeType
           });
+          erroRede = false;
           if (r.ok) enviou = true; else break; // servidor recusou: não adianta repetir
-        } catch (e) { if (tent === 0) await GAR.sleep(1200); }
+        } catch (e) { erroRede = true; if (tent === 0) await GAR.sleep(1200); }
       }
-      if (enviou) { lista[n].i.enviada = true; ok++; } else falhas++;
+      if (enviou) { lista[n].enviada = true; ok++; }
+      else { falhas++; if (erroRede) { redeCaiu = true; break; } }
     }
     if (fill) fill.style.width = '100%';
     if (barra) setTimeout(function () { barra.className = 'foto-upload-prog'; }, 800);
-    return { total: todas, ok: ok, falhas: falhas };
+    return { total: todas, ok: ok, falhas: falhas, redeCaiu: redeCaiu };
+  };
+
+  /** Compatibilidade: recebe os grupos criados por GAR.criarFotos. */
+  GAR.enviarFotos = function (prefixo, grupos) {
+    return GAR.enviarFotosLista(prefixo, GAR.coletarFotos(grupos));
+  };
+
+  /** Lista plana das fotos dos grupos (os MESMOS objetos: o flag "enviada" vale para o formulário e para a fila). */
+  GAR.coletarFotos = function (grupos) {
+    var out = [];
+    grupos.forEach(function (g) { g.itens().forEach(function (i) { i.rotulo = g.rotulo; out.push(i); }); });
+    return out;
+  };
+
+  GAR.textoLinkImagens = function (rf) {
+    return rf.ok > 0 ? 'Fotos enviadas para pasta da viatura no Drive (' + rf.ok + (rf.falhas ? ' de ' + rf.total : '') + ')' : '';
+  };
+
+  /**
+   * Envia UM registro: fotos pendentes e depois o POST do registro.
+   * item: {id, tipo, prefixo, payload, fotos, resumo}.  Lança erro se a rede cair; senão devolve {r, rf, payload}.
+   * r.ok === false = o servidor recusou (r.erro, r.confirmarOdometro, r.bloqueado).
+   */
+  GAR.enviarItem = async function (item, opt) {
+    opt = opt || {};
+    var rf = await GAR.enviarFotosLista(item.prefixo, item.fotos || [], opt);
+    if (rf.redeCaiu) throw new Error('sem rede');
+    var payload = Object.assign({}, item.payload, { idEnvio: item.id, linkImagens: GAR.textoLinkImagens(rf) });
+    if (!opt.silencioso) GAR.loading(true, item.tipo === 'saida' ? 'Registrando saída...' : 'Registrando entrada...');
+    var r = await GAR.postJson(payload);
+    return { r: r, rf: rf, payload: payload };
   };
 
   /* ---------- Dados iniciais (viaturas e setores) com cache local ---------- */
@@ -647,6 +795,155 @@
     };
     return W;
   };
+
+
+  /* ---------- Fila de reenvio (sem sinal: guarda no aparelho e envia quando a rede voltar) ----------
+     Segura porque o servidor ignora um idEnvio repetido (ver utils_patch_idEnvio.gs).
+     O envio acontece enquanto o app estiver aberto (online / volta ao app / a cada 45 s) e ao abrir de novo. */
+  GAR.fila = (function () {
+    var F = {}, DB = 'garageiro-fila', ST = 'itens', LS = 'gar:fila', LOCK = 'gar:fila:lock';
+    var dbPromise = null, enviando = false, timer = null, ultimoAviso = '';
+
+    function abrirDb() {
+      if (dbPromise) return dbPromise;
+      dbPromise = new Promise(function (res) {
+        try {
+          var rq = w.indexedDB.open(DB, 1);
+          rq.onupgradeneeded = function () { rq.result.createObjectStore(ST, { keyPath: 'id' }); };
+          rq.onsuccess = function () { res(rq.result); };
+          rq.onerror = rq.onblocked = function () { res(null); };
+        } catch (e) { res(null); }
+      });
+      return dbPromise;
+    }
+    function idb(db) {
+      function tx(modo, fn) {
+        return new Promise(function (res) {
+          try {
+            var t = db.transaction(ST, modo), out;
+            out = fn(t.objectStore(ST));
+            t.oncomplete = function () { res(out && 'result' in out ? out.result : true); };
+            t.onerror = t.onabort = function () { res(modo === 'readonly' ? [] : false); };
+          } catch (e) { res(modo === 'readonly' ? [] : false); }
+        });
+      }
+      return {
+        all: function () { return tx('readonly', function (s) { return s.getAll(); }).then(function (r) { return r || []; }); },
+        put: function (item) { return tx('readwrite', function (s) { s.put(item); }); },
+        del: function (id) { return tx('readwrite', function (s) { s.delete(id); }); }
+      };
+    }
+    var lsBackend = {
+      all: function () { return Promise.resolve(GAR.store.get(LS) || []); },
+      put: function (item) {
+        var l = (GAR.store.get(LS) || []).filter(function (x) { return x.id !== item.id; }); l.push(item);
+        return Promise.resolve(GAR.store.set(LS, l));
+      },
+      del: function (id) { return Promise.resolve(GAR.store.set(LS, (GAR.store.get(LS) || []).filter(function (x) { return x.id !== id; }))); }
+    };
+    function bk() { return abrirDb().then(function (db) { return db ? idb(db) : lsBackend; }); }
+
+    F.listar = function () { return bk().then(function (b) { return b.all(); }); };
+    /** true se ficou guardado no aparelho. */
+    F.adicionar = function (item) {
+      var reg = {
+        id: item.id, tipo: item.tipo, prefixo: item.prefixo, resumo: item.resumo || '', payload: item.payload,
+        fotos: (item.fotos || []).map(function (f) { return { base64: f.base64, nome: f.nome, mimeType: f.mimeType, rotulo: f.rotulo, enviada: !!f.enviada }; }),
+        criadoEm: Date.now(), tentativas: 0, estado: 'aguardando', erro: '', confirmarOdometro: false
+      };
+      return bk().then(function (b) { return b.put(reg); }).then(function (ok) { if (ok) { renderizar(); agendar(); } return !!ok; });
+    };
+    function salvar(item) { return bk().then(function (b) { return b.put(item); }); }
+    function remover(id) { return bk().then(function (b) { return b.del(id); }); }
+
+    function lockPegar() { var t = GAR.store.get(LOCK); if (t && Date.now() - t < 120000) return false; GAR.store.set(LOCK, Date.now()); return true; }
+    function lockSoltar() { GAR.store.del(LOCK); }
+
+    F.enviarPendentes = async function (manual) {
+      if (enviando) return;
+      if (!manual && w.navigator && w.navigator.onLine === false) return;
+      if (!lockPegar()) return;
+      enviando = true; renderizar(true);
+      try {
+        var lista = (await F.listar()).filter(function (i) { return i.estado === 'aguardando'; });
+        for (var n = 0; n < lista.length; n++) {
+          var item = lista[n];
+          try {
+            var res = await GAR.enviarItem(item, { silencioso: true });
+            // as fotos que subiram ficam marcadas, mesmo se o registro for recusado ou a rede cair depois
+            if (res.r.ok) { await remover(item.id); ultimoAviso = 'Registro de ' + (item.prefixo || 'viatura') + ' enviado.'; }
+            else { item.estado = 'recusado'; item.erro = res.r.erro; item.confirmarOdometro = !!res.r.confirmarOdometro; await salvar(item); }
+          } catch (e) { item.tentativas = (item.tentativas || 0) + 1; await salvar(item); break; } // sem rede: tenta de novo depois
+        }
+      } finally { enviando = false; lockSoltar(); renderizar(); agendar(); }
+    };
+
+    F.descartar = function (id) { return remover(id).then(function () { renderizar(); }); };
+    F.confirmarEEnviar = function (id) {
+      return F.listar().then(function (l) {
+        var it = l.filter(function (x) { return x.id === id; })[0]; if (!it) return;
+        it.payload.confirmarOdometro = true; it.estado = 'aguardando'; it.erro = '';
+        return salvar(it).then(function () { return F.enviarPendentes(true); });
+      });
+    };
+
+    /* faixa no topo da página (criada sob demanda) */
+    function faixa() {
+      var f = document.getElementById('filaBanner');
+      if (f) return f;
+      f = document.createElement('div'); f.id = 'filaBanner'; f.className = 'fila-banner'; f.setAttribute('role', 'status');
+      document.body.insertBefore(f, document.body.firstChild ? document.body.children[1] || null : null);
+      f.addEventListener('click', function (e) {
+        var b = e.target.closest ? e.target.closest('[data-fila]') : null; if (!b) return;
+        var a = b.getAttribute('data-fila'), id = b.getAttribute('data-id');
+        if (a === 'enviar') F.enviarPendentes(true);
+        else if (a === 'descartar') { if (w.confirm('Descartar este registro? Ele NÃO será enviado.')) F.descartar(id); }
+        else if (a === 'confirmar') F.confirmarEEnviar(id);
+      });
+      return f;
+    }
+    function renderizar(trabalhando) {
+      F.listar().then(function (lista) {
+        var f = faixa();
+        if (!lista.length) {
+          if (ultimoAviso) { f.className = 'fila-banner ok on'; f.innerHTML = GAR.ico('check-circle') + ' ' + GAR.esc(ultimoAviso); setTimeout(function () { ultimoAviso = ''; if (!enviando) f.className = 'fila-banner'; }, 6000); }
+          else f.className = 'fila-banner';
+          return;
+        }
+        var h = '';
+        lista.forEach(function (i) {
+          var nome = (i.tipo === 'saida' ? 'Saída' : 'Entrada') + (i.prefixo ? ' — ' + i.prefixo : '');
+          if (i.estado === 'recusado') {
+            h += '<div class="fila-item err"><div>' + GAR.ico('alert') + ' <strong>' + GAR.esc(nome) + '</strong> não foi aceito: ' + GAR.esc(i.erro) + '</div><div class="fila-acoes">' +
+              (i.confirmarOdometro ? '<button type="button" data-fila="confirmar" data-id="' + GAR.esc(i.id) + '">Confirmar odômetro e enviar</button>' : '') +
+              '<button type="button" data-fila="descartar" data-id="' + GAR.esc(i.id) + '">Descartar</button></div></div>';
+          } else {
+            h += '<div class="fila-item"><div>' + GAR.ico(trabalhando ? 'refresh' : 'cloud-off') + ' <strong>' + GAR.esc(nome) + '</strong> — ' +
+              (trabalhando ? 'enviando...' : 'aguardando sinal para enviar') + '</div><div class="fila-acoes">' +
+              (trabalhando ? '' : '<button type="button" data-fila="enviar">Enviar agora</button>') + '</div></div>';
+          }
+        });
+        f.className = 'fila-banner on'; f.innerHTML = h;
+      });
+    }
+    function agendar() {
+      F.listar().then(function (l) {
+        var pend = l.some(function (i) { return i.estado === 'aguardando'; });
+        if (pend && !timer) timer = setInterval(function () { F.enviarPendentes(false); }, 45000);
+        if (!pend && timer) { clearInterval(timer); timer = null; }
+      });
+    }
+
+    F.iniciar = function () {
+      renderizar(); agendar();
+      w.addEventListener('online', function () { F.enviarPendentes(false); });
+      document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') F.enviarPendentes(false); });
+      setTimeout(function () { F.enviarPendentes(false); }, 1500);
+    };
+    return F;
+  })();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { GAR.fila.iniciar(); });
+  else GAR.fila.iniciar();
 
   /* ---------- Limpa marcação de erro ao digitar ---------- */
   function limparMarca(e) {
