@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Garageiro — 9º BPM</title>
+<title>Sistema de Controle de Viaturas — 9º BPM</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -133,6 +133,19 @@ textarea.pd-inp{resize:vertical;min-height:65px}
 .hdr-logo{width:38px;height:38px;border-radius:50%;flex-shrink:0;background:#fff var(--logo) center/80% no-repeat;border:2px solid var(--ac-bd);box-shadow:0 0 0 2px rgba(26,115,232,.18),0 2px 8px rgba(0,0,0,.45)}
 .hdr-title{font-family:var(--cond);font-size:16px;font-weight:800;letter-spacing:.5px}
 .hdr-sub{font-size:10px;color:var(--txt2)}
+/* nome do sistema em destaque */
+.hdr-sys{font-family:var(--cond);font-size:clamp(12px,3.6vw,19px);font-weight:800;letter-spacing:1px;line-height:1.1;text-transform:uppercase;color:var(--txt);text-shadow:0 0 14px rgba(26,115,232,.45)}
+.hdr-sys-sub{display:flex;align-items:center;gap:6px;margin-top:3px;font-size:11px;color:var(--txt2)}
+.hdr-sys-sub .hdr-title{font-size:12px;font-weight:700;color:var(--ac);letter-spacing:.6px;text-transform:uppercase}
+.hdr-left>div:last-child{min-width:0}
+@media(max-width:600px){
+  .hdr{padding:0 10px;gap:8px}
+  .hdr-left{gap:8px;flex:1;min-width:0}
+  .hdr-sys{font-size:12px;letter-spacing:.4px}
+  .hdr-sys-sub{font-size:10px;margin-top:2px}.hdr-sys-sub .hdr-title{font-size:10.5px}
+  #hdrBadge{display:none}
+  #onlineBadge{padding:5px 8px}#onlineBadge span:last-child{display:none}
+}
 .hdr-right{display:flex;align-items:center;gap:9px}
 .hdr-badge{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--bd);border-radius:7px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--txt)}
 
@@ -353,7 +366,7 @@ tr:hover td{background:rgba(245,166,35,.025)}
   <div class="sb-head">
     <div class="sb-brand">
       <div class="hdr-logo" role="img" aria-label="Brasão do 9º BPM"></div>
-      <div class="sb-brand-name"><strong>9º BPM</strong><span>SISTEMA GARAGEIRO</span></div>
+      <div class="sb-brand-name"><strong>9º BPM</strong><span>SISTEMA DE CONTROLE DE VIATURAS</span></div>
     </div>
     <button class="sb-close" onclick="closeSidebar()">✕</button>
   </div>
@@ -426,8 +439,8 @@ tr:hover td{background:rgba(245,166,35,.025)}
     </button>
     <div class="hdr-logo" role="img" aria-label="Brasão do 9º BPM"></div>
     <div>
-      <div class="hdr-title" id="hdrTitle">Viaturas</div>
-      <div class="hdr-sub">9º BPM — Sistema Garageiro</div>
+      <div class="hdr-sys">Sistema de Controle de Viaturas</div>
+      <div class="hdr-sys-sub"><span>9º BPM</span><span>·</span><span class="hdr-title" id="hdrTitle">Viaturas</span></div>
     </div>
   </div>
   <div class="hdr-right">
