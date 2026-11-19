@@ -1004,8 +1004,7 @@ function _prepararUI() {
   _uiPronta = true;
   definirDatasDefault();
   monitorarSessao();
-  atualizarOnline();
-  setInterval(atualizarOnline, 60000);
+  iniciarPresenca();
   // painel "vivo": dashboard (vem do cache do servidor, custa pouco) e feed de movimentações
   setInterval(function(){ if (!document.hidden) init(); }, 60000);
   setInterval(function(){ if (!document.hidden) carregarUltimasMovimentacoes(); }, 30000);
@@ -1071,8 +1070,7 @@ function _iniciar() {
   init().then(function(){ carregarUltimasMovimentacoes(); });
   carregarManut();
   monitorarSessao();
-  atualizarOnline();
-  setInterval(atualizarOnline, 60000);
+  iniciarPresenca();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1127,6 +1125,7 @@ document.addEventListener('click',function(e){
 async function fazerLogout() {
   if (!confirm('Deseja sair do sistema?')) return;
   loading('Encerrando...');
+  try { await atualizarOnline(true); } catch(e) {}
   try { await api({tipo:'garageiroLogout',token:_token}); } catch(e) {}
   sessionStorage.clear(); unload();
   window.location.href='garageiro-login.html';
@@ -1135,30 +1134,41 @@ async function fazerLogout() {
 // ═══════════════════════════════════════════════════════
 //  USUÁRIOS ONLINE
 // ═══════════════════════════════════════════════════════
-async function atualizarOnline() {
+var _presOn = false;
+var PRES_INTERVALO = 45000; // batimento a cada 45 s (o servidor considera offline após ~2 min sem bater)
+
+// "Online" = painel aberto e visível. O servidor conta só quem bateu recentemente (relógio do servidor).
+async function atualizarOnline(sair) {
+  if (!_token) return;
   try {
-    var r = await api({ tipo: 'usuariosListar', token: _token });
-    if (!r || !r.sucesso || !r.dados) return;
-    var limite = new Date(Date.now() - 30 * 60 * 1000);
-    var online = r.dados.filter(function(u) {
-      if (!u.ultimoAcesso || u.ultimoAcesso === '—' || u.ultimoAcesso === '--') return false;
-      var partes = String(u.ultimoAcesso).match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})/);
-      if (!partes) return false;
-      var dt = new Date(partes[3], partes[2]-1, partes[1], partes[4], partes[5]);
-      return dt >= limite;
-    });
-    var count = online.length;
-    if (count === 0) count = 1;
+    var r = await api({ tipo: 'garageiroPresenca', token: _token, sair: sair === true });
+    if (sair === true) return;
+    if (!r || !r.sucesso) throw new Error('sem resposta');
     var el = document.getElementById('onlineCount');
-    if (el) {
-      el.textContent = count;
-      var badge = document.getElementById('onlineBadge');
-      if (badge) {
-        var nomes = online.map(function(u){ return u.nomeGuerra || u.matricula; }).join(', ');
-        badge.title = count === 1 ? 'Você está online' : count + ' usuários online: ' + (nomes || 'você e outros');
+    var badge = document.getElementById('onlineBadge');
+    if (el) { el.textContent = r.online; el.style.opacity = ''; }
+    if (badge) badge.title = r.online + (r.online === 1 ? ' usuário online' : ' usuários online') + (r.nomes && r.nomes.length ? ': ' + r.nomes.join(', ') : '');
+  } catch (e) {
+    var el2 = document.getElementById('onlineCount');
+    if (el2) el2.style.opacity = '.45'; // sem conexão: o número mostrado pode estar desatualizado
+  }
+}
+
+function iniciarPresenca() {
+  if (_presOn) return; _presOn = true;
+  atualizarOnline();
+  setInterval(function () { if (!document.hidden) atualizarOnline(); }, PRES_INTERVALO);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) atualizarOnline(); });
+  // fechar a página: avisa o servidor na hora (sendBeacon sobrevive ao fechamento)
+  window.addEventListener('pagehide', function () {
+    if (!_token) return;
+    try {
+      var corpo = JSON.stringify({ tipo: 'garageiroPresenca', token: _token, sair: true });
+      if (!(navigator.sendBeacon && navigator.sendBeacon(API_URL, new Blob([corpo], { type: 'text/plain' })))) {
+        fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: corpo, keepalive: true });
       }
-    }
-  } catch(e) {}
+    } catch (e) {}
+  });
 }
 
 function monitorarSessao() {
