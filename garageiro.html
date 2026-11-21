@@ -1820,6 +1820,25 @@ async function sincronizarPastas() {
 }
 
 // ═══════════════════════════════════════════════════════
+//  DOWNLOAD DE PDF (o servidor devolve o PDF em base64)
+// ═══════════════════════════════════════════════════════
+function baixarRelatorioPDF(r) {
+  if (!r || !r.sucesso) { toast((r && (r.mensagem || r.erro)) || 'Falha ao gerar o PDF.', 'err'); return false; }
+  if (r.base64) {
+    var bin = atob(r.base64), bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    var url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+    var a = document.createElement('a');
+    a.href = url; a.download = r.nome || 'relatorio.pdf';
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 1500);
+    return true;
+  }
+  if (r.url) { window.open(r.url, '_blank'); return true; }
+  return false;
+}
+
+// ═══════════════════════════════════════════════════════
 //  RELATÓRIOS
 // ═══════════════════════════════════════════════════════
 async function admRel(tipo){
@@ -1843,7 +1862,7 @@ async function admRel(tipo){
     try {
       var rC = await api({tipo:'gerarPDFOficinas', token:_token, filtro:'COBRANCA', limiteHoras:lNum});
       unload();
-      if(rC&&rC.sucesso&&rC.url){toast('Relatório gerado!','ok');setTimeout(function(){window.open(rC.url,'_blank');},600);}
+      if(rC&&rC.sucesso&&(rC.base64||rC.url)){toast('Relatório gerado!','ok');baixarRelatorioPDF(rC);}
       else toast((rC&&rC.mensagem)||'Nenhuma viatura excedeu o limite.','info');
     } catch(e){unload();toast('Erro: '+e.message,'err');}
     return;
@@ -1859,7 +1878,7 @@ async function admRel(tipo){
       toast(ok ? (r.mensagem||'Operação concluída!') : (r.mensagem||'Erro.'), ok?'ok':'err');
       return;
     }
-    if(r&&r.sucesso&&r.url){toast('PDF gerado!','ok');setTimeout(function(){window.open(r.url,'_blank');},600);}
+    if(r&&r.sucesso&&(r.base64||r.url)){toast('PDF gerado!','ok');baixarRelatorioPDF(r);}
     else toast((r&&r.mensagem)||'Erro ao gerar PDF.','err');
   } catch(e){unload();toast('Erro: '+e.message,'err');}
 }
@@ -1868,7 +1887,7 @@ async function gerarRelPersonalizado(){
   var mes=parseInt(document.getElementById('relMes').value), ano=parseInt(document.getElementById('relAno').value);
   if(!mes||!ano){toast('Informe mês e ano.','err');return;}
   fechar('ovRelMes'); loading('Gerando PDF...');
-  try { var r=await api({tipo:'gerarRelatorioMensalPersonalizadoPDF',token:_token,mes,ano}); unload(); if(r&&r.sucesso&&r.url){toast('PDF gerado!','ok');setTimeout(function(){window.open(r.url,'_blank');},600);}else toast((r&&r.mensagem)||'Erro.','err'); }
+  try { var r=await api({tipo:'gerarRelatorioMensalPersonalizadoPDF',token:_token,mes,ano}); unload(); if(r&&r.sucesso&&(r.base64||r.url)){toast('PDF gerado!','ok');baixarRelatorioPDF(r);}else toast((r&&r.mensagem)||'Erro.','err'); }
   catch(e){unload();toast('Erro: '+e.message,'err');}
 }
 
@@ -2670,9 +2689,9 @@ async function admPDFIndice() {
   try {
     var r = await api({tipo:'gerarPDFIndiceViaturas', token:_token});
     unload();
-    if (r && r.sucesso && r.url) {
-      toast('✅ ' + r.mensagem, 'ok');
-      setTimeout(function(){ window.open(r.url, '_blank'); }, 600);
+    if (r && r.sucesso && (r.base64 || r.url)) {
+      toast('✅ ' + (r.mensagem||'PDF gerado!'), 'ok');
+      baixarRelatorioPDF(r);
     } else {
       toast((r && r.mensagem) || 'Erro ao gerar PDF.', 'err');
     }
