@@ -913,9 +913,11 @@ var _todasViaturas=[];
 // ═══════════════════════════════════════════════════════
 //  CHAMADA À API
 // ═══════════════════════════════════════════════════════
-async function api(payload) {
+// timeoutMs: padrão 20 s. Relatórios PDF e manutenção do índice usam TIMEOUT_PDF (mais longo).
+var TIMEOUT_PDF = 120000;
+async function api(payload, timeoutMs) {
   var ctrl = new AbortController();
-  var timer = setTimeout(function(){ctrl.abort();}, 20000);
+  var timer = setTimeout(function(){ctrl.abort();}, timeoutMs || 20000);
   try {
     var resp = await fetch(API_URL, {
       method:'POST', headers:{'Content-Type':'text/plain'},
@@ -1860,7 +1862,7 @@ async function admRel(tipo){
     var lNum = parseInt(limite)||240;
     loading('Gerando relatório de cobrança...');
     try {
-      var rC = await api({tipo:'gerarPDFOficinas', token:_token, filtro:'COBRANCA', limiteHoras:lNum});
+      var rC = await api({tipo:'gerarPDFOficinas', token:_token, filtro:'COBRANCA', limiteHoras:lNum}, TIMEOUT_PDF);
       unload();
       if(rC&&rC.sucesso&&(rC.base64||rC.url)){toast('Relatório gerado!','ok');baixarRelatorioPDF(rC);}
       else toast((rC&&rC.mensagem)||'Nenhuma viatura excedeu o limite.','info');
@@ -1871,7 +1873,7 @@ async function admRel(tipo){
   try {
     var payload = {tipo:acao, token:_token};
     if (acao==='gerarPDFOficinas') payload.filtro = 'TODOS';
-    var r = await api(payload);
+    var r = await api(payload, TIMEOUT_PDF);
     unload();
     if (tipo==='atualizarOleo'||tipo==='indice'||tipo==='arquivar') {
       var ok = r && r.sucesso !== false;
@@ -1887,7 +1889,7 @@ async function gerarRelPersonalizado(){
   var mes=parseInt(document.getElementById('relMes').value), ano=parseInt(document.getElementById('relAno').value);
   if(!mes||!ano){toast('Informe mês e ano.','err');return;}
   fechar('ovRelMes'); loading('Gerando PDF...');
-  try { var r=await api({tipo:'gerarRelatorioMensalPersonalizadoPDF',token:_token,mes,ano}); unload(); if(r&&r.sucesso&&(r.base64||r.url)){toast('PDF gerado!','ok');baixarRelatorioPDF(r);}else toast((r&&r.mensagem)||'Erro.','err'); }
+  try { var r=await api({tipo:'gerarRelatorioMensalPersonalizadoPDF',token:_token,mes,ano}, TIMEOUT_PDF); unload(); if(r&&r.sucesso&&(r.base64||r.url)){toast('PDF gerado!','ok');baixarRelatorioPDF(r);}else toast((r&&r.mensagem)||'Erro.','err'); }
   catch(e){unload();toast('Erro: '+e.message,'err');}
 }
 
@@ -2687,7 +2689,7 @@ document.querySelectorAll('.ov').forEach(function(o){ o.addEventListener('click'
 async function admPDFIndice() {
   loading('Atualizando índice e gerando PDF...');
   try {
-    var r = await api({tipo:'gerarPDFIndiceViaturas', token:_token});
+    var r = await api({tipo:'gerarPDFIndiceViaturas', token:_token}, TIMEOUT_PDF);
     unload();
     if (r && r.sucesso && (r.base64 || r.url)) {
       toast('✅ ' + (r.mensagem||'PDF gerado!'), 'ok');
