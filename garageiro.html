@@ -650,6 +650,7 @@ tr:hover td{background:rgba(245,166,35,.025)}
         <button class="adm-btn ap" onclick="admRel('personalizado')"><div class="adm-ico"><i class="fas fa-calendar-alt"></i></div><div><div class="adm-lbl">Relatório Personalizado</div><div class="adm-sub">Escolher mês e ano</div></div></button>
         <button class="adm-btn ap" onclick="admRel('oleo')"><div class="adm-ico"><i class="fas fa-oil-can"></i></div><div><div class="adm-lbl">Relatório de Óleo</div><div class="adm-sub">Status de troca por viatura</div></div></button>
         <button class="adm-btn ap" onclick="admRel('oficinas')"><div class="adm-ico"><i class="fas fa-wrench"></i></div><div><div class="adm-lbl">Relatório de Oficinas</div><div class="adm-sub">Histórico de manutenções externas</div></div></button>
+        <button class="adm-btn ap" onclick="admRel('saldos')"><div class="adm-ico"><i class="fas fa-credit-card"></i></div><div><div class="adm-lbl">Saldo dos Cartões</div><div class="adm-sub">Último saldo informado por viatura</div></div></button>
         <button class="adm-btn ap" onclick="admRel('cobranca')"><div class="adm-ico"><i class="fas fa-file-invoice-dollar"></i></div><div><div class="adm-lbl">Relatório de Cobrança</div><div class="adm-sub">Viaturas que excederam limite</div></div></button>
         <button class="adm-btn ap" onclick="admRel('atualizarOleo')"><div class="adm-ico"><i class="fas fa-sync-alt"></i></div><div><div class="adm-lbl">Atualizar Controle de Óleo</div><div class="adm-sub">Recalcular KM de todas viaturas</div></div></button>
         <button class="adm-btn ap" onclick="admRel('indice')"><div class="adm-ico"><i class="fas fa-list-alt"></i></div><div><div class="adm-lbl">Atualizar Índice de Viaturas</div><div class="adm-sub">Reconstruir índice da frota na planilha</div></div></button>
@@ -1850,6 +1851,7 @@ async function admRel(tipo){
   var acoes = {
     mensal:        'gerarRelatorioMesAtualPDF',
     oleo:          'gerarPDFOleo',
+    saldos:        'gerarRelatorioSaldos',
     oficinas:      'gerarPDFOficinas',
     atualizarOleo: 'atualizarControleOleo',
     indice:        'criarIndicePesquisa',
