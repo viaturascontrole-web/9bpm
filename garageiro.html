@@ -464,6 +464,39 @@ tr:hover td{background:rgba(245,166,35,.025)}
 .sk-card{height:92px;border-radius:10px;border:1px solid var(--bd);background:linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%);background-size:200% 100%;animation:skl 1.2s linear infinite}
 @keyframes skl{to{background-position:-200% 0}}
 @media (prefers-reduced-motion:reduce){.sk-card{animation:none}}
+
+/* ══ RELATÓRIOS — botões de download (somente visual · escopo .rel-*) ══ */
+.adm-btns.rel-grid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.adm-card.rel-card{--rp:#a78bfa;--rpr:167,139,250;position:relative;overflow:hidden;gap:8px;padding:16px;border-radius:14px;background:linear-gradient(180deg,rgba(167,139,250,.06),transparent 55%),var(--bg3)}
+.adm-card.rel-card::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,rgba(167,139,250,.8),transparent);opacity:0;transition:opacity var(--tr)}
+.adm-card.rel-card:hover{border-color:rgba(167,139,250,.55);box-shadow:0 10px 26px rgba(0,0,0,.32),0 0 0 1px rgba(167,139,250,.12)}
+.adm-card.rel-card:hover::before{opacity:1}
+.rel-card .adm-card-desc{margin-bottom:8px}
+
+.rel-act{--rpr:167,139,250;width:100%;min-height:44px;display:flex;align-items:center;gap:10px;padding:5px;border-radius:12px;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:700;letter-spacing:.2px;color:#ede9fe;background:linear-gradient(135deg,rgba(124,58,237,.34),rgba(99,102,241,.2));border:1px solid rgba(167,139,250,.4);transition:background var(--tr),border-color var(--tr),box-shadow var(--tr),transform var(--tr),color var(--tr);-webkit-tap-highlight-color:transparent}
+.rel-act-ico{width:34px;height:34px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;color:#c4b5fd;background:rgba(167,139,250,.18);border:1px solid rgba(167,139,250,.3)}
+.rel-act-lbl{flex:1;min-width:0;text-align:left;line-height:1.15}
+.rel-act-dl{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ddd6fe;background:rgba(255,255,255,.07);transition:background var(--tr),color var(--tr),transform var(--tr)}
+.rel-act:hover{background:linear-gradient(135deg,rgba(124,58,237,.55),rgba(99,102,241,.34));border-color:rgba(167,139,250,.8);box-shadow:0 6px 18px rgba(124,58,237,.28);color:#fff}
+.rel-act:hover .rel-act-dl{background:rgba(167,139,250,.92);color:#1e1b4b;transform:translateY(2px)}
+.rel-act:active{transform:scale(.985)}
+.rel-act:focus-visible{outline:2px solid #c4b5fd;outline-offset:2px}
+
+/* estados de feedback (aplicados por script isolado, sem tocar na lógica existente) */
+.rel-act.is-busy{pointer-events:none;cursor:progress;border-color:rgba(167,139,250,.65)}
+.rel-act.is-busy .rel-act-dl i,.rel-act.is-done .rel-act-dl i,.rel-act.is-fail .rel-act-dl i{display:none}
+.rel-act.is-busy .rel-act-dl::after{content:"";width:14px;height:14px;border:2px solid rgba(255,255,255,.28);border-top-color:#fff;border-radius:50%;animation:relSpin .7s linear infinite}
+.rel-act.is-done{pointer-events:none;color:#bbf7d0;border-color:rgba(74,222,128,.55);background:linear-gradient(135deg,rgba(22,163,74,.34),rgba(74,222,128,.14))}
+.rel-act.is-done .rel-act-ico{color:#86efac;background:rgba(74,222,128,.16);border-color:rgba(74,222,128,.35)}
+.rel-act.is-done .rel-act-dl{background:rgba(74,222,128,.9);color:#052e16}
+.rel-act.is-done .rel-act-dl::after{content:"\f00c";font-family:"Font Awesome 6 Free";font-weight:900}
+.rel-act.is-fail{color:#fecaca;border-color:rgba(239,68,68,.55);background:linear-gradient(135deg,rgba(220,38,38,.3),rgba(239,68,68,.12))}
+.rel-act.is-fail .rel-act-ico{color:#fca5a5;background:rgba(239,68,68,.16);border-color:rgba(239,68,68,.35)}
+.rel-act.is-fail .rel-act-dl{background:rgba(239,68,68,.9);color:#450a0a}
+.rel-act.is-fail .rel-act-dl::after{content:"\f071";font-family:"Font Awesome 6 Free";font-weight:900}
+@keyframes relSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.rel-act,.rel-act-dl,.adm-card.rel-card{transition:none}.rel-act.is-busy .rel-act-dl::after{animation-duration:1.8s}}
+@media(max-width:520px){.adm-btns.rel-grid{grid-template-columns:1fr;padding:12px;gap:10px}.rel-act{min-height:48px}}
 </style>
 </head>
 <body>
@@ -740,7 +773,7 @@ tr:hover td{background:rgba(245,166,35,.025)}
   <div class="adm-page">
     <div class="adm-grupo"><div class="adm-grupo-hdr v"><i class="fas fa-car"></i> Cadastros</div><div class="adm-btns"><div class="adm-card" style="--c:#3b82f6"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-car"></i></div><div class="adm-card-tit">Viaturas</div></div><div class="adm-card-desc">Adicionar, editar e excluir veículos da frota.</div><button class="adm-act" onclick="abrirModalViaturas()"><i class="fas fa-pen-to-square"></i> Abrir cadastro</button></div><div class="adm-card" style="--c:#06b6d4"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-folder-open"></i></div><div class="adm-card-tit">Pastas de fotos</div></div><div class="adm-card-desc">Cria no Drive as pastas das viaturas novas.</div><button class="adm-act" onclick="sincronizarPastas()"><i class="fas fa-rotate"></i> Sincronizar</button></div><div class="adm-card" style="--c:#14b8a6"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-map-marker-alt"></i></div><div class="adm-card-tit">Setores</div></div><div class="adm-card-desc">Gerenciar os setores de atuação.</div><button class="adm-act" onclick="abrirSetores()"><i class="fas fa-pen-to-square"></i> Abrir setores</button></div></div></div>
     <div class="adm-grupo"><div class="adm-grupo-hdr o"><i class="fas fa-oil-can"></i> Manutenção</div><div class="adm-btns"><div class="adm-card" style="--c:#f59e0b"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-tachometer-alt"></i></div><div class="adm-card-tit">Controle de óleo</div></div><div class="adm-card-desc">Definir KM atual e KM da próxima troca.</div><button class="adm-act" onclick="abrirModalOleo()"><i class="fas fa-gauge-high"></i> Gerenciar óleo</button></div><div class="adm-card" style="--c:#fb923c"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-tools"></i></div><div class="adm-card-tit">Oficinas</div></div><div class="adm-card-desc">Registrar entrada, retorno e histórico.</div><button class="adm-act" onclick="abrirModalOficinas()"><i class="fas fa-wrench"></i> Gerenciar oficinas</button></div><div class="adm-card" style="--c:#94a3b8"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-sliders-h"></i></div><div class="adm-card-tit">Listas de oficinas</div></div><div class="adm-card-desc">Editar oficinas e motivos disponíveis.</div><button class="adm-act" onclick="abrirCfgOf()"><i class="fas fa-sliders"></i> Configurar</button></div></div></div>
-    <div class="adm-grupo"><div class="adm-grupo-hdr p"><i class="fas fa-chart-bar"></i> Relatórios</div><div class="adm-btns"><div class="adm-card" style="--c:#7c3aed"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-file-pdf"></i></div><div class="adm-card-tit">Relatório mensal</div></div><div class="adm-card-desc">Relatório completo do mês atual.</div><button class="adm-act" onclick="admRel('mensal')"><i class="fas fa-download"></i> Baixar PDF</button></div><div class="adm-card" style="--c:#6366f1"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-calendar-alt"></i></div><div class="adm-card-tit">Relatório personalizado</div></div><div class="adm-card-desc">Escolha o mês e o ano desejados.</div><button class="adm-act" onclick="admRel('personalizado')"><i class="fas fa-download"></i> Escolher e baixar PDF</button></div><div class="adm-card" style="--c:#f59e0b"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-oil-can"></i></div><div class="adm-card-tit">Relatório de óleo</div></div><div class="adm-card-desc">Status de troca de óleo por viatura.</div><button class="adm-act" onclick="admRel('oleo')"><i class="fas fa-download"></i> Baixar PDF</button></div><div class="adm-card" style="--c:#fb923c"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-wrench"></i></div><div class="adm-card-tit">Relatório de oficinas</div></div><div class="adm-card-desc">Histórico de manutenções externas.</div><button class="adm-act" onclick="admRel('oficinas')"><i class="fas fa-download"></i> Baixar PDF</button></div><div class="adm-card" style="--c:#22c55e"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-credit-card"></i></div><div class="adm-card-tit">Saldo dos cartões</div></div><div class="adm-card-desc">Último saldo informado por viatura.</div><button class="adm-act" onclick="admRel('saldos')"><i class="fas fa-download"></i> Baixar PDF</button></div><div class="adm-card" style="--c:#f43f5e"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-file-invoice-dollar"></i></div><div class="adm-card-tit">Relatório de cobrança</div></div><div class="adm-card-desc">Viaturas que excederam o limite na oficina.</div><button class="adm-act" onclick="admRel('cobranca')"><i class="fas fa-download"></i> Baixar PDF</button></div><div class="adm-card" style="--c:#16a36a"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-table-list"></i></div><div class="adm-card-tit">Índice de viaturas</div></div><div class="adm-card-desc">Exportação do índice completo da frota.</div><button class="adm-act" onclick="admRel('pdf-indice')"><i class="fas fa-download"></i> Baixar PDF</button></div></div></div>
+    <div class="adm-grupo"><div class="adm-grupo-hdr p"><i class="fas fa-chart-bar"></i> Relatórios</div><div class="adm-btns rel-grid"><div class="adm-card rel-card" style="--c:#7c3aed"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-file-pdf"></i></div><div class="adm-card-tit">Relatório mensal</div></div><div class="adm-card-desc">Relatório completo do mês atual.</div><button class="rel-act" type="button" data-fb="1" onclick="admRel('mensal')"><span class="rel-act-ico"><i class="fas fa-file-pdf"></i></span><span class="rel-act-lbl">Baixar PDF</span><span class="rel-act-dl"><i class="fas fa-download"></i></span></button></div><div class="adm-card rel-card" style="--c:#6366f1"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-calendar-alt"></i></div><div class="adm-card-tit">Relatório personalizado</div></div><div class="adm-card-desc">Escolha o mês e o ano desejados.</div><button class="rel-act" type="button" onclick="admRel('personalizado')"><span class="rel-act-ico"><i class="fas fa-file-pdf"></i></span><span class="rel-act-lbl">Escolher e baixar PDF</span><span class="rel-act-dl"><i class="fas fa-download"></i></span></button></div><div class="adm-card rel-card" style="--c:#f59e0b"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-oil-can"></i></div><div class="adm-card-tit">Relatório de óleo</div></div><div class="adm-card-desc">Status de troca de óleo por viatura.</div><button class="rel-act" type="button" data-fb="1" onclick="admRel('oleo')"><span class="rel-act-ico"><i class="fas fa-file-pdf"></i></span><span class="rel-act-lbl">Baixar PDF</span><span class="rel-act-dl"><i class="fas fa-download"></i></span></button></div><div class="adm-card rel-card" style="--c:#fb923c"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-wrench"></i></div><div class="adm-card-tit">Relatório de oficinas</div></div><div class="adm-card-desc">Histórico de manutenções externas.</div><button class="rel-act" type="button" data-fb="1" onclick="admRel('oficinas')"><span class="rel-act-ico"><i class="fas fa-file-pdf"></i></span><span class="rel-act-lbl">Baixar PDF</span><span class="rel-act-dl"><i class="fas fa-download"></i></span></button></div><div class="adm-card rel-card" style="--c:#22c55e"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-credit-card"></i></div><div class="adm-card-tit">Saldo dos cartões</div></div><div class="adm-card-desc">Último saldo informado por viatura.</div><button class="rel-act" type="button" data-fb="1" onclick="admRel('saldos')"><span class="rel-act-ico"><i class="fas fa-file-pdf"></i></span><span class="rel-act-lbl">Baixar PDF</span><span class="rel-act-dl"><i class="fas fa-download"></i></span></button></div><div class="adm-card rel-card" style="--c:#f43f5e"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-file-invoice-dollar"></i></div><div class="adm-card-tit">Relatório de cobrança</div></div><div class="adm-card-desc">Viaturas que excederam o limite na oficina.</div><button class="rel-act" type="button" data-fb="1" onclick="admRel('cobranca')"><span class="rel-act-ico"><i class="fas fa-file-pdf"></i></span><span class="rel-act-lbl">Baixar PDF</span><span class="rel-act-dl"><i class="fas fa-download"></i></span></button></div><div class="adm-card rel-card" style="--c:#16a36a"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-table-list"></i></div><div class="adm-card-tit">Índice de viaturas</div></div><div class="adm-card-desc">Exportação do índice completo da frota.</div><button class="rel-act" type="button" data-fb="1" onclick="admRel('pdf-indice')"><span class="rel-act-ico"><i class="fas fa-file-pdf"></i></span><span class="rel-act-lbl">Baixar PDF</span><span class="rel-act-dl"><i class="fas fa-download"></i></span></button></div></div></div>
     <div class="adm-grupo"><div class="adm-grupo-hdr o"><i class="fas fa-gears"></i> Rotinas do sistema</div><div class="adm-btns"><div class="adm-card" style="--c:#0ea5e9"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-sync-alt"></i></div><div class="adm-card-tit">Controle de óleo</div></div><div class="adm-card-desc">Recalcula o KM de todas as viaturas.</div><button class="adm-act" onclick="admRel('atualizarOleo')"><i class="fas fa-calculator"></i> Recalcular</button></div><div class="adm-card" style="--c:#10b981"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-list-alt"></i></div><div class="adm-card-tit">Índice de viaturas</div></div><div class="adm-card-desc">Reconstrói o índice da frota na planilha.</div><button class="adm-act" onclick="admRel('indice')"><i class="fas fa-hammer"></i> Reconstruir</button></div><div class="adm-card" style="--c:#ef4444"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-archive"></i></div><div class="adm-card-tit">Registros antigos</div></div><div class="adm-card-desc">Move para o arquivo registros com mais de 90 dias.</div><button class="adm-act" onclick="admRel('arquivar')"><i class="fas fa-box-archive"></i> Arquivar</button></div></div></div>
     <div class="adm-grupo"><div class="adm-grupo-hdr y"><i class="fas fa-users-cog"></i> Usuários</div><div class="adm-btns"><div class="adm-card" style="--c:#22c55e"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-user-plus"></i></div><div class="adm-card-tit">Novo usuário</div></div><div class="adm-card-desc">Cadastrar um novo acesso ao sistema.</div><button class="adm-act" onclick="abrirNovoUsr()"><i class="fas fa-plus"></i> Cadastrar</button></div><div class="adm-card" style="--c:#94a3b8"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-sync-alt"></i></div><div class="adm-card-tit">Lista de usuários</div></div><div class="adm-card-desc">Recarregar a tabela de usuários abaixo.</div><button class="adm-act" onclick="carregarUsuarios()"><i class="fas fa-rotate"></i> Atualizar lista</button></div></div>
       <div class="tw-sm"><table><thead><tr><th>Matrícula</th><th>Nome de Guerra</th><th>Perfil</th><th style="text-align:center">Status</th><th>Último Acesso</th><th style="text-align:center">Ações</th></tr></thead><tbody id="tbUsr"><tr><td colspan="6" class="erow">Carregando...</td></tr></tbody></table></div>
@@ -2810,6 +2843,56 @@ async function admPDFIndice() {
     }
   } catch(e) { unload(); toast('Erro: ' + e.message, 'err'); }
 }
+</script>
+<script>
+/* Feedback visual dos botões de RELATÓRIOS — camada independente.
+   Não redefine nem chama admRel/loading/unload/toast: apenas observa o overlay #lov e os toasts. */
+(function(){
+  var lov = document.getElementById('lov');
+  if (!lov || !window.MutationObserver) return;
+  var cur = null, seen = false, toastType = null, tFallback = null, tEnd = null;
+
+  function setState(b, st, txt){
+    var l = b.querySelector('.rel-act-lbl');
+    if (l && !l.dataset.o) l.dataset.o = l.textContent;
+    clearTimeout(b._relT);
+    b.classList.remove('is-busy','is-done','is-fail');
+    if (st) b.classList.add(st);
+    if (l) l.textContent = txt || l.dataset.o;
+    b.setAttribute('aria-busy', st === 'is-busy' ? 'true' : 'false');
+  }
+  function finish(){
+    var b = cur; if (!b) return;
+    clearTimeout(tFallback); clearTimeout(tEnd);
+    var t = toastType; cur = null; seen = false; toastType = null;
+    if (t === 'ok')       { setState(b, 'is-done', 'Concluído');            b._relT = setTimeout(function(){ setState(b, null); }, 2200); }
+    else if (t === 'err') { setState(b, 'is-fail', 'Falhou — tente de novo'); b._relT = setTimeout(function(){ setState(b, null); }, 3000); }
+    else                  { setState(b, null); }
+  }
+
+  document.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('.rel-act[data-fb="1"]');
+    if (!b || cur) return;
+    cur = b; seen = false; toastType = null;
+    setState(b, 'is-busy', 'Gerando…');
+    clearTimeout(tFallback);
+    tFallback = setTimeout(function(){ if (cur && !seen) finish(); }, 1500);   // ação cancelada / sem overlay
+  }, true);
+
+  new MutationObserver(function(){
+    if (!cur) return;
+    if (lov.classList.contains('on')) { seen = true; clearTimeout(tEnd); }
+    else if (seen) { clearTimeout(tEnd); tEnd = setTimeout(finish, 350); }
+  }).observe(lov, { attributes:true, attributeFilter:['class'] });
+
+  new MutationObserver(function(muts){
+    if (!cur) return;
+    muts.forEach(function(m){ m.addedNodes.forEach(function(n){
+      if (n.classList && n.classList.contains('toast-el'))
+        toastType = n.classList.contains('ok') ? 'ok' : n.classList.contains('err') ? 'err' : 'info';
+    }); });
+  }).observe(document.body, { childList:true });
+})();
 </script>
 </body>
 </html>
