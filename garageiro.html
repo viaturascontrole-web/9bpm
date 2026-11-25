@@ -264,23 +264,25 @@ tr:hover td{background:rgba(245,166,35,.025)}
 .scp-lbl{font-size:9px;color:var(--txt);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
 
 /* ══ ADMIN ════════════════════════════════════════════ */
-.adm-page{display:flex;flex-direction:column;gap:14px}
+.adm-page{display:flex;flex-direction:column;gap:16px}
 .adm-grupo{background:var(--bg2);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
 .adm-grupo-hdr{padding:11px 16px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--bd);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
 .adm-grupo-hdr.v{background:var(--ac-dim);color:var(--ac)}
 .adm-grupo-hdr.o{background:rgba(251,146,60,.08);color:#fb923c}
-.adm-grupo-hdr.b{background:rgba(96,165,250,.08);color:#60a5fa}
 .adm-grupo-hdr.p{background:rgba(192,132,252,.08);color:#c084fc}
-.adm-grupo-hdr.y{background:rgba(245,166,35,.08);color:#92400e}
-.adm-btns{padding:12px 14px;display:flex;flex-wrap:wrap;gap:9px}
-.adm-btn{display:flex;align-items:center;gap:9px;padding:10px 14px;border-radius:8px;border:1px solid var(--bd);background:var(--bg3);color:var(--txt);cursor:pointer;font-size:12px;font-weight:600;font-family:var(--sans);transition:all .2s;text-align:left}
-.adm-btn:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.3)}
-.adm-ico{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.adm-lbl{font-size:12px;font-weight:700;line-height:1.2}
-.adm-sub{font-size:10px;color:var(--txt2);margin-top:2px;font-weight:400}
-.adm-btn.av .adm-ico{background:var(--ac-dim);color:var(--ac)}.adm-btn.ao .adm-ico{background:rgba(251,146,60,.12);color:#fb923c}
-.adm-btn.ab .adm-ico{background:rgba(96,165,250,.12);color:#60a5fa}.adm-btn.ap .adm-ico{background:rgba(192,132,252,.12);color:#c084fc}
-.adm-btn.ay .adm-ico{background:rgba(146,64,14,.08);color:#92400e}
+.adm-grupo-hdr.y{background:rgba(245,166,35,.08);color:#d97706}
+.adm-btns{padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.adm-card{--c:#3b82f6;background:var(--bg3);border:1px solid var(--bd);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px;transition:border-color var(--tr),transform var(--tr),box-shadow var(--tr)}
+.adm-card:hover{border-color:var(--c);transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.28)}
+.adm-card-hd{display:flex;align-items:center;gap:10px}
+.adm-card-ico{width:34px;height:34px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--c);background:rgba(255,255,255,.06);background:color-mix(in srgb,var(--c) 18%,transparent);border:1px solid color-mix(in srgb,var(--c) 35%,transparent)}
+.adm-card-tit{font-family:var(--cond);font-size:16px;font-weight:700;letter-spacing:.3px;line-height:1.15;color:var(--txt)}
+.adm-card-desc{font-size:12px;color:var(--txt2);line-height:1.35;flex:1;min-height:32px;margin-bottom:6px}
+.adm-act{width:100%;padding:10px 12px;border:none;border-radius:9px;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--c);background:color-mix(in srgb,var(--c) 62%,#0d1117);transition:filter var(--tr),background var(--tr)}
+.adm-act:hover{filter:brightness(1.18)}
+.adm-act:active{filter:brightness(.95)}
+.adm-act.outline{background:transparent;color:var(--c);border:1.5px solid var(--c)}
+.adm-act.outline:hover{background:color-mix(in srgb,var(--c) 14%,transparent)}
 
 /* ══ MODALS ═══════════════════════════════════════════ */
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:999;justify-content:center;align-items:flex-start;padding:24px 16px;overflow-y:auto;backdrop-filter:blur(3px)}
@@ -627,43 +629,11 @@ tr:hover td{background:rgba(245,166,35,.025)}
 <!-- ═══ PG ADMIN ═══ -->
 <div class="pg" id="pgAdmin">
   <div class="adm-page">
-    <div class="adm-grupo">
-      <div class="adm-grupo-hdr v"><i class="fas fa-car"></i> Cadastros</div>
-      <div class="adm-btns">
-        <button class="adm-btn av" onclick="abrirModalViaturas()"><div class="adm-ico"><i class="fas fa-plus-circle"></i></div><div><div class="adm-lbl">Cadastrar Viaturas</div><div class="adm-sub">Adicionar e editar frota</div></div></button>
-        <button class="adm-btn av" onclick="sincronizarPastas()"><div class="adm-ico"><i class="fas fa-folder-open"></i></div><div><div class="adm-lbl">Sincronizar Pastas de Fotos</div><div class="adm-sub">Criar pastas no Drive</div></div></button>
-        <button class="adm-btn av" onclick="abrirSetores()"><div class="adm-ico"><i class="fas fa-map-marker-alt"></i></div><div><div class="adm-lbl">Cadastrar Setores</div><div class="adm-sub">Gerenciar setores de atuação</div></div></button>
-      </div>
-    </div>
-    <div class="adm-grupo">
-      <div class="adm-grupo-hdr o"><i class="fas fa-oil-can"></i> Manutenção</div>
-      <div class="adm-btns">
-        <button class="adm-btn ao" onclick="abrirModalOleo()"><div class="adm-ico"><i class="fas fa-tachometer-alt"></i></div><div><div class="adm-lbl">Gerenciar Óleo</div><div class="adm-sub">KM atual e próxima troca</div></div></button>
-        <button class="adm-btn ao" onclick="abrirModalOficinas()"><div class="adm-ico"><i class="fas fa-tools"></i></div><div><div class="adm-lbl">Gerenciar Oficinas</div><div class="adm-sub">Entrada e saída de oficinas</div></div></button>
-        <button class="adm-btn ao" onclick="abrirCfgOf()"><div class="adm-ico"><i class="fas fa-sliders-h"></i></div><div><div class="adm-lbl">Configurar Oficinas</div><div class="adm-sub">Listas de oficinas e motivos</div></div></button>
-      </div>
-    </div>
-    <div class="adm-grupo">
-      <div class="adm-grupo-hdr p"><i class="fas fa-chart-bar"></i> Relatórios</div>
-      <div class="adm-btns">
-        <button class="adm-btn ap" onclick="admRel('mensal')"><div class="adm-ico"><i class="fas fa-file-pdf"></i></div><div><div class="adm-lbl">Relatório Mês Atual</div><div class="adm-sub">PDF do mês corrente</div></div></button>
-        <button class="adm-btn ap" onclick="admRel('personalizado')"><div class="adm-ico"><i class="fas fa-calendar-alt"></i></div><div><div class="adm-lbl">Relatório Personalizado</div><div class="adm-sub">Escolher mês e ano</div></div></button>
-        <button class="adm-btn ap" onclick="admRel('oleo')"><div class="adm-ico"><i class="fas fa-oil-can"></i></div><div><div class="adm-lbl">Relatório de Óleo</div><div class="adm-sub">Status de troca por viatura</div></div></button>
-        <button class="adm-btn ap" onclick="admRel('oficinas')"><div class="adm-ico"><i class="fas fa-wrench"></i></div><div><div class="adm-lbl">Relatório de Oficinas</div><div class="adm-sub">Histórico de manutenções externas</div></div></button>
-        <button class="adm-btn ap" onclick="admRel('saldos')"><div class="adm-ico"><i class="fas fa-credit-card"></i></div><div><div class="adm-lbl">Saldo dos Cartões</div><div class="adm-sub">Último saldo informado por viatura</div></div></button>
-        <button class="adm-btn ap" onclick="admRel('cobranca')"><div class="adm-ico"><i class="fas fa-file-invoice-dollar"></i></div><div><div class="adm-lbl">Relatório de Cobrança</div><div class="adm-sub">Viaturas que excederam limite</div></div></button>
-        <button class="adm-btn ap" onclick="admRel('atualizarOleo')"><div class="adm-ico"><i class="fas fa-sync-alt"></i></div><div><div class="adm-lbl">Atualizar Controle de Óleo</div><div class="adm-sub">Recalcular KM de todas viaturas</div></div></button>
-        <button class="adm-btn ap" onclick="admRel('indice')"><div class="adm-ico"><i class="fas fa-list-alt"></i></div><div><div class="adm-lbl">Atualizar Índice de Viaturas</div><div class="adm-sub">Reconstruir índice da frota na planilha</div></div></button>
-        <button class="adm-btn ap" onclick="admRel('pdf-indice')"><div class="adm-ico"><i class="fas fa-file-pdf"></i></div><div><div class="adm-lbl">PDF do Índice de Viaturas</div><div class="adm-sub">Exportar índice completo como PDF</div></div></button>
-        <button class="adm-btn ap" onclick="admRel('arquivar')"><div class="adm-ico"><i class="fas fa-archive"></i></div><div><div class="adm-lbl">Arquivar Registros Antigos</div><div class="adm-sub">Mover registros &gt;90 dias</div></div></button>
-      </div>
-    </div>
-    <div class="adm-grupo">
-      <div class="adm-grupo-hdr y"><i class="fas fa-users-cog"></i> Usuários</div>
-      <div class="adm-btns">
-        <button class="adm-btn ay" onclick="abrirNovoUsr()"><div class="adm-ico"><i class="fas fa-user-plus"></i></div><div><div class="adm-lbl">Novo Usuário</div><div class="adm-sub">Cadastrar acesso</div></div></button>
-        <button class="adm-btn ay" onclick="carregarUsuarios()"><div class="adm-ico"><i class="fas fa-sync-alt"></i></div><div><div class="adm-lbl">Atualizar Lista</div><div class="adm-sub">Recarregar usuários</div></div></button>
-      </div>
+    <div class="adm-grupo"><div class="adm-grupo-hdr v"><i class="fas fa-car"></i> Cadastros</div><div class="adm-btns"><div class="adm-card" style="--c:#3b82f6"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-car"></i></div><div class="adm-card-tit">Viaturas</div></div><div class="adm-card-desc">Adicionar, editar e excluir veículos da frota.</div><button class="adm-act" onclick="abrirModalViaturas()"><i class="fas fa-pen-to-square"></i> Abrir cadastro</button></div><div class="adm-card" style="--c:#06b6d4"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-folder-open"></i></div><div class="adm-card-tit">Pastas de fotos</div></div><div class="adm-card-desc">Cria no Drive as pastas das viaturas novas.</div><button class="adm-act" onclick="sincronizarPastas()"><i class="fas fa-rotate"></i> Sincronizar</button></div><div class="adm-card" style="--c:#14b8a6"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-map-marker-alt"></i></div><div class="adm-card-tit">Setores</div></div><div class="adm-card-desc">Gerenciar os setores de atuação.</div><button class="adm-act" onclick="abrirSetores()"><i class="fas fa-pen-to-square"></i> Abrir setores</button></div></div></div>
+    <div class="adm-grupo"><div class="adm-grupo-hdr o"><i class="fas fa-oil-can"></i> Manutenção</div><div class="adm-btns"><div class="adm-card" style="--c:#f59e0b"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-tachometer-alt"></i></div><div class="adm-card-tit">Controle de óleo</div></div><div class="adm-card-desc">Definir KM atual e KM da próxima troca.</div><button class="adm-act" onclick="abrirModalOleo()"><i class="fas fa-gauge-high"></i> Gerenciar óleo</button></div><div class="adm-card" style="--c:#fb923c"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-tools"></i></div><div class="adm-card-tit">Oficinas</div></div><div class="adm-card-desc">Registrar entrada, retorno e histórico.</div><button class="adm-act" onclick="abrirModalOficinas()"><i class="fas fa-wrench"></i> Gerenciar oficinas</button></div><div class="adm-card" style="--c:#94a3b8"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-sliders-h"></i></div><div class="adm-card-tit">Listas de oficinas</div></div><div class="adm-card-desc">Editar oficinas e motivos disponíveis.</div><button class="adm-act" onclick="abrirCfgOf()"><i class="fas fa-sliders"></i> Configurar</button></div></div></div>
+    <div class="adm-grupo"><div class="adm-grupo-hdr p"><i class="fas fa-chart-bar"></i> Relatórios</div><div class="adm-btns"><div class="adm-card" style="--c:#7c3aed"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-file-pdf"></i></div><div class="adm-card-tit">Relatório mensal</div></div><div class="adm-card-desc">Relatório completo do mês atual.</div><button class="adm-act" onclick="admRel('mensal')"><i class="fas fa-download"></i> Baixar PDF</button></div><div class="adm-card" style="--c:#6366f1"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-calendar-alt"></i></div><div class="adm-card-tit">Relatório personalizado</div></div><div class="adm-card-desc">Escolha o mês e o ano desejados.</div><button class="adm-act" onclick="admRel('personalizado')"><i class="fas fa-download"></i> Escolher e baixar PDF</button></div><div class="adm-card" style="--c:#f59e0b"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-oil-can"></i></div><div class="adm-card-tit">Relatório de óleo</div></div><div class="adm-card-desc">Status de troca de óleo por viatura.</div><button class="adm-act" onclick="admRel('oleo')"><i class="fas fa-download"></i> Baixar PDF</button></div><div class="adm-card" style="--c:#fb923c"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-wrench"></i></div><div class="adm-card-tit">Relatório de oficinas</div></div><div class="adm-card-desc">Histórico de manutenções externas.</div><button class="adm-act" onclick="admRel('oficinas')"><i class="fas fa-download"></i> Baixar PDF</button></div><div class="adm-card" style="--c:#22c55e"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-credit-card"></i></div><div class="adm-card-tit">Saldo dos cartões</div></div><div class="adm-card-desc">Último saldo informado por viatura.</div><button class="adm-act" onclick="admRel('saldos')"><i class="fas fa-download"></i> Baixar PDF</button></div><div class="adm-card" style="--c:#f43f5e"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-file-invoice-dollar"></i></div><div class="adm-card-tit">Relatório de cobrança</div></div><div class="adm-card-desc">Viaturas que excederam o limite na oficina.</div><button class="adm-act" onclick="admRel('cobranca')"><i class="fas fa-download"></i> Baixar PDF</button></div><div class="adm-card" style="--c:#16a36a"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-table-list"></i></div><div class="adm-card-tit">Índice de viaturas</div></div><div class="adm-card-desc">Exportação do índice completo da frota.</div><button class="adm-act" onclick="admRel('pdf-indice')"><i class="fas fa-download"></i> Baixar PDF</button></div></div></div>
+    <div class="adm-grupo"><div class="adm-grupo-hdr o"><i class="fas fa-gears"></i> Rotinas do sistema</div><div class="adm-btns"><div class="adm-card" style="--c:#0ea5e9"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-sync-alt"></i></div><div class="adm-card-tit">Controle de óleo</div></div><div class="adm-card-desc">Recalcula o KM de todas as viaturas.</div><button class="adm-act" onclick="admRel('atualizarOleo')"><i class="fas fa-calculator"></i> Recalcular</button></div><div class="adm-card" style="--c:#10b981"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-list-alt"></i></div><div class="adm-card-tit">Índice de viaturas</div></div><div class="adm-card-desc">Reconstrói o índice da frota na planilha.</div><button class="adm-act" onclick="admRel('indice')"><i class="fas fa-hammer"></i> Reconstruir</button></div><div class="adm-card" style="--c:#ef4444"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-archive"></i></div><div class="adm-card-tit">Registros antigos</div></div><div class="adm-card-desc">Move para o arquivo registros com mais de 90 dias.</div><button class="adm-act" onclick="admRel('arquivar')"><i class="fas fa-box-archive"></i> Arquivar</button></div></div></div>
+    <div class="adm-grupo"><div class="adm-grupo-hdr y"><i class="fas fa-users-cog"></i> Usuários</div><div class="adm-btns"><div class="adm-card" style="--c:#22c55e"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-user-plus"></i></div><div class="adm-card-tit">Novo usuário</div></div><div class="adm-card-desc">Cadastrar um novo acesso ao sistema.</div><button class="adm-act" onclick="abrirNovoUsr()"><i class="fas fa-plus"></i> Cadastrar</button></div><div class="adm-card" style="--c:#94a3b8"><div class="adm-card-hd"><div class="adm-card-ico"><i class="fas fa-sync-alt"></i></div><div class="adm-card-tit">Lista de usuários</div></div><div class="adm-card-desc">Recarregar a tabela de usuários abaixo.</div><button class="adm-act" onclick="carregarUsuarios()"><i class="fas fa-rotate"></i> Atualizar lista</button></div></div>
       <div class="tw-sm"><table><thead><tr><th>Matrícula</th><th>Nome de Guerra</th><th>Perfil</th><th style="text-align:center">Status</th><th>Último Acesso</th><th style="text-align:center">Ações</th></tr></thead><tbody id="tbUsr"><tr><td colspan="6" class="erow">Carregando...</td></tr></tbody></table></div>
     </div>
   </div>
