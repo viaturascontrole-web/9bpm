@@ -322,21 +322,128 @@ tr:hover td{background:rgba(245,166,35,.025)}
 /* wa */
 .wa-btn{display:inline-block;background:#25D366;color:#fff;padding:1px 7px;border-radius:7px;text-decoration:none;font-size:10px;font-weight:600}
 
-/* mov paginação */
-.mov-pag{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:6px}
-.mov-pag-info{font-size:10px;color:var(--txt2);font-family:var(--mono);flex:1}
-.mov-pag-btn{width:26px;height:26px;border:1px solid var(--bd);background:var(--bg3);color:var(--txt);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all var(--tr)}
-.mov-pag-btn:hover:not(:disabled){border-color:var(--ac);color:var(--ac)}
-.mov-pag-btn:disabled{opacity:.3;cursor:not-allowed}
+/* ══════════════════════════════════════════════════════════════════
+   ÚLTIMAS MOVIMENTAÇÕES — apresentação modernizada (somente visual)
+   Escopo: painéis "Últimas Entradas" e "Últimas Saídas de Serviço"
+   ══════════════════════════════════════════════════════════════════ */
+.mv-sec{margin-top:18px}
+.mv-sec-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.mv-sec-ttl{display:flex;align-items:center;gap:12px;min-width:0}
+.mv-sec-ico{width:36px;height:36px;border-radius:10px;background:rgba(26,115,232,.12);border:1px solid rgba(26,115,232,.3);color:var(--ac);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.mv-sec-name{font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--txt);line-height:1.15}
+.mv-stamp{display:inline-flex;align-items:center;gap:6px;margin-top:3px;font-size:10px;color:var(--txt3);font-family:var(--mono)}
+.mv-stamp i{font-size:10px;opacity:.8}
 
-/* mov */
-.mov-tw{background:var(--bg2);border:1px solid var(--bd);border-radius:8px;overflow:auto;max-height:340px}
-.mov-tw table{width:100%;border-collapse:collapse;font-size:12px}
-.mov-tw thead{position:sticky;top:0;z-index:5;background:var(--bg3)}
-.mov-tw th{padding:7px 10px;text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--txt);border-bottom:1px solid var(--bd);white-space:nowrap}
-.mov-tw td{padding:7px 10px;border-bottom:1px solid rgba(37,53,72,.4);vertical-align:middle;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mov-tw tr:hover td{background:rgba(245,166,35,.025)}
-.mov-tw .erow td{text-align:center!important;padding:24px!important;color:var(--txt3);font-size:13px}
+/* painel */
+.mv-panel{--pc:#60a5fa;--pcr:96,165,250;position:relative;overflow:hidden;background:var(--bg2);border:1px solid var(--bd);border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.mv-panel::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--pc)}
+.mv-out{--pc:#4ade80;--pcr:74,222,128}
+.mv-panel+.mv-panel{margin-top:18px}
+.mv-body{padding:16px 18px 14px 22px}
+.mv-head{display:flex;align-items:center;gap:12px;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--bd)}
+.mv-head-ico{width:38px;height:38px;border-radius:10px;background:rgba(var(--pcr),.14);border:1px solid rgba(var(--pcr),.35);color:var(--pc);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.mv-head-txt{flex:1;min-width:0}
+.mv-head-ttl{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--pc);line-height:1.15}
+.mv-head-sub{font-size:11px;color:var(--txt2);margin-top:3px}
+.mv-live{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;padding:4px 10px;border:1px solid var(--bd);border-radius:999px;background:var(--bg3);font-size:10px;color:var(--txt3);font-family:var(--mono);white-space:nowrap}
+.mv-live i{color:var(--pc);font-size:9px}
+
+/* indicadores */
+.mv-kpis{display:grid;gap:10px;margin-bottom:14px}
+.mv-kpis-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.mv-kpis-5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.mv-kpi{--k:var(--ac);--kr:26,115,232;display:flex;align-items:center;gap:12px;min-height:68px;padding:10px 14px;background:rgba(var(--kr),.07);border:1px solid rgba(var(--kr),.28);border-radius:12px;transition:background var(--tr),border-color var(--tr)}
+.mv-kpi:hover{background:rgba(var(--kr),.11);border-color:rgba(var(--kr),.5)}
+.mv-kpi-ico{width:34px;height:34px;border-radius:9px;background:rgba(var(--kr),.16);color:var(--k);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.mv-kpi-tx{min-width:0;display:flex;flex-direction:column;gap:4px}
+.mv-kpi-val{font-size:26px;font-weight:800;line-height:1;font-family:var(--mono);color:var(--k)}
+.mv-kpi-lbl{font-size:9.5px;font-weight:700;line-height:1.2;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px}
+
+/* tabela */
+.mov-tw{background:var(--bg);border:1px solid var(--bd);border-radius:12px;overflow:auto;max-height:470px;-webkit-overflow-scrolling:touch}
+.mov-tw table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px}
+.mv-t-in{min-width:900px}
+.mv-t-out{min-width:1090px}
+.mov-tw th{position:sticky;top:0;z-index:5;padding:10px 12px;background:var(--bg3);border-bottom:1px solid var(--bd2);text-align:left;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--txt2);white-space:nowrap}
+.mov-tw th.w-dt{width:122px}.mov-tw th.w-vt{width:108px}.mov-tw th.w-num{width:96px}.mov-tw th.w-chip{width:150px}.mov-tw th.w-sn{width:100px}
+.mov-tw td{padding:10px 12px;border-bottom:1px solid rgba(45,55,72,.55);vertical-align:middle;white-space:nowrap;max-width:none;overflow:visible;text-overflow:clip;transition:background .15s}
+.mov-tw tbody tr:last-child td{border-bottom:none}
+.mov-tw td.mv-wrap{white-space:normal;min-width:120px;max-width:230px;word-break:break-word}
+.mov-tw tbody tr:nth-child(even) td{background:rgba(255,255,255,.022)}
+.mov-tw tbody tr.mv-alert td{background:rgba(231,76,60,.06)}
+.mov-tw tbody tr.mv-alert td:first-child{box-shadow:inset 3px 0 0 #ef4444}
+.mov-tw tbody tr:hover td{background:rgba(26,115,232,.10)}
+.mov-tw tbody tr.mv-alert:hover td{background:rgba(231,76,60,.12)}
+.mov-tw td.erow{text-align:center;padding:30px;color:var(--txt3);font-size:13px;white-space:normal}
+
+/* células */
+.mv-dt{display:flex;flex-direction:column;gap:3px;line-height:1.2}
+.mv-dt-d{font-size:11.5px;font-weight:600;color:var(--txt)}
+.mv-dt-h{font-size:11px;color:var(--txt2);font-family:var(--mono)}
+.mv-dt-h i{font-size:9px;margin-right:3px;opacity:.7}
+.mv-vt{display:inline-block;padding:3px 9px;border-radius:7px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.35);color:#60a5fa;font-family:var(--mono);font-size:12.5px;font-weight:800;letter-spacing:.3px}
+.mv-plate{display:block;margin-top:4px;font-size:10px;color:var(--txt2);font-family:var(--mono);letter-spacing:.8px}
+.mv-pp{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.mv-nm{font-weight:600;color:var(--txt);line-height:1.25}
+.mv-nm.mv-sub{font-weight:500;color:var(--txt2)}
+.mov-tw .mv-wa{display:inline-flex;align-items:center;gap:4px;padding:1px 9px;border-radius:999px;font-size:10px}
+.mv-num{font-family:var(--mono);font-weight:700;color:var(--txt)}
+.mv-mute{color:var(--txt3)}
+.mv-chips{display:flex;gap:6px;flex-wrap:wrap}
+.mv-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border:1px solid transparent;border-radius:999px;font-size:10px;font-weight:700;line-height:1.3;letter-spacing:.2px;white-space:nowrap}
+.mv-chip i{font-size:10px}
+.mv-chip.mv-long{white-space:normal;align-items:flex-start;border-radius:10px}
+.mv-chip.mv-long i{margin-top:2px}
+.mv-ok{background:rgba(74,222,128,.12);color:#86efac;border-color:rgba(74,222,128,.3)}
+.mv-warn{background:rgba(245,158,11,.14);color:#fcd34d;border-color:rgba(245,158,11,.35)}
+.mv-bad{background:rgba(239,68,68,.16);color:#fca5a5;border-color:rgba(239,68,68,.4)}
+.mv-info{background:rgba(79,172,254,.13);color:#7cc4ff;border-color:rgba(79,172,254,.35)}
+.mv-n{background:rgba(100,116,139,.14);color:#94a3b8;border-color:rgba(100,116,139,.3)}
+.mv-qp{display:block;margin-top:4px;max-width:200px;font-size:10px;line-height:1.3;color:#fca5a5;white-space:normal}
+
+/* paginação */
+.mov-pag{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:12px}
+.mov-pag-info{flex:1;min-width:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--txt2);font-family:var(--mono)}
+.mov-pag-info b{color:var(--txt);font-weight:800}
+.mv-pg-sep{width:1px;height:12px;background:var(--bd2)}
+.mov-pag-btn{height:32px;min-width:32px;padding:0 12px;gap:6px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--bd);background:var(--bg3);color:var(--txt);border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--sans);transition:all var(--tr)}
+.mov-pag-btn i{font-size:11px}
+.mov-pag-btn:hover:not(:disabled){border-color:var(--pc);color:var(--pc);background:rgba(var(--pcr),.08)}
+.mov-pag-btn:disabled{opacity:.35;cursor:not-allowed}
+
+/* tablet */
+@media(max-width:900px){
+  .mv-body{padding:14px 14px 12px 18px}
+  .mv-kpis-5{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .mv-kpis-5 .mv-kpi{grid-column:span 2}
+  .mv-kpis-5 .mv-kpi:nth-child(n+4){grid-column:span 3}
+}
+/* celular — tabela vira cartões (todas as colunas preservadas) */
+@media(max-width:700px){
+  .mv-live{display:none}
+  .mv-kpis-4,.mv-kpis-5{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mv-kpis-5 .mv-kpi,.mv-kpis-5 .mv-kpi:nth-child(n+4){grid-column:auto}
+  .mv-kpis-5 .mv-kpi:last-child{grid-column:1/-1}
+  .mv-kpi{gap:9px;min-height:62px;padding:9px 10px}
+  .mv-kpi-ico{width:30px;height:30px;font-size:12px}
+  .mv-kpi-val{font-size:22px}
+  .mov-pag-btn span{display:none}
+  .mov-pag-btn{padding:0;width:36px;height:36px}
+  .mov-tw{max-height:none;overflow:visible;background:transparent;border:none;border-radius:0}
+  .mov-tw table,.mov-tw tbody{display:block;min-width:0!important;width:100%}
+  .mov-tw thead{display:none}
+  .mov-tw tbody tr{display:block;margin-bottom:10px;padding:4px 12px;background:var(--bg);border:1px solid var(--bd);border-radius:12px}
+  .mov-tw tbody tr.mv-alert{border-color:rgba(239,68,68,.45);background:rgba(231,76,60,.06)}
+  .mov-tw tbody tr td{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px 0;max-width:none;min-width:0;text-align:right;white-space:normal;background:transparent!important;box-shadow:none!important;border-bottom:1px dashed rgba(45,55,72,.7)}
+  .mov-tw tbody tr td:last-child{border-bottom:none}
+  .mov-tw tbody tr td::before{content:attr(data-label);flex-shrink:0;font-size:9.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--txt3);text-align:left}
+  .mov-tw tbody tr td.erow{display:block;text-align:center}
+  .mov-tw tbody tr td.erow::before{display:none}
+  .mv-dt,.mv-pp,.mv-vtw,.mv-pend{align-items:flex-end;text-align:right}
+  .mv-dt,.mv-pend{display:flex;flex-direction:column}
+  .mv-chips{justify-content:flex-end}
+  .mv-qp{max-width:none}
+}
 
 /* ══ DETALHES EXPANSÍVEIS (PATCH) ════════════════════ */
 .det-row{background:var(--bg3);border-bottom:1px solid var(--bd)}
@@ -478,76 +585,78 @@ tr:hover td{background:rgba(245,166,35,.025)}
   <div class="v-grid" id="vGrid"><div class="sk-card"></div><div class="sk-card"></div><div class="sk-card"></div><div class="sk-card"></div><div class="sk-card"></div><div class="sk-card"></div></div>
 
   <!-- Últimas Movimentações -->
-  <div style="margin-top:18px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
-      <div style="display:flex;align-items:center;gap:10px">
-        <i class="fas fa-history" style="color:var(--ac);font-size:16px"></i>
+  <div class="mv-sec">
+    <div class="mv-sec-head">
+      <div class="mv-sec-ttl">
+        <div class="mv-sec-ico"><i class="fas fa-history"></i></div>
         <div>
-          <div style="font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--txt)">Últimas Movimentações</div>
-          <div style="font-size:10px;color:var(--txt3);font-family:var(--mono)" id="movTimestamp">— atualizado em --:--</div>
+          <div class="mv-sec-name">Últimas Movimentações</div>
+          <div class="mv-stamp"><i class="far fa-clock"></i><span id="movTimestamp">Atualizado às --:--</span></div>
         </div>
       </div>
       <button class="btn btn-s sm" onclick="carregarUltimasMovimentacoes(true)" title="Atualizar"><i class="fas fa-sync-alt"></i> Atualizar</button>
     </div>
 
     <!-- ÚLTIMAS ENTRADAS -->
-    <div style="margin-bottom:18px;background:var(--bg2);border:1px solid var(--bd);border-left:4px solid #60a5fa;border-radius:10px;padding:14px 16px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--bd)">
-        <div style="width:32px;height:32px;border-radius:8px;background:rgba(96,165,250,.15);border:1px solid rgba(96,165,250,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <i class="fas fa-sign-in-alt" style="color:#60a5fa;font-size:14px"></i>
+    <div class="mv-panel mv-in">
+      <div class="mv-body">
+        <div class="mv-head">
+          <div class="mv-head-ico"><i class="fas fa-sign-in-alt"></i></div>
+          <div class="mv-head-txt">
+            <div class="mv-head-ttl">Últimas Entradas de Serviço</div>
+            <div class="mv-head-sub">Registros de entrada de viaturas em serviço</div>
+          </div>
+          <div class="mv-live" title="Os registros são atualizados automaticamente"><i class="fas fa-rotate"></i> Auto · 30 s</div>
         </div>
-        <div>
-          <div style="font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#60a5fa;line-height:1.1">Últimas Entradas de Serviço</div>
-          <div style="font-size:10px;color:var(--txt3);margin-top:1px">Registros de entrada de viaturas em serviço</div>
+        <div class="mv-kpis mv-kpis-4">
+        <div class="mv-kpi" style="--k:var(--ac);--kr:26,115,232"><div class="mv-kpi-ico"><i class="fas fa-list-check"></i></div><div class="mv-kpi-tx"><div class="mv-kpi-val" id="movEStT">—</div><div class="mv-kpi-lbl">Total</div></div></div>
+        <div class="mv-kpi" style="--k:#60a5fa;--kr:96,165,250"><div class="mv-kpi-ico"><i class="fas fa-car-side"></i></div><div class="mv-kpi-tx"><div class="mv-kpi-val" id="movEStV">—</div><div class="mv-kpi-lbl">Viaturas</div></div></div>
+        <div class="mv-kpi" style="--k:#c084fc;--kr:192,132,252"><div class="mv-kpi-ico"><i class="fas fa-id-card"></i></div><div class="mv-kpi-tx"><div class="mv-kpi-val" id="movEStM">—</div><div class="mv-kpi-lbl">Motoristas</div></div></div>
+        <div class="mv-kpi" style="--k:var(--ylw);--kr:212,137,26"><div class="mv-kpi-ico"><i class="fas fa-triangle-exclamation"></i></div><div class="mv-kpi-tx"><div class="mv-kpi-val" id="movEStA">—</div><div class="mv-kpi-lbl">Com Alteração</div></div></div>
         </div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
-        <div class="scp" style="border-top:2px solid var(--ac)"><div class="scp-val" style="color:var(--ac)" id="movEStT">—</div><div class="scp-lbl">Total</div></div>
-        <div class="scp" style="border-top:2px solid #60a5fa"><div class="scp-val" style="color:#60a5fa" id="movEStV">—</div><div class="scp-lbl">Viaturas</div></div>
-        <div class="scp" style="border-top:2px solid #c084fc"><div class="scp-val" style="color:#c084fc" id="movEStM">—</div><div class="scp-lbl">Motoristas</div></div>
-        <div class="scp" style="border-top:2px solid var(--ylw)"><div class="scp-val" style="color:var(--ylw)" id="movEStA">—</div><div class="scp-lbl">Com Alteração</div></div>
-      </div>
-      <div class="mov-tw">
-        <table><thead><tr>
-          <th>Data/Hora</th><th>Viatura</th><th>Motorista</th><th>Comandante</th><th>Setor</th><th>Odômetro</th><th>Óleo/Água</th><th>Alterações</th>
-        </tr></thead>
-        <tbody id="tbUltEntradas"><tr><td colspan="8" class="erow">Carregando...</td></tr></tbody></table>
-      </div>
-      <div class="mov-pag">
-        <span class="mov-pag-info" id="movEPagInfo"></span>
-        <button class="mov-pag-btn" id="movEPrev" onclick="movPagE(-1)" disabled title="Página anterior"><i class="fas fa-chevron-left"></i></button>
-        <button class="mov-pag-btn" id="movENext" onclick="movPagE(1)" disabled title="Próxima página"><i class="fas fa-chevron-right"></i></button>
+        <div class="mov-tw">
+          <table class="mv-t-in"><thead><tr>
+            <th class="w-dt">Data/Hora</th><th class="w-vt">Viatura</th><th>Motorista</th><th>Comandante</th><th>Setor</th><th class="w-num">Odômetro</th><th class="w-chip">Óleo/Água</th><th>Alterações</th>
+          </tr></thead>
+          <tbody id="tbUltEntradas"><tr><td colspan="8" class="erow">Carregando...</td></tr></tbody></table>
+        </div>
+        <div class="mov-pag">
+          <span class="mov-pag-info" id="movEPagInfo"></span>
+          <button class="mov-pag-btn" id="movEPrev" onclick="movPagE(-1)" disabled title="Página anterior"><i class="fas fa-chevron-left"></i><span>Anterior</span></button>
+          <button class="mov-pag-btn" id="movENext" onclick="movPagE(1)" disabled title="Próxima página"><span>Próxima</span><i class="fas fa-chevron-right"></i></button>
+        </div>
       </div>
     </div>
 
     <!-- ÚLTIMAS SAÍDAS -->
-    <div style="background:var(--bg2);border:1px solid var(--bd);border-left:4px solid #4ade80;border-radius:10px;padding:14px 16px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--bd)">
-        <div style="width:32px;height:32px;border-radius:8px;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <i class="fas fa-sign-out-alt" style="color:#4ade80;font-size:14px"></i>
+    <div class="mv-panel mv-out">
+      <div class="mv-body">
+        <div class="mv-head">
+          <div class="mv-head-ico"><i class="fas fa-sign-out-alt"></i></div>
+          <div class="mv-head-txt">
+            <div class="mv-head-ttl">Últimas Saídas de Serviço</div>
+            <div class="mv-head-sub">Registros de saída de viaturas do serviço</div>
+          </div>
+          <div class="mv-live" title="Os registros são atualizados automaticamente"><i class="fas fa-rotate"></i> Auto · 30 s</div>
         </div>
-        <div>
-          <div style="font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#4ade80;line-height:1.1">Últimas Saídas de Serviço</div>
-          <div style="font-size:10px;color:var(--txt3);margin-top:1px">Registros de saída de viaturas do serviço</div>
+        <div class="mv-kpis mv-kpis-5">
+        <div class="mv-kpi" style="--k:var(--ac);--kr:26,115,232"><div class="mv-kpi-ico"><i class="fas fa-list-check"></i></div><div class="mv-kpi-tx"><div class="mv-kpi-val" id="movSStT">—</div><div class="mv-kpi-lbl">Total</div></div></div>
+        <div class="mv-kpi" style="--k:#60a5fa;--kr:96,165,250"><div class="mv-kpi-ico"><i class="fas fa-car-side"></i></div><div class="mv-kpi-tx"><div class="mv-kpi-val" id="movSStV">—</div><div class="mv-kpi-lbl">Viaturas</div></div></div>
+        <div class="mv-kpi" style="--k:#c084fc;--kr:192,132,252"><div class="mv-kpi-ico"><i class="fas fa-id-card"></i></div><div class="mv-kpi-tx"><div class="mv-kpi-val" id="movSStM">—</div><div class="mv-kpi-lbl">Motoristas</div></div></div>
+        <div class="mv-kpi" style="--k:#fca5a5;--kr:252,165,165"><div class="mv-kpi-ico"><i class="fas fa-car-burst"></i></div><div class="mv-kpi-tx"><div class="mv-kpi-val" id="movSStSin">—</div><div class="mv-kpi-lbl">Sinistros</div></div></div>
+        <div class="mv-kpi" style="--k:#4facfe;--kr:79,172,254"><div class="mv-kpi-ico"><i class="fas fa-gas-pump"></i></div><div class="mv-kpi-tx"><div class="mv-kpi-val" id="movSStAbs">—</div><div class="mv-kpi-lbl">Abastecimentos</div></div></div>
         </div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px">
-        <div class="scp" style="border-top:2px solid var(--ac)"><div class="scp-val" style="color:var(--ac)" id="movSStT">—</div><div class="scp-lbl">Total</div></div>
-        <div class="scp" style="border-top:2px solid #60a5fa"><div class="scp-val" style="color:#60a5fa" id="movSStV">—</div><div class="scp-lbl">Viaturas</div></div>
-        <div class="scp" style="border-top:2px solid #c084fc"><div class="scp-val" style="color:#c084fc" id="movSStM">—</div><div class="scp-lbl">Motoristas</div></div>
-        <div class="scp" style="border-top:2px solid #fca5a5"><div class="scp-val" style="color:#fca5a5" id="movSStSin">—</div><div class="scp-lbl">Sinistros</div></div>
-        <div class="scp" style="border-top:2px solid #4facfe"><div class="scp-val" style="color:#4facfe" id="movSStAbs">—</div><div class="scp-lbl">Abastecimentos</div></div>
-      </div>
-      <div class="mov-tw">
-        <table><thead><tr>
-          <th>Data/Hora</th><th>Viatura</th><th>Motorista</th><th>Comandante</th><th>Setor</th><th>Odômetro</th><th>Abasteceu</th><th>Saldo</th><th>Pendência</th><th>Sinistro</th>
-        </tr></thead>
-        <tbody id="tbUltSaidas"><tr><td colspan="10" class="erow">Carregando...</td></tr></tbody></table>
-      </div>
-      <div class="mov-pag">
-        <span class="mov-pag-info" id="movSPagInfo"></span>
-        <button class="mov-pag-btn" id="movSPrev" onclick="movPagS(-1)" disabled title="Página anterior"><i class="fas fa-chevron-left"></i></button>
-        <button class="mov-pag-btn" id="movSNext" onclick="movPagS(1)" disabled title="Próxima página"><i class="fas fa-chevron-right"></i></button>
+        <div class="mov-tw">
+          <table class="mv-t-out"><thead><tr>
+            <th class="w-dt">Data/Hora</th><th class="w-vt">Viatura</th><th>Motorista</th><th>Comandante</th><th>Setor</th><th class="w-num">Odômetro</th><th class="w-sn">Abasteceu</th><th class="w-num">Saldo</th><th>Pendência</th><th class="w-sn">Sinistro</th>
+          </tr></thead>
+          <tbody id="tbUltSaidas"><tr><td colspan="10" class="erow">Carregando...</td></tr></tbody></table>
+        </div>
+        <div class="mov-pag">
+          <span class="mov-pag-info" id="movSPagInfo"></span>
+          <button class="mov-pag-btn" id="movSPrev" onclick="movPagS(-1)" disabled title="Página anterior"><i class="fas fa-chevron-left"></i><span>Anterior</span></button>
+          <button class="mov-pag-btn" id="movSNext" onclick="movPagS(1)" disabled title="Próxima página"><span>Próxima</span><i class="fas fa-chevron-right"></i></button>
+        </div>
       </div>
     </div>
   </div>
@@ -1606,6 +1715,48 @@ var _movEntradas = [], _movSaidas = [];
 var _movEPag = 1,      _movSPag = 1;
 var MOV_POR_PAG = 5;
 
+/* Helpers visuais EXCLUSIVOS dos painéis de movimentações.
+   (badgeSN / nivelBadge globais permanecem intactos — são usados em outras telas) */
+function _mvChip(cls, ico, txt, title) {
+  return '<span class="mv-chip '+cls+'"'+(title?' title="'+esc(title)+'"':'')+'>'+(ico?'<i class="fas '+ico+'"></i>':'')+'<span>'+txt+'</span></span>';
+}
+function _mvData(s) {
+  var f = String(fmtData(s) || '--'), p = f.split(' às ');
+  if (p.length === 2) return '<div class="mv-dt"><span class="mv-dt-d">'+esc(p[0])+'</span><span class="mv-dt-h"><i class="far fa-clock"></i>'+esc(p[1])+'</span></div>';
+  return '<div class="mv-dt"><span class="mv-dt-d">'+esc(f)+'</span></div>';
+}
+function _mvViat(r) {
+  var placa = _placaPorPrefixo(r.prefixo);
+  var viat  = _viaturaByPrefixo(r.prefixo);
+  var pref  = (viat && _normPref(viat.prefixo) !== _normPref(r.prefixo)) ? viat.prefixo : (r.prefixo||'--');
+  return '<div class="mv-vtw"><span class="mv-vt">'+esc(pref)+'</span>'+(placa?'<span class="mv-plate">'+esc(placa)+'</span>':'')+'</div>';
+}
+function _mvMotorista(nome, tel) {
+  var t = String(tel||'').replace(/\D/g,'');
+  var n = nome || '--';
+  return '<div class="mv-pp"><span class="mv-nm" title="'+esc(n)+'">'+esc(n)+'</span>'+
+    (t ? '<a class="wa-btn mv-wa" href="https://wa.me/55'+t+'" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> WhatsApp</a>' : '')+'</div>';
+}
+function _mvNivel(n, ico, rotulo) {
+  var s = String(n||'');
+  if (!n || s === '--' || s === '-') return _mvChip('mv-n', ico, '--', rotulo);
+  var u = s.toUpperCase();
+  var cls = (u.includes('MIN') || u.includes('MÍN')) ? 'mv-bad'
+          : (u.includes('MED') || u.includes('MÉD')) ? 'mv-warn'
+          : (u.includes('MAX') || u.includes('MÁX')) ? 'mv-ok' : 'mv-n';
+  return _mvChip(cls, ico, esc(s), rotulo+': '+s);
+}
+/* modo 'alerta': SIM = vermelho / NÃO = verde (pendência, sinistro). modo 'info': SIM = azul (abastecimento) */
+function _mvSN(v, modo, ico) {
+  var u = String(v||'').toUpperCase().trim();
+  if (u === 'SIM') return modo === 'info' ? _mvChip('mv-info', ico||'fa-check', 'Sim') : _mvChip('mv-bad', 'fa-triangle-exclamation', 'Sim');
+  if (u === 'NÃO' || u === 'NAO') return modo === 'info' ? _mvChip('mv-n', 'fa-minus', 'Não') : _mvChip('mv-ok', 'fa-check', 'Não');
+  return '<span class="mv-mute">'+(esc(v)||'--')+'</span>';
+}
+function _mvPagInfo(total, pag, totalPag) {
+  return total ? '<span><b>'+total+'</b> '+(total===1?'registro':'registros')+'</span><span class="mv-pg-sep"></span><span>Página <b>'+pag+'</b> de '+totalPag+'</span>' : '';
+}
+
 function _renderMovEntradas() {
   var tb   = document.getElementById('tbUltEntradas');
   var info = document.getElementById('movEPagInfo');
@@ -1617,28 +1768,22 @@ function _renderMovEntradas() {
   var ini = (_movEPag - 1) * MOV_POR_PAG;
   var pag = _movEntradas.slice(ini, ini + MOV_POR_PAG);
 
-  if (info) info.textContent = total ? 'Página '+_movEPag+' de '+totalPag+' ('+total+' registros)' : '';
+  if (info) info.innerHTML = _mvPagInfo(total, _movEPag, totalPag);
   if (prev) prev.disabled = _movEPag <= 1;
   if (next) next.disabled = _movEPag >= totalPag;
 
   if (!pag.length) { tb.innerHTML = '<tr><td colspan="8" class="erow">📭 Sem registros no período</td></tr>'; return; }
   tb.innerHTML = pag.map(function(r){
     var temA = r.alteracoes&&r.alteracoes!=='--'&&r.alteracoes!=='-'&&r.alteracoes!=='Sem alteração'&&r.alteracoes.toUpperCase()!=='NÃO';
-    var telL = String(r.telefone||'').replace(/\D/g,'');
-    var wa   = telL ? '<br><a class="wa-btn" href="https://wa.me/55'+telL+'" target="_blank">📱 WA</a>' : '';
-    var placa = _placaPorPrefixo(r.prefixo);
-    var viat  = _viaturaByPrefixo(r.prefixo);
-    var prefixoExibir = (viat && _normPref(viat.prefixo) !== _normPref(r.prefixo))
-      ? viat.prefixo : (r.prefixo||'--');
-    return '<tr>'+
-      '<td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(fmtData(r.data||'--'))+'</td>'+
-      '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(prefixoExibir)+(placa?'<br><span style="font-size:10px;color:var(--txt2);font-weight:400">'+esc(placa)+'</span>':'')+'</td>'+
-      '<td>'+esc(r.motorista||'--')+wa+'</td>'+
-      '<td>'+esc(r.comandante||'--')+'</td>'+
-      '<td>'+esc(r.setor||'--')+'</td>'+
-      '<td style="font-family:var(--mono)">'+esc(r.odometro||r.odometroInicial||'--')+'</td>'+
-      '<td style="font-size:11px">'+nivelBadge(r.nivelOleo||r.oleo,'🛢️')+' '+nivelBadge(r.nivelAgua||r.agua,'💧')+'</td>'+
-      '<td style="font-size:11px;max-width:160px;white-space:normal">'+(temA?'<span style="display:inline-block;background:rgba(239,68,68,.18);color:#fca5a5;border:1px solid rgba(239,68,68,.4);border-radius:5px;padding:2px 7px;font-weight:700;font-size:10px">⚠ '+esc(r.alteracoes)+'</span>':'<span style="display:inline-block;background:rgba(39,174,96,.12);color:#86efac;border:1px solid rgba(39,174,96,.3);border-radius:5px;padding:2px 7px;font-size:10px">✓ Sem alteração</span>')+'</td>'+
+    return '<tr'+(temA?' class="mv-alert"':'')+'>'+
+      '<td data-label="Data/Hora">'+_mvData(r.data||'--')+'</td>'+
+      '<td data-label="Viatura">'+_mvViat(r)+'</td>'+
+      '<td data-label="Motorista" class="mv-wrap">'+_mvMotorista(r.motorista, r.telefone)+'</td>'+
+      '<td data-label="Comandante" class="mv-wrap"><span class="mv-nm mv-sub" title="'+esc(r.comandante||'--')+'">'+esc(r.comandante||'--')+'</span></td>'+
+      '<td data-label="Setor" class="mv-wrap"><span class="mv-nm mv-sub">'+esc(r.setor||'--')+'</span></td>'+
+      '<td data-label="Odômetro"><span class="mv-num">'+esc(r.odometro||r.odometroInicial||'--')+'</span></td>'+
+      '<td data-label="Óleo/Água"><div class="mv-chips">'+_mvNivel(r.nivelOleo||r.oleo,'fa-oil-can','Óleo')+_mvNivel(r.nivelAgua||r.agua,'fa-droplet','Água')+'</div></td>'+
+      '<td data-label="Alterações" class="mv-wrap">'+(temA ? _mvChip('mv-bad mv-long','fa-triangle-exclamation',esc(r.alteracoes)) : _mvChip('mv-ok','fa-check','Sem alteração'))+'</td>'+
     '</tr>';
   }).join('');
 }
@@ -1654,30 +1799,24 @@ function _renderMovSaidas() {
   var ini = (_movSPag - 1) * MOV_POR_PAG;
   var pag = _movSaidas.slice(ini, ini + MOV_POR_PAG);
 
-  if (info) info.textContent = total ? 'Página '+_movSPag+' de '+totalPag+' ('+total+' registros)' : '';
+  if (info) info.innerHTML = _mvPagInfo(total, _movSPag, totalPag);
   if (prev) prev.disabled = _movSPag <= 1;
   if (next) next.disabled = _movSPag >= totalPag;
 
   if (!pag.length) { tb.innerHTML = '<tr><td colspan="10" class="erow">📭 Sem registros no período</td></tr>'; return; }
   tb.innerHTML = pag.map(function(r){
     var temP = String(r.pendencia||'').toUpperCase()==='SIM'||String(r.sinistro||'').toUpperCase()==='SIM';
-    var telL = String(r.telefone||'').replace(/\D/g,'');
-    var wa   = telL ? '<br><a class="wa-btn" href="https://wa.me/55'+telL+'" target="_blank">📱 WA</a>' : '';
-    var placa = _placaPorPrefixo(r.prefixo);
-    var viat  = _viaturaByPrefixo(r.prefixo);
-    var prefixoExibir = (viat && _normPref(viat.prefixo) !== _normPref(r.prefixo))
-      ? viat.prefixo : (r.prefixo||'--');
-    return '<tr'+(temP?' style="background:rgba(231,76,60,.06)"':'')+'>'+
-      '<td style="white-space:nowrap;color:var(--txt);font-size:11px">'+esc(fmtData(r.data||'--'))+'</td>'+
-      '<td style="font-weight:700;color:var(--ac);font-family:var(--mono)">'+esc(prefixoExibir)+(placa?'<br><span style="font-size:10px;color:var(--txt2);font-weight:400">'+esc(placa)+'</span>':'')+'</td>'+
-      '<td>'+esc(r.motorista||'--')+wa+'</td>'+
-      '<td>'+esc(r.comandante||'--')+'</td>'+
-      '<td>'+esc(r.setor||'--')+'</td>'+
-      '<td style="font-family:var(--mono)">'+esc(r.odometro||r.odometroFinal||'--')+'</td>'+
-      '<td>'+badgeSN(r.abastecimento)+'</td>'+
-      '<td>'+esc(r.saldoCartao||r.saldo||'--')+'</td>'+
-      '<td>'+badgeSN(r.pendencia)+(r.qualPendencia?'<br><small style="color:#b91c1c;font-size:10px">'+esc(r.qualPendencia)+'</small>':'')+'</td>'+
-      '<td>'+badgeSN(r.sinistro)+'</td>'+
+    return '<tr'+(temP?' class="mv-alert"':'')+'>'+
+      '<td data-label="Data/Hora">'+_mvData(r.data||'--')+'</td>'+
+      '<td data-label="Viatura">'+_mvViat(r)+'</td>'+
+      '<td data-label="Motorista" class="mv-wrap">'+_mvMotorista(r.motorista, r.telefone)+'</td>'+
+      '<td data-label="Comandante" class="mv-wrap"><span class="mv-nm mv-sub" title="'+esc(r.comandante||'--')+'">'+esc(r.comandante||'--')+'</span></td>'+
+      '<td data-label="Setor" class="mv-wrap"><span class="mv-nm mv-sub">'+esc(r.setor||'--')+'</span></td>'+
+      '<td data-label="Odômetro"><span class="mv-num">'+esc(r.odometro||r.odometroFinal||'--')+'</span></td>'+
+      '<td data-label="Abasteceu">'+_mvSN(r.abastecimento,'info','fa-gas-pump')+'</td>'+
+      '<td data-label="Saldo"><span class="mv-num">'+esc(r.saldoCartao||r.saldo||'--')+'</span></td>'+
+      '<td data-label="Pendência" class="mv-wrap"><div class="mv-pend">'+_mvSN(r.pendencia,'alerta')+(r.qualPendencia?'<span class="mv-qp">'+esc(r.qualPendencia)+'</span>':'')+'</div></td>'+
+      '<td data-label="Sinistro">'+_mvSN(r.sinistro,'alerta')+'</td>'+
     '</tr>';
   }).join('');
 }
@@ -1769,7 +1908,7 @@ async function carregarUltimasMovimentacoes(completo) {
     _renderMovEntradas();
     _renderMovSaidas();
     var ts = document.getElementById('movTimestamp');
-    if (ts) { var d=new Date(); ts.textContent='— atualizado às '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); }
+    if (ts) { var d=new Date(); ts.textContent='Atualizado às '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); }
   } catch(e) {
     if (!_movEntradas.length && !_movSaidas.length) {
       tbE.innerHTML = '<tr><td colspan="8" class="erow">⚠️ '+esc(e.message)+'</td></tr>';
